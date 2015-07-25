@@ -1,0 +1,15 @@
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\bin\Release\ShowdownBot.exe.config
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\bin\Release\ShowdownBot.exe
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\bin\Release\ShowdownBot.pdb
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\bin\Release\WatiN.Core.dll
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\bin\Release\Interop.SHDocVw.dll
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\bin\Release\WatiN.Core.xml
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.Consol.resources
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.Form1.resources
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.Properties.Resources.resources
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.csproj.GenerateResource.Cache
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.exe
+C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.pdb
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\ShowdownBot.exe.config
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.exe
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.pdb

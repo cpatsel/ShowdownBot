@@ -6,16 +6,19 @@ using WatiN.Core;
 using System.Drawing;
 using System.Net.NetworkInformation;
 using System.Windows.Forms;
+using System.Configuration;
+using System.Collections.Specialized;
 
 namespace ShowdownBot
 {
     class Bot
     {
         // ///Bot info
-        //Move to a file or something easier to read/write
-        string site = "http://play.pokemonshowdown.com/";
-        string username = "username"; //Change these
-        string password = "password"; //Change these
+        
+        string site; //Initialization moved to config file.
+        string username; 
+        string password;
+        string owner; //More uses for this later, right now it's used to initiate the challenge.
         // ///Site Info
         string LoginButton = "login";
         string nameField = "username";
@@ -41,7 +44,7 @@ namespace ShowdownBot
         {
             this.c = c;
             activeState = State.IDLE;
-            
+            ReadFile();
         }
 
 
@@ -58,12 +61,22 @@ namespace ShowdownBot
             //    c.writef("Cannot connect to "+site,"[ERROR]",Color.Red);
             //    c.writef("Aborting processes. Please start again.",Color.Red);
             //}
+            
             OpenSite(site);
             
 
         }
 
-        public void performNextTask(IE b)
+        private void ReadFile()
+        {
+            //ConfigurationManager is giving me an error
+            site = ConfigurationSettings.AppSettings.Get("site");
+            username = ConfigurationSettings.AppSettings.Get("username");
+            password = ConfigurationSettings.AppSettings.Get("password");
+            owner = ConfigurationSettings.AppSettings.Get("owner");
+            c.writef("Bot's owner set to: " + owner, "[DEBUG]", Global.okColor);
+        }
+        private void performNextTask(IE b)
         {
             IE browser = b;
             while (activeState == State.IDLE)
@@ -124,16 +137,13 @@ namespace ShowdownBot
                 //}
 
                 
-                //Challenge Vardy-B to random
+                //Challenge the owner to random
                 c.write("Searching for user");
                 browser.Button(Find.ByName("finduser")).Click();
-                browser.TextField(Find.ByName("data")).TypeText("Vardy-B");
+                browser.TextField(Find.ByName("data")).TypeText(owner);
                 System.Windows.Forms.SendKeys.SendWait("{ENTER}");
                 c.write("Contacting user");
                 browser.Button(Find.ByName("challenge")).Click();
-                //browser.TextField(Find.ByName("message")).TypeText("Hi!");
-               // System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-               // c.write("Sent message: Hi!");
                 browser.Button(Find.ByName("makeChallenge")).Click();
                 c.write("Challenge made, awaiting response.");
 

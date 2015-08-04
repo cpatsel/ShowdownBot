@@ -147,40 +147,6 @@ namespace ShowdownBot
                             threadBot.SetApartmentState(ApartmentState.STA);
                             threadBot.Start();
                         }
-                        else if (args[1] == "overused" || args[1] == "ou")
-                        {
-                            cmd = () => bot.changeState(ShowdownBot.Bot.State.BATTLEOU);
-                            ts = new ThreadStart(cmd);
-                            threadBot = new Thread(ts);
-                            threadBot.SetApartmentState(ApartmentState.STA);
-                            threadBot.Start();
-                        }
-                    }
-                    else
-                    {
-                        writef("Acceptable arguments are idle, ou, random", "[SYSTEM]", Global.sysColor);
-                    }
-                }
-                else if (args[0] == "m" || args[0] == "mode")
-                {
-                    if (args[1] != null)
-                    {
-                        if (args[1] == "random")
-                        {
-                            cmd = () => bot.changeMode(ShowdownBot.Bot.AiMode.RANDOM);
-                            ts = new ThreadStart(cmd);
-                            threadBot = new Thread(ts);
-                            threadBot.SetApartmentState(ApartmentState.STA);
-                            threadBot.Start();
-                        }
-                        else if (args[1] == "biased" || args[1] == "b")
-                        {
-                            cmd = () => bot.changeMode(ShowdownBot.Bot.AiMode.BIAS);
-                            ts = new ThreadStart(cmd);
-                            threadBot = new Thread(ts);
-                            threadBot.SetApartmentState(ApartmentState.STA);
-                            threadBot.Start();
-                        }
                     }
                     else
                     {

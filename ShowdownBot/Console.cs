@@ -104,14 +104,23 @@ namespace ShowdownBot
 
                 if (args[0] == "start")
                     {
+                        
                         writef("Starting bot...", "[SYSTEM]", Global.sysColor);
-                        cmd = () => bot.Start();
+                        cmd = () => bot.Start(true);
                         ts = new ThreadStart(cmd);
                         threadBot = new Thread(ts);
                         threadBot.SetApartmentState(ApartmentState.STA);
                         threadBot.Start();
-
-                      //  bot.Start();
+                    }
+                else if (args[0] == "startf")
+                    {
+                        
+                        writef("Starting bot without authentication...", "[SYSTEM]", Global.sysColor);
+                        cmd = () => bot.Start(false);
+                        ts = new ThreadStart(cmd);
+                        threadBot = new Thread(ts);
+                        threadBot.SetApartmentState(ApartmentState.STA);
+                        threadBot.Start();
                     }
                 else if ( t == "help")
                 {
@@ -130,7 +139,7 @@ namespace ShowdownBot
                             threadBot.SetApartmentState(ApartmentState.STA);
                             threadBot.Start();
                         }
-                        else if (args[1] == "randombattle")
+                        else if (args[1] == "randombattle" || args[1] == "rb")
                         {
                             cmd = () => bot.changeState(ShowdownBot.Bot.State.RANDOMBATTLE);
                             ts = new ThreadStart(cmd);
@@ -153,6 +162,12 @@ namespace ShowdownBot
 
 
 
+                }
+                else if (args[0] == "info")
+                {
+                    write("Current state: " + bot.getState().ToString() + "\n"
+                        + "Current mode: " + bot.getMode().ToString() + "\n"
+                        );
                 }
                 else if (args[0] == "visible" || args[0] == "v")
                 {
@@ -177,7 +192,7 @@ namespace ShowdownBot
             //    write("***REMOVED***");
             //    //process the command.
             //}
-            writef("Available commands are: start, exit, changestate", "[SYSTEM]", Global.sysColor);
+            writef("Available commands are: start, startf, exit, changestate, info", "[SYSTEM]", Global.sysColor);
             
         }
 

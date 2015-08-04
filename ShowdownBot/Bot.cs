@@ -13,9 +13,9 @@ namespace ShowdownBot
 {
     class Bot
     {
-        // ///Bot info
-        
-        string site; //Initialization moved to config file.
+        #region Bot Info
+
+        string site;
         string username; 
         string password;
         string owner; //More uses for this later, right now it's used to initiate the challenge.
@@ -28,6 +28,10 @@ namespace ShowdownBot
         State activeState;
         AiMode modeCurrent;
         IE mainBrowser;
+        float move1Weight = 0.4f;
+        float move2Weight = 0.3f;
+        float move3Weight = 0.2f;
+        float move4Weight = 0.1f;
         //////////////
         //Bot states
         public enum State
@@ -45,19 +49,42 @@ namespace ShowdownBot
             ANALYTIC
         };
 
+        #endregion
 
         Consol c;
         public Bot(Consol c)
         {
             this.c = c;
             activeState = State.IDLE;
-            modeCurrent = AiMode.RANDOM; //TODO: set default in config to read
+            modeCurrent = AiMode.RANDOM; //TODO: set default in config to be read
+          
             ReadFile();
         }
 
         public State getState() { return activeState; }
         public AiMode getMode() { return modeCurrent; }
-       
+        public void changeState(State nstate)
+        {
+            c.write("Changing state to: " + nstate.ToString());
+            State oldState = activeState;
+            activeState = nstate;
+            if (mainBrowser != null)
+            {
+                if (oldState == State.RANDOMBATTLE)
+                {
+                    //forfeit a match we're in if we switch.
+                    //this (should be) handled in the randombattle() method.
+
+                }
+            }
+            // performNextTask(mainBrowser);
+
+        }
+        public void changeMode(AiMode nmode)
+        {
+            c.write("Changing AI mode from " + modeCurrent.ToString() + " to: " + nmode.ToString());
+            modeCurrent = nmode;
+        }
 
         public void Start(bool auth)
         {
@@ -100,10 +127,14 @@ namespace ShowdownBot
                 { 
                     challengePlayer(mainBrowser);
                 }
+                else if (activeState == State.BATTLEOU)
+                {
+                    challengePlayer(mainBrowser);
+                }
             }
         }
 
-        public bool OpenSite(string site)
+        private bool OpenSite(string site)
         {
             using (var browser = new IE(site))
             {
@@ -192,23 +223,10 @@ namespace ShowdownBot
             return reply.Status == IPStatus.Success;
            }
 
-        public void changeState(State nstate)
-        {
-            c.write("Changing state to: " + nstate.ToString());
-            State oldState = activeState;
-            activeState = nstate;
-            if (mainBrowser != null)
-            {
-                if (oldState == State.RANDOMBATTLE)
-                {
-                    //forfeit a match we're in if we switch.
-                    //this (should be) handled in the randombattle() method.
-                    
-                }
-            }
-           // performNextTask(mainBrowser);
-            
-        }
+       
+
+
+
         //Change the type if we change the browser
         private bool Login(IE browser)
         {
@@ -318,7 +336,10 @@ namespace ShowdownBot
                 {
                     battleRandomly(browser, ref turn);
                 }
-              
+                else if (modeCurrent == AiMode.BIAS)
+                {
+                    battleBiased(browser, ref turn);
+                }
 
             }while(activeState == State.RANDOMBATTLE);
 
@@ -331,6 +352,37 @@ namespace ShowdownBot
                 goMainMenu(browser, false);
             return true;
 
+        }
+
+        private bool ouBattle(IE browser)
+        {
+            int turn = 1;
+            IE b = browser;
+            
+            //Select lead
+            WatiN.Core.Button lead = b.Button(Find.ByValue("0").And(Find.ByName("chooseTeamPreview")));
+
+            do
+            {
+                
+
+                if (modeCurrent == AiMode.RANDOM)
+                {
+           
+                    battleRandomly(browser, ref turn);
+                }
+                else if (modeCurrent == AiMode.BIAS)
+                {
+                    if (lead.Exists)
+                    {
+                        c.writef("Selecting first pokemon as lead.", Global.botInfoColor);
+                        lead.Click();
+                    }
+                    battleBiased(browser, ref turn);
+                }
+
+            } while (activeState == State.BATTLEOU);
+            return true;
         }
         /// <summary>
         /// Determines all actions randomly, with some guidance.
@@ -347,6 +399,14 @@ namespace ShowdownBot
 
             if (checkMove(browser))
             {
+
+                //first check if there's a mega evo option
+                WatiN.Core.CheckBox box = browser.CheckBox(Find.ByName("megaevo"));
+                if (box.Exists && !box.Checked)
+                {
+                    box.Click();
+                }
+
                 moveSelection = determineMoveRandomly(browser);
                 c.writef("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", Global.botInfoColor);
                 browser.Button(Find.ByValue(moveSelection.ToString())).Click(); //Select move
@@ -376,11 +436,61 @@ namespace ShowdownBot
             }
             return false;
         }
+
+        /// <summary>
+        /// Determines actions based on the predetermined weight of each moveslot.
+        /// </summary>
+        /// <param name="b">browser</param>
+        /// <param name="turn"></param>
+        /// <returns>state of the battle (over/true, ongoing/false)</returns>
+        private bool battleBiased(IE b, ref int turn)
+        {
+            IE browser = b;
+            int moveSelection;
+            int pokeSelection;
+            int[] pkmnExclude = null;
+
+            if (checkMove(browser))
+            {
+                WatiN.Core.CheckBox box = browser.CheckBox(Find.ByName("megaevo"));
+                if (box.Exists && !box.Checked)
+                {
+                    c.writef("I'm mega evolving this turn.", Global.botInfoColor);
+                    box.Click();
+                }
+
+                moveSelection = pickMoveBiased(browser);
+                c.writef("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", Global.botInfoColor);
+                browser.Button(Find.ByValue(moveSelection.ToString())).Click(); //Select move
+                System.Threading.Thread.Sleep(2000);
+                turn++;
+            }
+            else if (checkSwitch(browser))
+            {
+                //TODO: check if it's the first turn, and then select appropriate lead.
+                c.writef("Switching pokemon.", Global.botInfoColor);
+                pokeSelection = pickPokeRandomly(pkmnExclude, browser);
+                c.writef("New pokemon selected: " + pokeSelection.ToString(), Global.botInfoColor);
+                browser.Button(Find.ByValue(pokeSelection.ToString())).Click();
+                System.Threading.Thread.Sleep(2000);
+            }
+            else if (checkBattleEnd(browser))
+            {
+
+                return true;
+            }
+            else
+            {
+                // c.write("Sleeping for 2 secs");
+                System.Threading.Thread.Sleep(2000);
+            }
+            return false;
+        }
+
         private void challengePlayer(IE b)
         {
-            string player = "Vardy-B";
+            string player = owner;
             IE browser = b;
-            //wait for page to load
             c.writef("Waiting for page to load", "[DEBUG]", Global.okColor);
             browser.WaitForComplete(160);
             if (activeState == State.RANDOMBATTLE)
@@ -392,23 +502,43 @@ namespace ShowdownBot
                     c.writef("finduser button does not exist!", "[DEBUG]", Global.okColor);
                 browser.Button(Find.ByName("finduser")).Click();
                 browser.TextField(Find.ByName("data")).TypeText(player);
-                System.Windows.Forms.SendKeys.SendWait("{ENTER}");
+               // System.Windows.Forms.SendKeys.SendWait("{ENTER}");
+                browser.Button(Find.ByText("Open")).Click();
                 c.write("Contacting user for random battle");
                 browser.Button(Find.ByName("challenge")).Click();
-                //browser.TextField(Find.ByName("message")).TypeText("Hi!");
-                // System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-                // c.write("Sent message: Hi!");
                 browser.Button(Find.ByName("makeChallenge")).Click();
                 c.write("Challenge made, awaiting response.");
-
-                ////Indicates we're in a battle, can't think of a better way to check for this.
-                ////Check for the battle buttons/timer button
+                ////TODO: Check for the battle buttons/timer button. More reliable than checking for text.
                 browser.WaitUntilContainsText("Sleep Clause Mod", 500);
                 c.writef("Battle starting!", Global.botInfoColor);
                 randomBattle(browser);
                 performNextTask(browser);
             }
+            else if (activeState == State.BATTLEOU)
+            {
+                c.write("Searching for " + player);
+                if (!browser.Button(Find.ByName("finduser")).Exists)
+                    c.writef("finduser button does not exist!", "[DEBUG]", Global.okColor);
+                browser.Button(Find.ByName("finduser")).Click();
+                browser.TextField(Find.ByName("data")).TypeText(player);
+                browser.Button(Find.ByText("Open")).Click();
+                c.write("Contacting user for OU battle");
+                browser.Button(Find.ByName("challenge")).Click();
+                //Select format
+                browser.Button(Find.ByName("format")).Click();
+                browser.Button(Find.ByValue("ou")).Click();
+                //TODO: implement a way to select alternate teams/ have more than one team.
+                browser.Button(Find.ByName("makeChallenge")).Click();
+                c.write("Challenge made, awaiting response.");
+                ////TODO: Check for the battle buttons/timer button. More reliable than checking for text.
+                browser.WaitUntilContainsText("Sleep Clause Mod", 500);
+                c.writef("Battle starting!", Global.botInfoColor);
+                ouBattle(browser);
+                performNextTask(browser);
+            }
         }
+
+
         private int determineMoveRandomly(IE b)
         {
             IE browser = b;
@@ -445,6 +575,45 @@ namespace ShowdownBot
             return choice;
         }
 
+        private int pickMoveBiased(IE b)
+        {
+            IE browser = b;
+            
+            HashSet<int> exclude = new HashSet<int>();
+            int choice;
+            choice = getIndexBiased();
+            while (!browser.Button(Find.ByValue(choice.ToString())).Exists) 
+            {
+                //If the move we've chosen does not exist, just cycle through until we get one.
+                c.writef("Bad move choice: " + choice.ToString() + "Picking another", "[DEBUG]", Global.okColor);
+                exclude.Add(choice);
+                choice = GetRandomExcluding(exclude, 1, 4);
+            }
+
+            return choice;
+        }
+        /// <summary>
+        /// Helper method for pickMoveBiased.
+        /// </summary>
+        /// <returns></returns>
+        private int getIndexBiased()
+        {
+            int choice;
+            Random rand = new Random();
+            float percent = (float)rand.NextDouble();
+            if (percent >= 0 && percent <= move4Weight)
+                choice = 4;
+            else if (percent > move4Weight && percent <= move3Weight)
+                choice = 3;
+            else if (percent > move3Weight && percent <= move2Weight)
+                choice = 2;
+            else
+                choice = 1;
+
+            return choice;
+        }
+
+
         private bool goMainMenu(IE b, bool forfeit)
         {
             IE browser = b;
@@ -473,10 +642,10 @@ namespace ShowdownBot
             return range.ElementAt(index);
         }
 
-        private void sendText(string t)
-        {
-            c.Invoke((MethodInvoker)delegate { c.write(t); });
-        }
+        //private void sendText(string t)
+        //{
+        //    c.Invoke((MethodInvoker)delegate { c.write(t); });
+        //}
 
 
 

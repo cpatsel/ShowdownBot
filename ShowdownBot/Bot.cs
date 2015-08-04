@@ -26,6 +26,7 @@ namespace ShowdownBot
         // ///Vars
         int loginAttempts;
         State activeState;
+        AiMode modeCurrent;
         IE mainBrowser;
         //////////////
         //Bot states
@@ -36,7 +37,13 @@ namespace ShowdownBot
             RANDOMBATTLE,
             CHALLANGEPLR
         };
-
+        //Determines AI
+        public enum AiMode
+        {
+            RANDOM,
+            BIAS,
+            ANALYTIC
+        };
 
 
         Consol c;
@@ -44,25 +51,25 @@ namespace ShowdownBot
         {
             this.c = c;
             activeState = State.IDLE;
+            modeCurrent = AiMode.RANDOM; //TODO: set default in config to read
             ReadFile();
         }
 
+        public State getState() { return activeState; }
+        public AiMode getMode() { return modeCurrent; }
+       
 
-        public void Start()
+        public void Start(bool auth)
         {
-            //Todo: Add checks for routines, etc. Determine what the bot will 
-            //do and store it somewhere to call it again after successful login.
             loginAttempts = 0;
-            //TODO: clean this shit up and have it make sure we can actually connect to the website first.
-            //if (CanConnect())
-            //OpenSite(site);
-            //else
-            //{
-            //    c.writef("Cannot connect to "+site,"[ERROR]",Color.Red);
-            //    c.writef("Aborting processes. Please start again.",Color.Red);
-            //}
-            
-            OpenSite(site);
+            c.write("Opening site.");
+            if (auth)
+                OpenSite(site);
+            else
+            {
+               
+                OpenSiteNoAuth(site);
+            }
             
 
         }
@@ -79,15 +86,20 @@ namespace ShowdownBot
         private void performNextTask(IE b)
         {
             IE browser = b;
-            while (activeState == State.IDLE)
+            bool loop = true;
+            //A better exit condition needs to be implemented.
+            while (loop)
             {
-                System.Threading.Thread.Sleep(5000);
-                //wait 5 seconds and check for a change in state.
+                if (activeState == State.IDLE)
+                {
+                    System.Threading.Thread.Sleep(5000);
+                    //wait 5 seconds and check for a change in state.
 
-            }
-            if (activeState == State.RANDOMBATTLE)
-            {
-                challengePlayer(mainBrowser);
+                }
+                else if (activeState == State.RANDOMBATTLE)
+                { 
+                    challengePlayer(mainBrowser);
+                }
             }
         }
 
@@ -157,7 +169,22 @@ namespace ShowdownBot
                 return true;
             }
         }
-
+        private bool OpenSiteNoAuth(string site)
+        {
+            using (var browser = new IE(site))
+            {
+                mainBrowser = browser;
+                if (mainBrowser == null)
+                    c.writef("main browser is null", "[DEBUG]", Global.okColor);
+                c.write("Opened site, skipping authentication steps.");
+                browser.WaitForComplete();
+                c.write("Moving onto next task");
+                performNextTask(browser);
+               
+                
+                return true;
+            }
+        }
         public bool CanConnect()
            {
             var ping = new Ping();
@@ -281,67 +308,15 @@ namespace ShowdownBot
         private bool randomBattle(IE browser)
         {
             ///The random battle has just started, pick a move.
-            int moveSelection;
-            int pokeSelection;
             int turn = 1;
-            int[] pkmnExclude = null; //Pokemon to exclude from being selected.
-            DateTime lastAction, currentAction;
-            bool hasMoved = false;
+            //DateTime lastAction, currentAction;
+            //bool hasMoved = false;
             do
             {
-                //If this button exists, the match is over.
-                
-                //if (browser.Button(Find.ByName("chooseSwitch")).Exists)
-                //    c.writef("Found switching buttons.", "[DEBUG]", Color.Green);
 
-               
-             
-
-                //Check for items that limit skills.
-
-
-                if (checkMove(browser))
+                if (modeCurrent == AiMode.RANDOM)
                 {
-                    moveSelection = determineMoveRandomly(browser);
-                    c.writef("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", Global.botInfoColor);
-                    browser.Button(Find.ByValue(moveSelection.ToString())).Click(); //Select move
-                    //hasMoved = true;
-                    lastAction = DateTime.Now;
-                    System.Threading.Thread.Sleep(2000);
-                    turn++;
-                }
-                ////////
-                // c.write("Checking to see if we need to switch pokemon.");
-                else if (checkSwitch(browser))
-                {
-
-                    c.writef("Switching pokemon.", Global.botInfoColor);
-                    pokeSelection = pickPokeRandomly(pkmnExclude, browser);
-                    //while (!browser.Button(Find.ByValue(pokeSelection.ToString())).Enabled ||
-                    //    !browser.Button(Find.ByValue(pokeSelection.ToString())).Exists)
-                    //{
-                    //   // pkmnExclude[i] = selection;
-                    //    pokeSelection = pickPokeRandomly(null,browser); //If the pokemon to be selected is fainted/DNE, pick another.
-                    //    i++;
-                    //} //moved to poke select method
-                    c.writef("New pokemon selected: " + pokeSelection.ToString(), Global.botInfoColor);
-                    //  turn++;
-                    browser.Button(Find.ByValue(pokeSelection.ToString())).Click();
-                    System.Threading.Thread.Sleep(2000);
-                }
-                else if (checkBattleEnd(browser))
-                {
-
-                    return true;
-                }
-                //else if (DateTime.Now.Add(-lastAction) >= 200)
-                //{
-
-                //}
-                else
-                {
-                    // c.write("Sleeping for 2 secs");
-                    System.Threading.Thread.Sleep(2000);
+                    battleRandomly(browser, ref turn);
                 }
               
 
@@ -357,8 +332,50 @@ namespace ShowdownBot
             return true;
 
         }
+        /// <summary>
+        /// Determines all actions randomly, with some guidance.
+        /// </summary>
+        /// <param name="b">browser instance</param>
+        /// <param name="turn"></param>
+        /// <returns></returns>
+        private bool battleRandomly(IE b, ref int turn)
+        {
+            IE browser = b;
+            int moveSelection;
+            int pokeSelection;
+            int[] pkmnExclude = null;
 
+            if (checkMove(browser))
+            {
+                moveSelection = determineMoveRandomly(browser);
+                c.writef("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", Global.botInfoColor);
+                browser.Button(Find.ByValue(moveSelection.ToString())).Click(); //Select move
+                //hasMoved = true;
+                //lastAction = DateTime.Now;
+                System.Threading.Thread.Sleep(2000);
+                turn++;
+            }
+            else if (checkSwitch(browser))
+            {
 
+                c.writef("Switching pokemon.", Global.botInfoColor);
+                pokeSelection = pickPokeRandomly(pkmnExclude, browser);
+                c.writef("New pokemon selected: " + pokeSelection.ToString(), Global.botInfoColor);
+                browser.Button(Find.ByValue(pokeSelection.ToString())).Click();
+                System.Threading.Thread.Sleep(2000);
+            }
+            else if (checkBattleEnd(browser))
+            {
+
+                return true;
+            }
+            else
+            {
+                // c.write("Sleeping for 2 secs");
+                System.Threading.Thread.Sleep(2000);
+            }
+            return false;
+        }
         private void challengePlayer(IE b)
         {
             string player = "Vardy-B";
@@ -415,27 +432,6 @@ namespace ShowdownBot
             HashSet<int> exclude = new HashSet<int>();
             int i = 0;
             int choice = rand.Next(1, 5);
-            //if (exclude == null)
-            //    return choice; 
-            //if we exclude all but one, just return that one.
-            //if (exclude.Length == 4)
-            //{
-            //    int total = 0;
-            //    for (int i = 0; i < exclude.Length; i++)
-            //    {
-            //       total = total + exclude[i];
-            //    }
-            //    //Since all the choices (1-5) added together = 15, subtracting what we have from 15 will give us the remaining choice.
-            //    return (15 - total);
-
-            //}
-            //Failing all that, pick a mon randomly.
-            ////for (int i = 0; i < exclude.Length; i++)
-            ////{
-            ////    if (exclude[i] == choice)
-            ////    choice = rand.Next(1,5);
-            ////}
-            //Exclude is busted right now, using simple method
             c.write("Choosing new pokemon");
             choice = rand.Next(1, 5);
             while (!browser.Button(Find.ByValue(choice.ToString())).Exists )
@@ -459,7 +455,7 @@ namespace ShowdownBot
                 System.Windows.Forms.SendKeys.SendWait("{ENTER}");
                 System.Threading.Thread.Sleep(2000);
                 //browser.Button(Find.ByLabelText("Forfeit")).Click();
-                browser.Button(Find.ByName("closeAndMainMenu")).Click();
+                browser.Button(Find.ByName("closeAndMainMenu")).Click(); 
                 return true;
             }
             else

@@ -32,6 +32,8 @@ namespace ShowdownBot
         float move2Weight = 0.3f;
         float move3Weight = 0.2f;
         float move4Weight = 0.1f;
+        bool needLogout;
+        bool isRunning;
         //////////////
         //Bot states
         public enum State
@@ -40,6 +42,7 @@ namespace ShowdownBot
             BATTLEOU,
             RANDOMBATTLE,
             CHALLANGEPLR
+
         };
         //Determines AI
         public enum AiMode
@@ -55,6 +58,7 @@ namespace ShowdownBot
         public Bot(Consol c)
         {
             this.c = c;
+            isRunning = false;
             activeState = State.IDLE;
             modeCurrent = AiMode.RANDOM; //TODO: set default in config to be read
           
@@ -63,6 +67,7 @@ namespace ShowdownBot
 
         public State getState() { return activeState; }
         public AiMode getMode() { return modeCurrent; }
+        public bool getStatus() { return isRunning; }
         public void changeState(State nstate)
         {
             c.write("Changing state to: " + nstate.ToString());
@@ -88,7 +93,14 @@ namespace ShowdownBot
 
         public void Start(bool auth)
         {
+            if (isRunning)
+            {
+                c.writef("Bot is already running!", Global.warnColor);
+                return;
+            }
             loginAttempts = 0;
+            needLogout = auth;
+            isRunning = true;
             c.write("Opening site.");
             if (auth)
                 OpenSite(site);
@@ -101,6 +113,25 @@ namespace ShowdownBot
 
         }
 
+        //TODO: add checks to other battle methods to break out of loop if bot is no longer running.
+        public void Kill()
+        {
+            if (!isRunning)
+            {
+                c.writef("Bot is not running!", Global.warnColor);
+                return;
+            }
+            if (needLogout)
+            {
+                c.write("Logging out.");
+                //Logout
+            }
+            c.write("Bot is shutting down.");
+            isRunning = false;
+           
+            
+            
+        }
         private void ReadFile()
         {
             //ConfigurationManager is giving me an error
@@ -113,9 +144,9 @@ namespace ShowdownBot
         private void performNextTask(IE b)
         {
             IE browser = b;
-            bool loop = true;
+           // bool loop = true;
             //A better exit condition needs to be implemented.
-            while (loop)
+            while (isRunning)
             {
                 if (activeState == State.IDLE)
                 {
@@ -132,6 +163,7 @@ namespace ShowdownBot
                     challengePlayer(mainBrowser);
                 }
             }
+            c.writef("Done performing tasks.", Global.okColor);
         }
 
         private bool OpenSite(string site)
@@ -166,7 +198,7 @@ namespace ShowdownBot
 
 
                 }
-
+                performNextTask(browser);
                 //if (!browser.Span(Find.ByClass("username")).Exists) //The userbar should show our name if we've succesfully logged in.
                 //{
                 //    c.writef("Cannot find Username bar", "[DEBUG]", Color.Green);
@@ -180,23 +212,7 @@ namespace ShowdownBot
                 //}
 
                 
-                //Challenge the owner to random
-                c.write("Searching for user");
-                browser.Button(Find.ByName("finduser")).Click();
-                browser.TextField(Find.ByName("data")).TypeText(owner);
-                System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-                c.write("Contacting user");
-                browser.Button(Find.ByName("challenge")).Click();
-                browser.Button(Find.ByName("makeChallenge")).Click();
-                c.write("Challenge made, awaiting response.");
-
-                ////Indicates we're in a battle, but there should be a better way to check.
-                browser.WaitUntilContainsText("Sleep Clause Mod", 500);
-                c.writef("Battle starting!", Global.botInfoColor);
-                activeState = State.RANDOMBATTLE;
-                randomBattle(browser);
-                performNextTask(browser);
-                // browser
+               
                 return true;
             }
         }
@@ -325,10 +341,7 @@ namespace ShowdownBot
         }
         private bool randomBattle(IE browser)
         {
-            ///The random battle has just started, pick a move.
             int turn = 1;
-            //DateTime lastAction, currentAction;
-            //bool hasMoved = false;
             do
             {
 
@@ -344,12 +357,14 @@ namespace ShowdownBot
             }while(activeState == State.RANDOMBATTLE);
 
             //Done battling, but the battle isn't over.
-            if (activeState == State.IDLE && !checkBattleEnd(browser))
-            {
-                goMainMenu(browser, true);
-            }
-            else
-                goMainMenu(browser, false);
+            //This doesn't work
+
+            //if (activeState == State.IDLE && !checkBattleEnd(browser))
+            //{
+            //    goMainMenu(browser, true);
+            //}
+            //else
+            //    goMainMenu(browser, false);
             return true;
 
         }
@@ -364,7 +379,12 @@ namespace ShowdownBot
 
             do
             {
-                
+
+                if (lead.Exists)
+                {
+                    c.writef("Selecting first pokemon as lead.", Global.botInfoColor);
+                    lead.Click();
+                }
 
                 if (modeCurrent == AiMode.RANDOM)
                 {
@@ -373,11 +393,7 @@ namespace ShowdownBot
                 }
                 else if (modeCurrent == AiMode.BIAS)
                 {
-                    if (lead.Exists)
-                    {
-                        c.writef("Selecting first pokemon as lead.", Global.botInfoColor);
-                        lead.Click();
-                    }
+                   
                     battleBiased(browser, ref turn);
                 }
 
@@ -487,6 +503,11 @@ namespace ShowdownBot
             return false;
         }
 
+        /// <summary>
+        /// Sends a challenge to a player.
+        /// TODO: implement specifying which player. (Defaults to "owner")
+        /// </summary>
+        /// <param name="b"></param>
         private void challengePlayer(IE b)
         {
             string player = owner;
@@ -592,6 +613,7 @@ namespace ShowdownBot
 
             return choice;
         }
+       
         /// <summary>
         /// Helper method for pickMoveBiased.
         /// </summary>
@@ -631,7 +653,10 @@ namespace ShowdownBot
                 return false;
         }
 
-
+        /// <summary>
+        /// Gets a random number from the range, excluding all numbers in the hash set.
+        /// </summary>
+        /// <param name="ex">set of excluded numbers</param>
         private int GetRandomExcluding(HashSet<int> ex, int min, int max)
         {
             var exclude = ex;
@@ -642,15 +667,7 @@ namespace ShowdownBot
             return range.ElementAt(index);
         }
 
-        //private void sendText(string t)
-        //{
-        //    c.Invoke((MethodInvoker)delegate { c.write(t); });
-        //}
 
-
-
-
-        
     }//End of Class
 
 }

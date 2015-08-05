@@ -122,6 +122,16 @@ namespace ShowdownBot
                         threadBot.SetApartmentState(ApartmentState.STA);
                         threadBot.Start();
                     }
+                else if (args[0] == "kill")
+                {
+
+                    writef("Killing bot.", "[SYSTEM]", Global.sysColor);
+                    cmd = () => bot.Kill();
+                    ts = new ThreadStart(cmd);
+                    threadBot = new Thread(ts);
+                    threadBot.SetApartmentState(ApartmentState.STA);
+                    threadBot.Start();
+                }
                 else if ( t == "help")
                 {
                     DisplayHelp();
@@ -165,7 +175,7 @@ namespace ShowdownBot
                 {
                     if (args[1] != null)
                     {
-                        if (args[1] == "random")
+                        if (args[1] == "random" || args[1] == "r")
                         {
                             cmd = () => bot.changeMode(ShowdownBot.Bot.AiMode.RANDOM);
                             ts = new ThreadStart(cmd);
@@ -190,6 +200,12 @@ namespace ShowdownBot
                 else if (args[0] == "exit")
                 {
                     writef("Shutting down.", "[SYSTEM]", Global.sysColor);
+                    writef("Killing bot.", "[SYSTEM]", Global.sysColor);
+                    cmd = () => bot.Kill();
+                    ts = new ThreadStart(cmd);
+                    threadBot = new Thread(ts);
+                    threadBot.SetApartmentState(ApartmentState.STA);
+                    threadBot.Start();
                     //temp.Close();
                     Environment.Exit(0);
                     this.Close();
@@ -199,8 +215,10 @@ namespace ShowdownBot
                 }
                 else if (args[0] == "info")
                 {
-                    write("Current state: " + bot.getState().ToString() + "\n"
+                    write("Bot is running:" + bot.getStatus().ToString() + "\n"
+                        + "Current state: " + bot.getState().ToString() + "\n"
                         + "Current mode: " + bot.getMode().ToString() + "\n"
+                        
                         );
                 }
                 else if (args[0] == "visible" || args[0] == "v")

@@ -32,7 +32,7 @@ namespace ShowdownBot
         float move2Weight = 0.3f;
         float move3Weight = 0.2f;
         float move4Weight = 0.1f;
-        bool needLogout;
+        bool needLogout, isLoggedIn;
         bool isRunning;
         //////////////
         //Bot states
@@ -68,6 +68,7 @@ namespace ShowdownBot
         public State getState() { return activeState; }
         public AiMode getMode() { return modeCurrent; }
         public bool getStatus() { return isRunning; }
+        
         public void changeState(State nstate)
         {
             c.write("Changing state to: " + nstate.ToString());
@@ -82,7 +83,7 @@ namespace ShowdownBot
 
                 }
             }
-            // performNextTask(mainBrowser);
+            // Update(mainBrowser);
 
         }
         public void changeMode(AiMode nmode)
@@ -99,14 +100,18 @@ namespace ShowdownBot
                 return;
             }
             loginAttempts = 0;
-            needLogout = auth;
             isRunning = true;
             c.write("Opening site.");
             if (auth)
-                OpenSite(site);
+            {
+                if (!OpenSite(site))
+                {
+                    c.writef("Failed to initiate bot.", "[ERROR]", Global.errColor);
+                }
+            }
             else
             {
-               
+
                 OpenSiteNoAuth(site);
             }
             
@@ -123,8 +128,7 @@ namespace ShowdownBot
             }
             if (needLogout)
             {
-                c.write("Logging out.");
-                //Logout
+                Logout(mainBrowser);
             }
             c.write("Bot is shutting down.");
             isRunning = false;
@@ -135,24 +139,26 @@ namespace ShowdownBot
         private void ReadFile()
         {
             //ConfigurationManager is giving me an error
+            
             site = ConfigurationSettings.AppSettings.Get("site");
             username = ConfigurationSettings.AppSettings.Get("username");
             password = ConfigurationSettings.AppSettings.Get("password");
             owner = ConfigurationSettings.AppSettings.Get("owner");
+            if (site == null || username == null || password == null
+                || owner == null)
+                c.writef("Unable to read config file.", "[WARNING]", Global.warnColor);
+            System.Threading.Thread.Sleep(500);
             c.writef("Bot's owner set to: " + owner, "[DEBUG]", Global.okColor);
         }
-        private void performNextTask(IE b)
+        private void Update(IE b)
         {
             IE browser = b;
-           // bool loop = true;
-            //A better exit condition needs to be implemented.
+            c.write("Ready.");
             while (isRunning)
             {
                 if (activeState == State.IDLE)
                 {
                     System.Threading.Thread.Sleep(5000);
-                    //wait 5 seconds and check for a change in state.
-
                 }
                 else if (activeState == State.RANDOMBATTLE)
                 { 
@@ -171,16 +177,23 @@ namespace ShowdownBot
             using (var browser = new IE(site))
             {
                 mainBrowser = browser;
-                if (mainBrowser == null)
-                    c.writef("main browser is null", "[DEBUG]", Global.okColor);
                 //wait a second for page to load.
-                //System.Threading.Thread.Sleep(1000);
-                browser.WaitUntilContainsText("Choose name");
+                browser.WaitForComplete(160);
+                System.Threading.Thread.Sleep(5000);
                 if (!browser.Button(Find.ByName(LoginButton)).Exists)
                 {
-                    c.write("TEST");
                   c.writef("Cannot find login button", "[WARNING]", Global.warnColor);
-                    c.writef("Assuming already logged in, proceeding", Global.warnColor);
+                  
+                  System.Threading.Thread.Sleep(2000);
+                  if (browser.Span(Find.ByClass("username")).Exists)
+                  {
+                      c.writef("Assuming already logged in.", Global.okColor);
+                  }
+                  else
+                  {
+                      c.writef("There was a problem logging in.","[ERROR]",Global.errColor);
+                      return false;
+                  }
                 }
                 else
                 {
@@ -188,6 +201,7 @@ namespace ShowdownBot
                     if (Login(browser))
                     {
                         c.write("Successfully logged in as " + username);
+                        needLogout = true;
                     }
                     else
                     {
@@ -198,21 +212,7 @@ namespace ShowdownBot
 
 
                 }
-                performNextTask(browser);
-                //if (!browser.Span(Find.ByClass("username")).Exists) //The userbar should show our name if we've succesfully logged in.
-                //{
-                //    c.writef("Cannot find Username bar", "[DEBUG]", Color.Green);
-                //    //c.writef("Unable to validate login.", "[ERROR]", Color.Red);
-                //    //c.writef("Aborting operations.", Color.Red);
-                //    //return false;
-                //}
-                //if (!browser.ContainsText(username))
-                //{
-                //    c.writef("Cannot find instance of username", "[DEBUG]", Color.Green);
-                //}
-
-                
-               
+                Update(browser);
                 return true;
             }
         }
@@ -226,7 +226,7 @@ namespace ShowdownBot
                 c.write("Opened site, skipping authentication steps.");
                 browser.WaitForComplete();
                 c.write("Moving onto next task");
-                performNextTask(browser);
+                Update(browser);
                
                 
                 return true;
@@ -252,12 +252,13 @@ namespace ShowdownBot
 
                 browser.Button(Find.ByName(LoginButton)).Click();
                 browser.TextField(Find.ByName(nameField)).TypeText(username);
+                //needs to be a better way to find the second "choose name" button. For now, just mimic hitting enter.
                 System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-                //   System.Threading.Thread.Sleep(1000);
-                if (!browser.TextField(Find.ByName(password)).Exists)
+                System.Threading.Thread.Sleep(1000);
+                if (!browser.TextField(Find.ByName("password")).Exists)
                 {
                     c.writef("Cannot find password field", "[WARNING]", Global.warnColor);
-                    c.writef("Assuming already logged in, proceeding", Global.warnColor);
+                    return false;
                 }
                     //Make sure the above assumption is correct.
                 //if (browser.Button(Find.ByName(LoginButton)).Exists)
@@ -279,8 +280,8 @@ namespace ShowdownBot
                     //{
                         c.write("Entering password " + password);
                         browser.TextField(Find.ByName(passwordField)).TypeText(password);
-                        ////browser.Button(Find.ByText("Log In")).Click();
-                        System.Windows.Forms.SendKeys.SendWait("{ENTER}");
+                        browser.Button(Find.ByText("Log in")).Click();
+                        //System.Windows.Forms.SendKeys.SendWait("{ENTER}");
                         
                     //}
 
@@ -289,6 +290,13 @@ namespace ShowdownBot
             
         }
 
+        private bool Logout(IE browser)
+        {
+            c.write("Logging out.");
+            browser.Button(Find.ByName("openOptions")).Click();
+            browser.Button(Find.ByName("logout")).Click();
+            return true;
+        }
         
         private bool CheckLoggedIn(IE browser)
         {
@@ -375,14 +383,11 @@ namespace ShowdownBot
             }while(activeState == State.RANDOMBATTLE);
 
             //Done battling, but the battle isn't over.
-            //This doesn't work
 
-            //if (activeState == State.IDLE && !checkBattleEnd(browser))
-            //{
-            //    goMainMenu(browser, true);
-            //}
-            //else
-            //    goMainMenu(browser, false);
+            if (activeState == State.IDLE && !checkBattleEnd(browser))
+            {
+                goMainMenu(browser, true);
+            }
             return true;
 
         }
@@ -525,12 +530,12 @@ namespace ShowdownBot
 
         /// <summary>
         /// Sends a challenge to a player.
-        /// TODO: implement specifying which player. (Defaults to "owner")
+        /// If no player is specified, it defaults to owner.
         /// </summary>
         /// <param name="b"></param>
-        private void challengePlayer(IE b)
+        private void challengePlayer(IE b, string user)
         {
-            string player = owner;
+            string player = user;
             IE browser = b;
             c.writef("Waiting for page to load", "[DEBUG]", Global.okColor);
             browser.WaitForComplete(160);
@@ -540,7 +545,7 @@ namespace ShowdownBot
                     c.writef("current browser is null", "[DEBUG]", Global.okColor);
                 c.write("Searching for "+ player);
                 if (!browser.Button(Find.ByName("finduser")).Exists)
-                    c.writef("finduser button does not exist!", "[DEBUG]", Global.okColor);
+                    c.writef("finduser button does not exist!", "[DEBUG]", Global.warnColor);
                 browser.Button(Find.ByName("finduser")).Click();
                 browser.TextField(Find.ByName("data")).TypeText(player);
                // System.Windows.Forms.SendKeys.SendWait("{ENTER}");
@@ -550,10 +555,9 @@ namespace ShowdownBot
                 browser.Button(Find.ByName("makeChallenge")).Click();
                 c.write("Challenge made, awaiting response.");
                 ////TODO: Check for the battle buttons/timer button. More reliable than checking for text.
-                browser.WaitUntilContainsText("Sleep Clause Mod", 500);
+                browser.WaitUntilContainsText("Format:");
                 c.writef("Battle starting!", Global.botInfoColor);
                 randomBattle(browser);
-                performNextTask(browser);
             }
             else if (activeState == State.BATTLEOU)
             {
@@ -572,13 +576,15 @@ namespace ShowdownBot
                 browser.Button(Find.ByName("makeChallenge")).Click();
                 c.write("Challenge made, awaiting response.");
                 ////TODO: Check for the battle buttons/timer button. More reliable than checking for text.
-                browser.WaitUntilContainsText("Sleep Clause Mod", 500);
+                browser.WaitUntilContainsText("Format:");
                 c.writef("Battle starting!", Global.botInfoColor);
                 ouBattle(browser);
-                performNextTask(browser);
             }
         }
-
+        private void challengePlayer(IE b)
+        {
+            challengePlayer(b, owner);
+        }
 
         private int determineMoveRandomly(IE b)
         {
@@ -662,7 +668,6 @@ namespace ShowdownBot
 
         /// <summary>
         /// Should be used when exiting a battle, prematurely or otherwise.
-        /// TODO: bot can't find a lot of those buttons
         /// </summary>
         /// <param name="b"></param>
         /// <param name="forfeit">Go through steps to forfeit match?</param>
@@ -672,12 +677,10 @@ namespace ShowdownBot
             IE browser = b;
             if (forfeit)
             {
-                //TODO: bot can't find this chatbox
-                browser.TextField(Find.ByClass("textbox")).TypeText("/forfeit");
-                System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-                System.Threading.Thread.Sleep(2000);
-                //browser.Button(Find.ByLabelText("Forfeit")).Click();
-                browser.Button(Find.ByName("closeAndMainMenu")).Click(); 
+                //force the browser to click the exit button.
+                browser.Eval("$('.closebutton').click();");
+                browser.Button(Find.ByText("Forfeit")).Click();//forfeiting also closes the tab.
+                
                 return true;
             }
             else

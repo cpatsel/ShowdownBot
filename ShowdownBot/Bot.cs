@@ -289,6 +289,7 @@ namespace ShowdownBot
             
         }
 
+        
         private bool CheckLoggedIn(IE browser)
         {
             if (browser.Button(Find.ByName(LoginButton)).Exists)
@@ -312,6 +313,13 @@ namespace ShowdownBot
                 return false;
 
         }
+
+        /// <summary>
+        /// Checks the bot's ability to select a move.
+        /// Bot prioritizes making moves over switching (for now)
+        /// </summary>
+        /// <param name="b"></param>
+        /// <returns>Can select a move?</returns>
         private bool checkMove(IE b)
         {
             
@@ -328,6 +336,10 @@ namespace ShowdownBot
             
         }
 
+        /// <summary>
+        /// Checks if the bot can switch.
+        /// </summary>
+        /// <returns>can switch?</returns>
         private bool checkSwitch(IE b)
         {
             IE browser = b;
@@ -339,6 +351,12 @@ namespace ShowdownBot
             }
             return false;
         }
+
+        /// <summary>
+        /// Action loop for BattleRandom state.
+        /// </summary>
+        /// <returns></returns>
+
         private bool randomBattle(IE browser)
         {
             int turn = 1;
@@ -369,6 +387,11 @@ namespace ShowdownBot
 
         }
 
+        /// <summary>
+        /// Action loop for the BattleOU state.
+        /// </summary>
+        /// <param name="browser"></param>
+        /// <returns>Successful end to battle</returns>
         private bool ouBattle(IE browser)
         {
             int turn = 1;
@@ -400,6 +423,7 @@ namespace ShowdownBot
             } while (activeState == State.BATTLEOU);
             return true;
         }
+
         /// <summary>
         /// Determines all actions randomly, with some guidance.
         /// </summary>
@@ -411,8 +435,6 @@ namespace ShowdownBot
             IE browser = b;
             int moveSelection;
             int pokeSelection;
-            int[] pkmnExclude = null;
-
             if (checkMove(browser))
             {
 
@@ -435,19 +457,18 @@ namespace ShowdownBot
             {
 
                 c.writef("Switching pokemon.", Global.botInfoColor);
-                pokeSelection = pickPokeRandomly(pkmnExclude, browser);
+                pokeSelection = pickPokeRandomly(browser);
                 c.writef("New pokemon selected: " + pokeSelection.ToString(), Global.botInfoColor);
                 browser.Button(Find.ByValue(pokeSelection.ToString())).Click();
                 System.Threading.Thread.Sleep(2000);
             }
             else if (checkBattleEnd(browser))
             {
-
                 return true;
             }
             else
             {
-                // c.write("Sleeping for 2 secs");
+                //c.write("Sleeping for 2 secs");
                 System.Threading.Thread.Sleep(2000);
             }
             return false;
@@ -464,7 +485,6 @@ namespace ShowdownBot
             IE browser = b;
             int moveSelection;
             int pokeSelection;
-            int[] pkmnExclude = null;
 
             if (checkMove(browser))
             {
@@ -485,7 +505,7 @@ namespace ShowdownBot
             {
                 //TODO: check if it's the first turn, and then select appropriate lead.
                 c.writef("Switching pokemon.", Global.botInfoColor);
-                pokeSelection = pickPokeRandomly(pkmnExclude, browser);
+                pokeSelection = pickPokeRandomly(browser);
                 c.writef("New pokemon selected: " + pokeSelection.ToString(), Global.botInfoColor);
                 browser.Button(Find.ByValue(pokeSelection.ToString())).Click();
                 System.Threading.Thread.Sleep(2000);
@@ -576,7 +596,12 @@ namespace ShowdownBot
             }
             return choice;
         }
-        private int pickPokeRandomly(int[] ex, IE b)
+
+        /// <summary>
+        /// Randomly selects a pokemon.
+        /// </summary>
+        /// <returns>Index of pokemon.</returns>
+        private int pickPokeRandomly(IE b)
         {
             Random rand = new Random();
             IE browser = b;
@@ -617,7 +642,7 @@ namespace ShowdownBot
         /// <summary>
         /// Helper method for pickMoveBiased.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Choice index based on the specified weights.</returns>
         private int getIndexBiased()
         {
             int choice;
@@ -635,7 +660,13 @@ namespace ShowdownBot
             return choice;
         }
 
-
+        /// <summary>
+        /// Should be used when exiting a battle, prematurely or otherwise.
+        /// TODO: bot can't find a lot of those buttons
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="forfeit">Go through steps to forfeit match?</param>
+        /// <returns>Whether it forfeited</returns>
         private bool goMainMenu(IE b, bool forfeit)
         {
             IE browser = b;

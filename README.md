@@ -8,12 +8,11 @@ The bot may require .NET framework 4.0 in order to run. This may not be the case
 Before running the program, be sure to edit the ShowdownBot.exe.config file. The file contains the following parameters.
 * username - Name of the bot's account.
 * password - its password.
-* owner - This is the name of your account. Technically, it's the name of the account who the will challenge
+* owner - This is the name of your account. Technically, it's the name of the account who the bot will challenge
 * site - The website the bot opens up. It defaults to the showdown website, but alternatives running the same software should be compatible (as long as they're formatted the same way).
 
-To start the bot, use the command **start**. This will attempt to log in as the specified user in the config. Since it's a bit buggy, for now just use **startf**, which skips authentication.
-Note that if using the **startf** command (and you should) the username/password field will not be used. Additionally, since the bot will neither log in nor out this way, leaving an account
-logged in will allow the bot to use it.
+To start the bot, use the command **start**. This will attempt to log in as the specified user in the config.
+If you leave an account logged in on the browser, you can use **startf** to skip the login/logout process.
 
 Once the bot has been started, you will need to change it's state.
 

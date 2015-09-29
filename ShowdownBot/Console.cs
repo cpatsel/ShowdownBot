@@ -235,15 +235,7 @@ namespace ShowdownBot
         
         private void DisplayHelp()
         {
-            //if (arg == null)
-            //{
-            //    writef("Available commands are: start, exit, changestate", "[SYSTEM]", Global.sysColor);
-            //}
-            //else
-            //{
-            //    write("topkek");
-            //    //process the command.
-            //}
+          
             writef("Available commands are: start, startf, exit, changestate, info", "[SYSTEM]", Global.sysColor);
             
         }

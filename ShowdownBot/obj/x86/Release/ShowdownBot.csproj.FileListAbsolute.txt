@@ -10,7 +10,6 @@ C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\ob
 C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.csproj.GenerateResource.Cache
 C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.exe
 C:\Users\Steven\documents\visual studio 2010\Projects\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.pdb
-C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\ShowdownBot.exe.config
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.exe
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.pdb
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\ShowdownBot.exe

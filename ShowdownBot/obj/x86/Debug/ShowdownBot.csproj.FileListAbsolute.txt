@@ -22,4 +22,3 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\Sho
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.Form1.resources
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.Properties.Resources.resources
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.csproj.GenerateResource.Cache
-C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\ShowdownBot.exe.config

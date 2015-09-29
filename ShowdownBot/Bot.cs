@@ -8,6 +8,7 @@ using System.Net.NetworkInformation;
 using System.Windows.Forms;
 using System.Configuration;
 using System.Collections.Specialized;
+using System.IO;
 
 namespace ShowdownBot
 {
@@ -41,7 +42,8 @@ namespace ShowdownBot
             IDLE,
             BATTLEOU,
             RANDOMBATTLE,
-            CHALLANGEPLR
+            CHALLANGEPLR,
+            BUSY
 
         };
         //Determines AI
@@ -138,17 +140,49 @@ namespace ShowdownBot
         }
         private void ReadFile()
         {
-            //ConfigurationManager is giving me an error
-            
-            site = ConfigurationSettings.AppSettings.Get("site");
-            username = ConfigurationSettings.AppSettings.Get("username");
-            password = ConfigurationSettings.AppSettings.Get("password");
-            owner = ConfigurationSettings.AppSettings.Get("owner");
-            if (site == null || username == null || password == null
-                || owner == null)
-                c.writef("Unable to read config file.", "[WARNING]", Global.warnColor);
-            System.Threading.Thread.Sleep(500);
+            if (!File.Exists("botInfo.txt"))
+            {
+                c.writef("Could not load config (maybe it's missing?)", "[ERROR]", Global.errColor);
+                c.writef("You can try starting without authenticating (startf)", Global.warnColor);
+                return;
+            }
+            using (var reader = new StreamReader("botInfo.txt"))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    //ghetto commenting, avoid using inline comments :^)
+                    if (!line.StartsWith("//") || !line.StartsWith("#"))
+                    {
+                        string[] configparams = line.Split('=');
+                        setInitVars(configparams[0], configparams[1]);
+                    }
+                }
+            }
             c.writef("Bot's owner set to: " + owner, "[DEBUG]", Global.okColor);
+        }
+
+        private void setInitVars(string key, string val)
+        {
+            switch (key)
+            {
+                case "[OWNER]":
+                    {
+                        owner = val;
+                        break;
+                    }
+                case "[USERNAME]":
+                    {
+                        username = val;
+                        break;
+                    }
+                case "[PASSWORD]":
+                    {
+                        password = val;
+                        break;
+                    }
+
+            }
         }
         private void Update(IE b)
         {
@@ -403,7 +437,9 @@ namespace ShowdownBot
             IE b = browser;
             
             //Select lead
-            WatiN.Core.Button lead = b.Button(Find.ByValue("0").And(Find.ByName("chooseTeamPreview")));
+            WatiN.Core.Button lead;
+            if (modeCurrent == AiMode.ANALYTIC) lead = SelectLead(browser); 
+            else lead = b.Button(Find.ByValue("0").And(Find.ByName("chooseTeamPreview")));
 
             do
             {
@@ -645,6 +681,22 @@ namespace ShowdownBot
             return choice;
         }
        
+        #region Analytic Functions
+        WatiN.Core.Button SelectLead(IE browser)
+        {
+            //for now just select the first pokemon
+            //todo: analyze things, pick the best choice
+
+            return browser.Button(Find.ByValue("0").And(Find.ByName("chooseTeamPreview")));
+        }
+
+
+
+
+
+#endregion
+
+
         /// <summary>
         /// Helper method for pickMoveBiased.
         /// </summary>

@@ -182,6 +182,12 @@ namespace ShowdownBot
                         break;
                     }
 
+                default:
+                    {
+                        //No match, do nothing.
+                        break;
+                    }
+
             }
         }
         private void Update(IE b)

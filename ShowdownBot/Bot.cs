@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Configuration;
 using System.Collections.Specialized;
 using System.IO;
+using System.Collections;
 
 namespace ShowdownBot
 {
@@ -20,6 +21,8 @@ namespace ShowdownBot
         string username; 
         string password;
         string owner; //More uses for this later, right now it's used to initiate the challenge.
+        
+        Dictionary<string,Pokemon> pokedex;
         // ///Site Info
         string LoginButton = "login";
         string nameField = "username";
@@ -63,8 +66,9 @@ namespace ShowdownBot
             isRunning = false;
             activeState = State.IDLE;
             modeCurrent = AiMode.RANDOM; //TODO: set default in config to be read
-          
+            pokedex = new Dictionary<string, Pokemon>();
             ReadFile();
+            BuildPokedex();
         }
 
         public State getState() { return activeState; }
@@ -146,13 +150,14 @@ namespace ShowdownBot
                 c.writef("You can try starting without authenticating (startf)", Global.warnColor);
                 return;
             }
+            System.Threading.Thread.Sleep(1000);
             using (var reader = new StreamReader("botInfo.txt"))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
                 {
                     //ghetto commenting, avoid using inline comments :^)
-                    if (!line.StartsWith("//") || !line.StartsWith("#"))
+                    if (!line.StartsWith("#"))
                     {
                         string[] configparams = line.Split('=');
                         setInitVars(configparams[0], configparams[1]);
@@ -285,9 +290,7 @@ namespace ShowdownBot
 
         //Change the type if we change the browser
         private bool Login(IE browser)
-        {
-            
-           
+        {         
                 //Click the choose name button and input the creditentials
 
                 browser.Button(Find.ByName(LoginButton)).Click();
@@ -300,31 +303,10 @@ namespace ShowdownBot
                     c.writef("Cannot find password field", "[WARNING]", Global.warnColor);
                     return false;
                 }
-                    //Make sure the above assumption is correct.
-                //if (browser.Button(Find.ByName(LoginButton)).Exists)
-                //{
-                //    //if (loginAttempts < 2)
-                //    //{
-                //    //    loginAttempts++;
-                //    //    c.writef("Assumption incorrect, attempting to login again.", "[ERROR]", Color.Red);
-                //    //    Login(browser);
-                //    //}
-                //    //else
-                //    //{
-                //    //    return false;
-                //    //}
-                //    return false;
 
-                //}
-                    //else
-                    //{
                         c.write("Entering password " + password);
                         browser.TextField(Find.ByName(passwordField)).TypeText(password);
                         browser.Button(Find.ByText("Log in")).Click();
-                        //System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-                        
-                    //}
-
                     return true;
                 
             
@@ -466,6 +448,11 @@ namespace ShowdownBot
                    
                     battleBiased(browser, ref turn);
                 }
+                else if (modeCurrent == AiMode.ANALYTIC)
+                {
+                    Pokemon enemy = getActivePokemon(browser);
+                    battleAnalytic(browser, enemy, ref turn);
+                }
 
             } while (activeState == State.BATTLEOU);
             return true;
@@ -570,6 +557,13 @@ namespace ShowdownBot
             return false;
         }
 
+        private bool battleAnalytic(IE b, Pokemon enemy, ref int turn)
+        {
+            IE browser = b;
+            int moveSelection;
+            int pokeSelection;
+            return true;
+        }
         /// <summary>
         /// Sends a challenge to a player.
         /// If no player is specified, it defaults to owner.
@@ -688,6 +682,67 @@ namespace ShowdownBot
         }
        
         #region Analytic Functions
+
+        private void BuildPokedex()
+        {
+            c.write("Building pokedex, this may take a moment...");
+            if (!File.Exists("pokebase.txt"))
+            {
+                c.writef("Could not find pokebase.txt.","[ERROR]",Global.errColor);
+                c.writef("Analytic battle mode will not work correctly.",Global.warnColor);
+                c.writef("Continuing operation.",Global.okColor);
+                return;
+            }
+            using (var reader = new StreamReader("pokebase.txt"))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    Pokemon p = new Pokemon(line);
+                  //  c.writef("Adding pokemon " + p.name, "[DEBG]", Global.defaultColor);
+                    pokedex.Add(p.name, p);
+                }
+            }
+            c.writef("Pokedex built!", Global.okColor);
+        }
+
+        private Pokemon getActivePokemon(IE browser)
+        {
+            //I feel like there's an easier way to do this.
+            c.write("Getting active Pokemon");
+            IElementContainer elem = (IElementContainer)browser.Element(Find.ByClass("rightbar"));
+            Div ticon = elem.Div(Find.ByClass("trainericon"));
+            c.write("Searching first list");
+            string temp = parseNameFromPage(ticon);
+            if (temp == "0")
+            {
+                //Get the second row
+                ticon = elem.Div(Find.ByClass("trainericon") && Find.ByIndex(1));
+                c.write("Searching second list");
+                temp = parseNameFromPage(ticon);
+                if (temp == "0") return null;
+            }
+            //Found the name, now look it up in the dex.
+            c.write("The current pokemon is "+temp);
+            Pokemon p = pokedex[temp];
+            return p;
+        }
+        string parseNameFromPage(Div divcollection)
+        {
+            foreach (Span s in divcollection.Spans)
+            {
+                if (s.Title.Contains("(active)"))
+                {
+                    string[] name = s.Title.Split(' ');
+                    //Nicknamed pokemon appear in the html as "Nickname (Pokemon) (active)"
+                    //this means that the pokemon's name should be N-1, which should hold
+                    //true even for non-named mons.
+                    string n_name = name[name.Length - 1].Trim('(', ')'); //gets a sanitized name.
+                    return n_name;
+                }
+            }
+            return "0"; //return indicator that we did not find it.
+        }
         WatiN.Core.Button SelectLead(IE browser)
         {
             //for now just select the first pokemon

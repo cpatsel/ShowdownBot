@@ -17,7 +17,7 @@ namespace ShowdownBot
     {
         #region Bot Info
 
-        string site;
+        string site = "http://play.pokemonshowdown.com";
         string username; 
         string password;
         string owner; //More uses for this later, right now it's used to initiate the challenge.
@@ -711,34 +711,48 @@ namespace ShowdownBot
             //I feel like there's an easier way to do this.
             c.write("Getting active Pokemon");
             IElementContainer elem = (IElementContainer)browser.Element(Find.ByClass("rightbar"));
-            Div ticon = elem.Div(Find.ByClass("trainericon"));
-            c.write("Searching first list");
+            Div ticon = elem.Div(Find.ByClass("teamicons"));
+            c.write("TICON = "+ticon.ClassName);
             string temp = parseNameFromPage(ticon);
             if (temp == "0")
             {
                 //Get the second row
-                ticon = elem.Div(Find.ByClass("trainericon") && Find.ByIndex(1));
+                ticon = elem.Div(Find.ByClass("teamicons") && Find.ByIndex(1));
                 c.write("Searching second list");
                 temp = parseNameFromPage(ticon);
                 if (temp == "0") return null;
+                return null;
             }
             //Found the name, now look it up in the dex.
             c.write("The current pokemon is "+temp);
-            Pokemon p = pokedex[temp];
+            Pokemon p;
+            try
+            {
+                p = pokedex[temp];
+            }
+            catch (Exception e)
+            {
+                c.writef("POKEMON: "+ temp + e.ToString(), "[WARNING]", Global.warnColor);
+                p = null;
+            }
             return p;
         }
         string parseNameFromPage(Div divcollection)
         {
             foreach (Span s in divcollection.Spans)
             {
-                if (s.Title.Contains("(active)"))
+              
+                if (s.Title != null)
                 {
-                    string[] name = s.Title.Split(' ');
-                    //Nicknamed pokemon appear in the html as "Nickname (Pokemon) (active)"
-                    //this means that the pokemon's name should be N-1, which should hold
-                    //true even for non-named mons.
-                    string n_name = name[name.Length - 1].Trim('(', ')'); //gets a sanitized name.
-                    return n_name;
+                    if (s.Title.Contains("(active)"))
+                    {
+                        string[] name = s.Title.Split(' ');
+                        //Nicknamed pokemon appear in the html as "Nickname (Pokemon) (active)"
+                        //this means that the pokemon's name should be N-2, which should hold
+                        //true even for non-named mons.
+                        string n_name = name[name.Length - 2].Trim('(', ')'); //gets a sanitized name.
+                        return n_name.ToLower();
+                    }
                 }
             }
             return "0"; //return indicator that we did not find it.

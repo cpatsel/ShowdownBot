@@ -382,11 +382,11 @@ namespace ShowdownBot
             return false;
         }
 
+
         /// <summary>
         /// Action loop for BattleRandom state.
         /// </summary>
         /// <returns></returns>
-
         private bool randomBattle(IE browser)
         {
             int turn = 1;
@@ -416,12 +416,15 @@ namespace ShowdownBot
 
         /// <summary>
         /// Action loop for the BattleOU state.
+        /// similar to randomBattle, except that there is additional
+        /// logic for selecting lead, etc. that is not present in Random Battles.
         /// </summary>
         /// <param name="browser"></param>
         /// <returns>Successful end to battle</returns>
         private bool ouBattle(IE browser)
         {
             int turn = 1;
+            int lastTurn = 1;
             IE b = browser;
             
             //Select lead
@@ -450,7 +453,8 @@ namespace ShowdownBot
                 }
                 else if (modeCurrent == AiMode.ANALYTIC)
                 {
-                    Pokemon enemy = getActivePokemon(browser);
+                    Pokemon enemy;
+                    enemy = getActivePokemon(browser);
                     battleAnalytic(browser, enemy, ref turn);
                 }
 
@@ -557,12 +561,45 @@ namespace ShowdownBot
             return false;
         }
 
+        /// <summary>
+        /// Considers different courses of action based on information about the current enemy.
+        /// </summary>
+        /// <param name="b"></param>
+        /// <param name="enemy"></param>
+        /// <param name="turn"></param>
+        /// <returns>End of battle?</returns>
         private bool battleAnalytic(IE b, Pokemon enemy, ref int turn)
         {
             IE browser = b;
             int moveSelection;
             int pokeSelection;
-            return true;
+            /* 
+             * small ( maybe <10% ) chance of doing something random (so as to not be entirely predictable)
+             * first we do risk assessment
+             *      if we should switch, find most suitable candidate
+             *  then pick a move
+             *  firstly, preempt set-up if afflicable/relevant
+             *  
+             *      if sweeper
+             *          check for nullifying abilities like wonder guard/levitate etc.
+             *          avoid picking an attack nullified by opponent's type
+             *          pick the most powerful attack against the enemy's types
+             *      if support/cleric
+             *          check field for already present status, and avoid doubling up.
+             *      
+             *      else if all choices are equally bad/good just pick a random one.   
+             * 
+            */
+
+            if (checkBattleEnd(browser))
+            {
+                return true;
+            }
+
+            
+            else 
+                System.Threading.Thread.Sleep(2000);
+            return false;
         }
         /// <summary>
         /// Sends a challenge to a player.
@@ -712,13 +749,11 @@ namespace ShowdownBot
             c.write("Getting active Pokemon");
             IElementContainer elem = (IElementContainer)browser.Element(Find.ByClass("rightbar"));
             Div ticon = elem.Div(Find.ByClass("teamicons"));
-            c.write("TICON = "+ticon.ClassName);
             string temp = parseNameFromPage(ticon);
             if (temp == "0")
             {
                 //Get the second row
                 ticon = elem.Div(Find.ByClass("teamicons") && Find.ByIndex(1));
-                c.write("Searching second list");
                 temp = parseNameFromPage(ticon);
                 if (temp == "0") return null;
                 return null;
@@ -765,6 +800,11 @@ namespace ShowdownBot
             return browser.Button(Find.ByValue("0").And(Find.ByName("chooseTeamPreview")));
         }
 
+        private float getRisk(IE browser, Pokemon you, Pokemon opponent)
+        {
+            //do a basic runthrough of wether the opponent's types are SE against one or both of our own.
+            return 0;
+        }
 
 
 

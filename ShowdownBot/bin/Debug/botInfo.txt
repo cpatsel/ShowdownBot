@@ -1,3 +1,5 @@
-﻿[USERNAME]=changeMe
+﻿#This is used to initialize certain variables.
+#Don't forget to change it!
+[USERNAME]=changeMe
 [PASSWORD]=changeMeToo
 [OWNER]=yourUsername

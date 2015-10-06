@@ -191,6 +191,14 @@ namespace ShowdownBot
                             threadBot.SetApartmentState(ApartmentState.STA);
                             threadBot.Start();
                         }
+                        else if (args[1] == "analytic" || args[1] == "a")
+                        {
+                            cmd = () => bot.changeMode(ShowdownBot.Bot.AiMode.ANALYTIC);
+                            ts = new ThreadStart(cmd);
+                            threadBot = new Thread(ts);
+                            threadBot.SetApartmentState(ApartmentState.STA);
+                            threadBot.Start();
+                        }
                     }
                     else
                     {

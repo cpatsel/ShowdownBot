@@ -5,11 +5,11 @@ A bot for Pokemon Showdown made using C# and the WatiN library.
 The bot may require .NET framework 4.0 in order to run. This may not be the case in the future, but for now it is. Installer Soon™
 
 ##Getting started
-Before running the program, be sure to edit the ShowdownBot.exe.config file. The file contains the following parameters.
+Before running the program, be sure to edit the botInfo.txt file. The file contains the following parameters.
 * username - Name of the bot's account.
 * password - its password.
 * owner - This is the name of your account. Technically, it's the name of the account who the bot will challenge
-* site - The website the bot opens up. It defaults to the showdown website, but alternatives running the same software should be compatible (as long as they're formatted the same way).
+* site - The website the bot opens up. It defaults to the showdown website, but alternatives running the same software should be compatible (as long as they're formatted the same way) [Temporarily removed].
 
 To start the bot, use the command **start**. This will attempt to log in as the specified user in the config.
 If you leave an account logged in on the browser, you can use **startf** to skip the login/logout process.

@@ -74,7 +74,7 @@ namespace ShowdownBot
             value = value.ToLower();
 
             //if it's a dummy value just ignore it
-            if (value == "todo" || value == "na")
+            if ((value == "todo") || (value == "na"))
                 return;
             //set the appropriate field
             switch (key)

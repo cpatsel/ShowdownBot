@@ -69,6 +69,7 @@ namespace ShowdownBot
             pokedex = new Dictionary<string, Pokemon>();
             ReadFile();
             BuildPokedex();
+            testDCalc();
         }
 
         public State getState() { return activeState; }
@@ -108,6 +109,7 @@ namespace ShowdownBot
             loginAttempts = 0;
             isRunning = true;
             c.write("Opening site.");
+            changeState(State.BUSY);
             if (auth)
             {
                 if (!OpenSite(site))
@@ -123,7 +125,15 @@ namespace ShowdownBot
             
 
         }
-
+        private void testDCalc()
+        {
+           
+            Pokemon def = pokedex["pidgeot"];
+            Pokemon atk = pokedex["hitmonlee"];
+            c.writef("Attacker's types are " + atk.type1.value + " " + atk.type2.value, Global.sysColor);
+            float dmg = def.checkTypes(atk);
+            c.writef("Damage is " + dmg.ToString(),Global.sysColor);
+        }
         //TODO: add checks to other battle methods to break out of loop if bot is no longer running.
         public void Kill()
         {
@@ -137,6 +147,7 @@ namespace ShowdownBot
                 Logout(mainBrowser);
             }
             c.write("Bot is shutting down.");
+            changeState(State.BUSY);
             isRunning = false;
            
             
@@ -199,6 +210,7 @@ namespace ShowdownBot
         {
             IE browser = b;
             c.write("Ready.");
+            changeState(State.IDLE);
             while (isRunning)
             {
                 if (activeState == State.IDLE)
@@ -802,7 +814,8 @@ namespace ShowdownBot
 
         private float getRisk(IE browser, Pokemon you, Pokemon opponent)
         {
-            //do a basic runthrough of wether the opponent's types are SE against one or both of our own.
+            float dmg = you.checkTypes(opponent);
+            
             return 0;
         }
 
@@ -846,7 +859,7 @@ namespace ShowdownBot
             {
                 //force the browser to click the exit button.
                 browser.Eval("$('.closebutton').click();");
-                browser.Button(Find.ByText("Forfeit")).Click();//forfeiting also closes the tab.
+              //  browser.Button(Find.ByText("Forfeit")).Click();//forfeiting also closes the tab.
                 
                 return true;
             }

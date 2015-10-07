@@ -30,7 +30,7 @@ namespace ShowdownBot
         string data; //The string containing all data to be read for this pokemon.
 
         public string name = "NONAME";
-        Type type1, type2;
+       public Type type1, type2;
         string ability1 = "NA", ability2 = "NA";
         string deftype = "NA";
         string item = "NA";
@@ -93,22 +93,48 @@ namespace ShowdownBot
     /// <param name="t1">attacking move</param>
     /// <param name="t2">defending type</param>
     /// <returns></returns>
-        public float damageCalc(Type t1,Type t2)
+        public float damageCalc(Type type1,Type type2)
         {
-            return 0; 
+            Type t1 = types[type1.value];
+            Type t2 = types[type2.value];
+            if (t1.nl != null)
+            {
+                if (t2.value == t1.nl[0].value)  //No single type has more than one immunity
+                    return 0;
+            }
+
+            if (t1.se != null)
+            {
+                for (int i = 0; i < t1.se.Length; i++)
+                {
+                    if (t2.value == t1.se[i].value) //supereffective
+                        return 2;
+                }
+            }
+            if (t1.res != null)
+            {
+                for (int i = 0; i < t1.res.Length; i++)
+                {
+                    if (t2.value == t1.res[i].value)
+                        return 0.5f;
+                }
+            }
+            return 1;
         }
         public float checkTypes(Pokemon enemy)
         {
             //although moves are capped at being 4x effective,
             //a type matchup can have a dis/advantage of 8x.
-            float p = damageCalc(enemy.type1, type1);   //get first types matchup
+            float[] p = {0,0,0,0};
+              p[0] = damageCalc(enemy.type1, type1);   //get first types matchup
             if (enemy.type1.value != enemy.type2.value)
-                p += damageCalc(enemy.type2,type1);     //if it's not a monotype, get first type matchup with second
+                p[1] = damageCalc(enemy.type2,type1);     //if it's not a monotype, get first type matchup with second
             if (type1.value != type2.value)
-                p += damageCalc(enemy.type1,type2);
+                p[2] = damageCalc(enemy.type1,type2);
             if ( (enemy.type1.value != enemy.type2.value) && (type1.value != type2.value) ) //if neither are monotype
-                p += damageCalc(type2, enemy.type2);
-            return p;
+                p[3] = damageCalc(type2, enemy.type2);
+
+            return p.Average();
         }
 
 

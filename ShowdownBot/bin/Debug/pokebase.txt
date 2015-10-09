@@ -32,7 +32,7 @@ name:scyther,type1:bug,type2:flying,ability1:TODO,ability2:NA,apct:100%,speed:TO
 name:pinsir,type1:bug,type2:flying,ability1:TODO,ability2:NA,apct:100%,speed:TODO,item:MSTONE
 name:pinsirmega,type1:bug,type2:flying,ability1:AERILATE,ability2:NA,apct:100%,speed:TODO,item:EVIOLITE
 name:gyarados,type1:water,type2:flying,ability1:TODO,ability2:NA,apct:100%,speed:TODO,item:EVIOLITE
-name:gyaradosmega
+name:gyarados-mega
 name:vaporeon
 name:jolteon
 name:flareon
@@ -40,7 +40,7 @@ name:aerodactyl
 name:aerodactylmega
 name:snorlax
 name:zapdos
-name:dragonite
+name:dragonite,type1:dragon,type2:flying
 name:mew
 name:xatu
 name:ampharos
@@ -165,7 +165,7 @@ name:amoonguss
 name:jellicent
 name:alomomola
 name:galvantula
-name:ferrothorn
+name:ferrothorn,type1:grass,type2:steel
 name:klinklang
 name:eelektross
 name:chandelure
@@ -183,7 +183,7 @@ name:thundurus
 name:thundurustherian
 name:landorustherian
 name:kyurem
-name:kyuremblack
+name:kyurem-black,type1:dragon,type2:ice
 name:kyuremwhite
 name:keldeo
 name:keldeoresolute

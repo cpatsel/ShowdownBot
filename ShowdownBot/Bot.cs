@@ -127,12 +127,12 @@ namespace ShowdownBot
         }
         private void testDCalc()
         {
-           
-            Pokemon def = pokedex["pidgeot"];
-            Pokemon atk = pokedex["hitmonlee"];
-            c.writef("Attacker's types are " + atk.type1.value + " " + atk.type2.value, Global.sysColor);
-            float dmg = def.checkTypes(atk);
-            c.writef("Damage is " + dmg.ToString(),Global.sysColor);
+
+            Pokemon def = pokedex["dragonite"];
+            Pokemon atk = pokedex["beedrill"];
+            float risk = getRisk(mainBrowser, atk, def);
+            c.writef("Risk is... " + risk.ToString(), "[DEBUG]", Global.okColor);
+            
         }
         //TODO: add checks to other battle methods to break out of loop if bot is no longer running.
         public void Kill()
@@ -444,6 +444,8 @@ namespace ShowdownBot
             if (modeCurrent == AiMode.ANALYTIC) lead = SelectLead(browser); 
             else lead = b.Button(Find.ByValue("0").And(Find.ByName("chooseTeamPreview")));
 
+            Pokemon active = pokedex[lead.OuterText.ToLower()];
+
             do
             {
 
@@ -467,7 +469,7 @@ namespace ShowdownBot
                 {
                     Pokemon enemy;
                     enemy = getActivePokemon(browser);
-                    battleAnalytic(browser, enemy, ref turn);
+                    battleAnalytic(browser,ref active, enemy, ref turn);
                 }
 
             } while (activeState == State.BATTLEOU);
@@ -580,11 +582,12 @@ namespace ShowdownBot
         /// <param name="enemy"></param>
         /// <param name="turn"></param>
         /// <returns>End of battle?</returns>
-        private bool battleAnalytic(IE b, Pokemon enemy, ref int turn)
+        private bool battleAnalytic(IE b, ref Pokemon active, Pokemon enemy,ref int turn)
         {
             IE browser = b;
             int moveSelection;
             int pokeSelection;
+            if (enemy == null) return true; //prevent crashing during selecting lead
             /* 
              * small ( maybe <10% ) chance of doing something random (so as to not be entirely predictable)
              * first we do risk assessment
@@ -607,9 +610,24 @@ namespace ShowdownBot
             {
                 return true;
             }
+            //Switch if fainted
+            else if (checkSwitch(browser))
+            {
+                active = pickPokeAnalytic(browser, enemy);
+            }
+            //Preemptively switch out of bad situations
+            else if (needSwitch(browser, getRisk(
+                                    browser, active, enemy)))
+            {
+                active = pickPokeAnalytic(browser, enemy);
+            }
+            else if (checkMove(browser))
+            {
+                //until implemented just pick a random move
+                battleRandomly(browser, ref turn);
+            }
 
-            
-            else 
+            else
                 System.Threading.Thread.Sleep(2000);
             return false;
         }
@@ -814,15 +832,96 @@ namespace ShowdownBot
 
         private float getRisk(IE browser, Pokemon you, Pokemon opponent)
         {
-            float dmg = you.checkTypes(opponent);
+            /*
+             * Check types must be interpreted here.
+             * It returns a 0-2 value, with 2 being
+             * the most dangerous, 0 being least.
+             * and 1 being an even fight
+             */
+            float danger = you.checkTypes(opponent);
+            c.writef("Danger is: " + danger.ToString(), "[DEBUG]", Global.okColor);
+            /*
+             * Now, adjust danger according to 
+             * characteristics like our role
+             * and the opponent's defense type.
+             * For example,  
+             * */
+            danger -= you.checkKOChance(opponent);
+
+            //Now determine % chance we will switch
+            float chance;
+            if (danger <= 0.5)
+                chance = 0; //don't worry about it
+            else if ((danger > 0.5) && (danger < 1))
+                chance = 0.1f;
+            else if (danger == 1)
+                 chance = 0.15f;
+            else if ( (danger > 1) && (danger <= 1.5))
+                 chance = 0.25f;
+            else if ((danger > 1.5) && (danger <= 1.999))
+                chance = 0.5f;
+            else
+                chance = 0.9f;
             
-            return 0;
+            return chance;
+        }
+
+        private bool needSwitch(IE browser, float chance)
+        {
+            if (isLastMon(browser))
+                return false;
+            Random rand = new Random();
+            float decision = (float)rand.NextDouble();
+            if (decision <= chance)
+                return true;
+            else
+                return false;
+        }
+        private bool isLastMon(IE browser)
+        {
+            int totalMons = 0;
+            for (int i = 1; i <= 5; i++)
+            {
+                if (browser.Button(Find.ByValue(i.ToString())).Exists)
+                    totalMons++;
+            }
+            if (totalMons == 0)
+                return true;
+            else
+                return false;
+        }
+        private Pokemon pickPokeAnalytic(IE browser, Pokemon enemy)
+        {
+            //Loop over all pokemon
+            int bestChoice = 1;
+            float highestdamage = 0;
+            WatiN.Core.Button b;
+            for (int i = 1; i <= 5; i++)
+            {
+
+                b = browser.Button(Find.ByValue(i.ToString()) && Find.ByName("chooseSwitch"));
+                if (b.Exists)
+                {
+                    Pokemon p = pokedex[b.OuterText.ToLower()];
+                    float temp = enemy.checkTypes(p);
+                    temp += enemy.checkKOChance(p);
+                    if (temp > highestdamage)
+                    {
+                        highestdamage = temp;
+                        bestChoice = i;
+                    }
+
+                }
+            }
+            b = browser.Button(Find.ByValue(bestChoice.ToString()) && Find.ByName("chooseSwitch"));
+            Pokemon nextPoke = pokedex[b.OuterText.ToLower()];
+            b.Click();
+            return nextPoke;
         }
 
 
 
-
-#endregion
+        #endregion
 
 
         /// <summary>

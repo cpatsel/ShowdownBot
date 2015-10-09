@@ -25,19 +25,26 @@ namespace ShowdownBot
     /// Parameters marked with NA are not relevant (or are less significant than others), and are effectively ignored.
     /// Formatting follows key1:value1,key2:value2
     /// </summary>
+    /// Role: Ph,Sp,Mix,Lead,Status,Stall,any(unknown/versatile)
+    /// Deftype: Ph,Sp,bulk,any
     class Pokemon
     {
         string data; //The string containing all data to be read for this pokemon.
 
+        #region Values
+
         public string name = "NONAME";
-       public Type type1, type2;
+        public Type type1, type2;
         string ability1 = "NA", ability2 = "NA";
-        string deftype = "NA";
+        string deftype = "any";
         string item = "NA";
+        string role = "any";
         int speed = 0;
         float apct = 1.0f;
         string firstmove = "NA";
         Dictionary<string,Type> types;
+        #endregion
+
         public Pokemon(string d)
         {
             data = d;
@@ -87,7 +94,7 @@ namespace ShowdownBot
             apct = (float)apct / 100f; //convert percentage to a 0-1.0 value
         }
 
-    /// <summary>
+        /// <summary>
     /// 
     /// </summary>
     /// <param name="t1">attacking move</param>
@@ -121,23 +128,46 @@ namespace ShowdownBot
             }
             return 1;
         }
+
+        /// <summary>
+        /// Predicts how well the pokemon matches up against
+        /// the opponent
+        /// </summary>
+        /// <param name="enemy">the opposing pokemon</param>
+        /// <returns>a float in range 0-2</returns>
         public float checkTypes(Pokemon enemy)
         {
-            //although moves are capped at being 4x effective,
-            //a type matchup can have a dis/advantage of 8x.
+            if (enemy == null) return 0;
             float[] p = {0,0,0,0};
-              p[0] = damageCalc(enemy.type1, type1);   //get first types matchup
-            if (enemy.type1.value != enemy.type2.value)
-                p[1] = damageCalc(enemy.type2,type1);     //if it's not a monotype, get first type matchup with second
-            if (type1.value != type2.value)
-                p[2] = damageCalc(enemy.type1,type2);
-            if ( (enemy.type1.value != enemy.type2.value) && (type1.value != type2.value) ) //if neither are monotype
-                p[3] = damageCalc(type2, enemy.type2);
-
-            return p.Average();
+            p[0] += damageCalc(enemy.type1, type1);
+            p[1] += damageCalc(enemy.type1, type2);
+            p[2] += damageCalc(enemy.type2, type1);
+            p[3] += damageCalc(enemy.type2, type2);
+              return p.Average();
         }
 
+        public float checkKOChance(Pokemon enemy)
+        {
+            float chance = 0;
+            //First check if we are faster.
+            if (enemy.item == "cscarf")
+                enemy.speed *= 2;
+            if (speed > enemy.speed)
+            {
+                chance += 0.4f;
+            }
+            //Now check if we are a suitable attacker
+            if ( ((role == "ph") && (enemy.deftype == "sp")) ||
+                 ((role == "sp") && (enemy.deftype == "ph")) ||
+                 (enemy.deftype == "any") )
+            {
+                chance += 0.4f;
+            }
+            //Todo: add other parameters here. Decrement chance for unsuitable matchings, etc.
+            //Todo also: adjust chance scale. do some calcs to find out what produces more favorable results.
+            return chance;
 
+        }
 
 
 

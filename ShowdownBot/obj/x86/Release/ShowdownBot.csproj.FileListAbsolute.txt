@@ -21,3 +21,4 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\S
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.Form1.resources
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.Properties.Resources.resources
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.csproj.GenerateResource.Cache
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\botInfo.txt

@@ -8,6 +8,7 @@ namespace ShowdownBot
     /// <summary>
     /// Contains variables utilized by multiple classes.
     /// </summary>
+   
   public static  class Global
     {
         // //Helper Information
@@ -18,6 +19,7 @@ namespace ShowdownBot
         public static ConsoleColor errColor = ConsoleColor.Red;
         public static ConsoleColor botInfoColor = ConsoleColor.Magenta;
         public static ConsoleColor defaultColor = ConsoleColor.White;
+        public static bool showDebug = false;
 
       
     }

@@ -18,6 +18,7 @@ namespace ShowdownBot
         Bot bot;
        Thread threadBot;
        ThreadStart ts;
+       
         public Consol()
         {
             //temp = f;
@@ -45,6 +46,7 @@ namespace ShowdownBot
             //richTextBox1.SelectionStart = richTextBox1.TextLength;
             //richTextBox1.ScrollToCaret();
             Console.WriteLine("[" + GetDate() + "]" + t);
+            Console.ResetColor();
         }
         public void writef(string t, ConsoleColor c)
         {
@@ -63,17 +65,14 @@ namespace ShowdownBot
         }
         public void writef(string t, string header, ConsoleColor c)
         {
-            //int l = richTextBox1.TextLength;
-            string date = GetDate();
-            //richTextBox1.AppendText("[" + date + "]" + header + t + "\n");
 
-            //richTextBox1.SelectionStart = l;
-            //richTextBox1.SelectionLength = header.Length + date.Length + 2;
-            //richTextBox1.SelectionColor = c;
-            //richTextBox1.ScrollToCaret();
+            string date = GetDate();
             Console.Write("[" + date + "]");
             Console.ForegroundColor = c;
-            Console.Write(header);
+            header = header.Trim('[',']').ToUpper();
+           if ((!Global.showDebug) && (header == "DEBUG"))
+            { Console.ResetColor(); return; }
+            Console.Write("["+header+"]");
             Console.ResetColor();
             Console.Write(t +"\n");
             

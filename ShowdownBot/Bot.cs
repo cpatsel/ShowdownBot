@@ -38,6 +38,7 @@ namespace ShowdownBot
         float move4Weight = 0.1f;
         bool needLogout, isLoggedIn;
         bool isRunning;
+
         //////////////
         //Bot states
         public enum State
@@ -196,6 +197,18 @@ namespace ShowdownBot
                     {
                         password = val;
                         break;
+                    }
+                case "[SHOW_DEBUG]":
+                    {
+                        val = val.ToLower();
+                        if (val == "false")
+                            Global.showDebug = false;
+                        else if (val == "true")
+                            Global.showDebug = true;
+                        else
+                            c.writef("Unknown value " + val + "for SHOW_DEBUG", "WARNING", Global.warnColor);
+                        break;
+
                     }
 
                 default:

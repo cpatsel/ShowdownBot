@@ -3,3 +3,4 @@
 [USERNAME]=changeMe
 [PASSWORD]=changeMeToo
 [OWNER]=yourUsername
+[SHOW_DEBUG]=true

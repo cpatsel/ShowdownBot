@@ -206,7 +206,7 @@ namespace ShowdownBot
                         else if (val == "true")
                             Global.showDebug = true;
                         else
-                            c.writef("Unknown value " + val + "for SHOW_DEBUG", "WARNING", Global.warnColor);
+                            c.writef("Unknown value " + val + " for SHOW_DEBUG", "WARNING", Global.warnColor);
                         break;
 
                     }

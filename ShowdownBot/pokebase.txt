@@ -1,5 +1,5 @@
 name:venusaur,type1:Grass,type2:Poison,ability1:NA,ability2:NA,apct:100%,speed:125,item:MSTONE,deftype:BULK
-name:venusaurmega,type1:Grass,type2:Poison,ability1:Thick_Fat,ability2:Thick_Fat,apct:100%,speed:TODO,item:MSTONE,deftype:BULK
+name:venusaur-mega,type1:Grass,type2:Poison,ability1:Thick_Fat,ability2:Thick_Fat,apct:100%,speed:TODO,item:MSTONE,deftype:BULK
 name:charizard,type1:Fire,type2:Flying,ability1:Solar_Power,ability2:Blaze,apct:100%,speed:TODO,item:MSTONE
 name:charizard-mega-x,type1:Fire,type2:Dragon,ability1:Tough_Claws,ability2:Tough_Claws,apct:100%,speed:TODO,item:MSTONE
 name:charizard-mega-y,type1:Fire,type2:Flying,ability1:Drought,ability2:Drought,apct:100%,speed:TODO,item:MSTONE
@@ -47,6 +47,7 @@ name:ampharos:type1:electric,type1:electric,item:MSTONE
 name:ampharos-mega,type1:electric,type1:dragon,item:MSTONE
 name:azumarill,type1:water,type1:fairy
 name:sudowoodo,type1:rock,type1:rock,ability1:sturdy
+name:smeargle,type1:normal,type2:normal,firstmove:spore,item:focus_sash
 name:espeon,type1:psychic,type2:psychic,ability1:magic_bounce
 name:umbreon,type1:dark,type2:dark
 name:slowking,type1:water,type2:psychic
@@ -92,10 +93,10 @@ name:sharpedo-mega,type1:water,type2:dark,item:MSTONE
 name:flygon,type1:dragon,type2:ground,ability1:levitate
 name:altaria,type1:dragon,type2:flying
 name:altaria-mega,type1:dragon,type2:fairy
-name:crawdaunt
-name:milotic
-name:absol
-name:absol-mega
+name:crawdaunt,type1:water,type2:dark
+name:milotic,type1:water,type2:water
+name:absol,type1:dark,type2:dark,ability1:magic_bounce
+name:absol-mega,type1:dark,type2:dark,ability1:magic_bounce
 name:glalie
 name:glalie-mega
 name:salamence
@@ -109,7 +110,7 @@ name:latias
 name:latias-mega
 name:latios
 name:latios-mega
-name:jirachi
+name:jirachi,type1:steel,type2:psychic,ability1:serene_grace
 name:infernape
 name:empoleon
 name:staraptor
@@ -117,8 +118,8 @@ name:roserade
 name:lopunny,firstmove:FAKEOUT
 name:lopunny-mega
 name:bronzong
-name:garchomp
-name:garchomp-mega
+name:garchomp,type1:dragon,type2:ground,ability1:rough_skin,item:rocky_helmet
+name:garchomp-mega,type1:dragon,type2:ground
 name:lucario
 name:lucario-mega
 name:hippowdon
@@ -178,10 +179,10 @@ name:cobalion
 name:terrakion
 name:virizion
 name:tornadus
-name:tornadustherian
+name:tornadus-therian
 name:thundurus
-name:thundurustherian
-name:landorustherian
+name:thundurus-therian
+name:landorus-therian,type1:ground,type2:flying,ability1:intimidate
 name:kyurem,type1:dragon,type2:ice
 name:kyuremblack,type1:dragon,type2:ice
 name:keldeo,type1:water,type2:fighting

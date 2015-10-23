@@ -446,10 +446,11 @@ namespace ShowdownBot
         /// </summary>
         /// <param name="browser"></param>
         /// <returns>Successful end to battle</returns>
+
+        int lastTurn = 0;
         private bool ouBattle(IE browser)
         {
             int turn = 1;
-            int lastTurn = 1;
             IE b = browser;
             
             //Select lead
@@ -458,7 +459,7 @@ namespace ShowdownBot
             else lead = b.Button(Find.ByValue("0").And(Find.ByName("chooseTeamPreview")));
 
             Pokemon active = pokedex[lead.OuterText.ToLower()];
-
+            Pokemon enemy = null;
             do
             {
 
@@ -480,8 +481,9 @@ namespace ShowdownBot
                 }
                 else if (modeCurrent == AiMode.ANALYTIC)
                 {
-                    Pokemon enemy;
-                    enemy = getActivePokemon(browser);
+                    
+                    if (turn != lastTurn)
+                        enemy = getActivePokemon(browser);
                     battleAnalytic(browser,ref active, enemy, ref turn);
                 }
 
@@ -595,12 +597,22 @@ namespace ShowdownBot
         /// <param name="enemy"></param>
         /// <param name="turn"></param>
         /// <returns>End of battle?</returns>
-        private bool battleAnalytic(IE b, ref Pokemon active, Pokemon enemy,ref int turn)
+        private bool battleAnalytic(IE b, ref Pokemon active, Pokemon enemy, ref int turn)
         {
             IE browser = b;
             int moveSelection;
             int pokeSelection;
-            if (enemy == null) return true; //prevent crashing during selecting lead
+            if (enemy == null)
+            {
+                if (checkSwitch(b))
+                {
+                    WatiN.Core.Button but = b.Button(Find.ByName("chooseSwitch") &&
+                                            Find.ByValue(pickPokeRandomly(b).ToString()));
+                    but.Click();
+                }
+                else
+                    return false;
+            }
             /* 
              * small ( maybe <10% ) chance of doing something random (so as to not be entirely predictable)
              * first we do risk assessment
@@ -618,11 +630,13 @@ namespace ShowdownBot
              *      else if all choices are equally bad/good just pick a random one.   
              * 
             */
-
+            
             if (checkBattleEnd(browser))
             {
                 return true;
             }
+            else if (turn == lastTurn)
+                return false;
             //Switch if fainted
             else if (checkSwitch(browser))
             {
@@ -632,15 +646,22 @@ namespace ShowdownBot
             else if (needSwitch(browser, getRisk(
                                     browser, active, enemy)))
             {
+                lastTurn = turn;
+                c.writef("I'm switching out.", "Turn "+turn.ToString(), Global.botInfoColor);
                 active = pickPokeAnalytic(browser, enemy);
+                turn++;
+                
             }
             else if (checkMove(browser))
             {
-                pickMoveAnalytic(active, enemy);
+                lastTurn = turn;
+                c.writef("I'm picking move " + pickMoveAnalytic(active, enemy), "Turn " + turn.ToString(), Global.botInfoColor);
+                turn++;
             }
 
             else
                 System.Threading.Thread.Sleep(2000);
+           
             return false;
         }
         /// <summary>
@@ -893,7 +914,7 @@ namespace ShowdownBot
             int totalMons = 0;
             for (int i = 1; i <= 5; i++)
             {
-                if (browser.Button(Find.ByValue(i.ToString())).Exists)
+                if (browser.Button(Find.ByValue(i.ToString()) && Find.ByName("chooseSwitch")).Exists)
                     totalMons++;
             }
             if (totalMons == 0)
@@ -901,6 +922,7 @@ namespace ShowdownBot
             else
                 return false;
         }
+        //TODO: This doesn't account for instances where there are less than 4 moves.
         private Pokemon pickPokeAnalytic(IE browser, Pokemon enemy)
         {
             //Loop over all pokemon
@@ -930,9 +952,9 @@ namespace ShowdownBot
             return nextPoke;
         }
 
-        private void pickMoveAnalytic(Pokemon you, Pokemon enemy)
+        private string pickMoveAnalytic(Pokemon you, Pokemon enemy)
         {
-            float[] rankings = {}; //ranking of each move
+            float[] rankings = new float[4]; //ranking of each move
             float bestMove = 0f;
             int choice = 1;
             Move[] moves = getMoves();
@@ -948,21 +970,33 @@ namespace ShowdownBot
                     choice = i+1;
                 }
             }
-            WatiN.Core.Button b = mainBrowser.Button(Find.ByName("chooseMove") && Find.ByValue(choice.ToString()));
-            b.Click();
+            if (checkMove(mainBrowser))
+            {
+                WatiN.Core.Button b = mainBrowser.Button(Find.ByName("chooseMove") && Find.ByValue(choice.ToString()));
+                if (b.Exists)
+                {
+                    string n = b.OuterText;
+                    b.Click();
+                    return n;
+                }
+                else
+                    return "Move "+choice.ToString();
+            }
+            else
+                return "no move";
 
         }
 
         private Move[] getMoves()
         {
-            Move[] moves = {};
+            Move[] moves = new Move[4];
             for (int i = 0; i < 4; i++)
             {
-                WatiN.Core.Button b = mainBrowser.Button(Find.ByName("chooseMove") && Find.ByValue(i+1.ToString()));
+                WatiN.Core.Button b = mainBrowser.Button(Find.ByName("chooseMove") && Find.ByValue((i + 1).ToString()));
                 string[] temp = b.ClassName.Split('-');
                 string type = temp[1];
                 //No reliable way to get power of each move yet.
-                moves[i] = new Move(Global.types[type], false);
+                moves[i] = new Move(Global.types[type.ToLower()], false);
             }
             return moves;
         }

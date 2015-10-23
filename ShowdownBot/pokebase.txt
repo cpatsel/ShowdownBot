@@ -184,7 +184,7 @@ name:thundurus
 name:thundurus-therian
 name:landorus-therian,type1:ground,type2:flying,ability1:intimidate
 name:kyurem,type1:dragon,type2:ice
-name:kyuremblack,type1:dragon,type2:ice
+name:kyurem-black,type1:dragon,type2:ice
 name:keldeo,type1:water,type2:fighting
 name:keldeoresolute,type1:water,type2:fighting
 name:meloetta,type1:normal,type2:psychic

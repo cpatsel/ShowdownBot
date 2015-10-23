@@ -636,8 +636,7 @@ namespace ShowdownBot
             }
             else if (checkMove(browser))
             {
-                //until implemented just pick a random move
-                battleRandomly(browser, ref turn);
+                pickMoveAnalytic(active, enemy);
             }
 
             else
@@ -929,6 +928,29 @@ namespace ShowdownBot
             Pokemon nextPoke = pokedex[b.OuterText.ToLower()];
             b.Click();
             return nextPoke;
+        }
+
+        private void pickMoveAnalytic(Pokemon you, Pokemon enemy)
+        {
+            float[] rankings = {}; //ranking of each move
+            float bestMove = 0f;
+            int choice = 1;
+            Move[] moves = getMoves();
+            for (int i = 0; i<4; i++)
+            {
+                rankings[i] = you.attacks(moves[i],enemy); 
+            }
+            for (int i = 0; i<4; i++)
+            {
+                if (rankings[i] > bestMove)
+                {
+                    bestMove = rankings[i];
+                    choice = i+1;
+                }
+            }
+            WatiN.Core.Button b = mainBrowser.Button(Find.ByName("chooseMove") && Find.ByValue(choice.ToString()));
+            b.Click();
+
         }
 
         private Move[] getMoves()

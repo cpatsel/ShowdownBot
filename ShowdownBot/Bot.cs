@@ -129,9 +129,9 @@ namespace ShowdownBot
         private void testDCalc()
         {
 
-            Pokemon def = pokedex["dragonite"];
+            Pokemon def = pokedex["alakazam"];
             Pokemon atk = pokedex["beedrill"];
-            float risk = getRisk(mainBrowser, atk, def);
+            float risk = getRisk(mainBrowser, def, atk);
             c.writef("Risk is... " + risk.ToString(), "[DEBUG]", Global.okColor);
             
         }
@@ -761,7 +761,7 @@ namespace ShowdownBot
             return choice;
         }
        
-        #region Analytic Functions
+   #region Analytic Functions
 
         private void BuildPokedex()
         {
@@ -799,7 +799,6 @@ namespace ShowdownBot
                 ticon = elem.Div(Find.ByClass("teamicons") && Find.ByIndex(1));
                 temp = parseNameFromPage(ticon);
                 if (temp == "0") return null;
-                return null;
             }
             //Found the name, now look it up in the dex.
             c.write("The current pokemon is "+temp);
@@ -932,9 +931,21 @@ namespace ShowdownBot
             return nextPoke;
         }
 
+        private Move[] getMoves()
+        {
+            Move[] moves = {};
+            for (int i = 0; i < 4; i++)
+            {
+                WatiN.Core.Button b = mainBrowser.Button(Find.ByName("chooseMove") && Find.ByValue(i+1.ToString()));
+                string[] temp = b.ClassName.Split('-');
+                string type = temp[1];
+                //No reliable way to get power of each move yet.
+                moves[i] = new Move(Global.types[type], false);
+            }
+            return moves;
+        }
 
-
-        #endregion
+   #endregion
 
 
         /// <summary>

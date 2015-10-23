@@ -14,6 +14,22 @@ namespace ShowdownBot
         public Type[] nl;    //0x against
         public Type(string v) { value = v; se = null; res = null; nl = null; }
     }
+
+
+    /// <summary>
+    /// If a move is non damaging (0 bp) it is considered
+    /// to be a status move.
+    /// </summary>
+    struct Move
+    {
+       public Type type;
+       public float bp;
+       bool selfStatus;
+       public Move(Type t, float p) { type = t; bp = p; selfStatus = false; }
+       public Move(Type t, bool s) { type = t; bp = 0.0f; selfStatus = s; }
+
+    }
+
     /// <summary>
     /// Information is read from file line by line, with the following parameters
     /// (changing them if present, defaulting if not):
@@ -40,7 +56,7 @@ namespace ShowdownBot
         string item = "NA";
         string role = "any";
         int speed = 0;
-        float apct = 1.0f;
+        float apct = 100f;
         string firstmove = "NA";
         Dictionary<string,Type> types;
         #endregion
@@ -123,7 +139,7 @@ namespace ShowdownBot
                 for (int i = 0; i < t1.res.Length; i++)
                 {
                     if (t2.value == t1.res[i].value)
-                        return 0.5f;
+                        return -0.5f;
                 }
             }
             return 1;
@@ -138,7 +154,7 @@ namespace ShowdownBot
         public float checkTypes(Pokemon enemy)
         {
             if (enemy == null) return 0;
-            float[] p = {0,0,0,0};
+            float[] p = {1,1,1,1};
             p[0] += damageCalc(enemy.type1, type1);
             p[1] += damageCalc(enemy.type1, type2);
             p[2] += damageCalc(enemy.type2, type1);
@@ -169,12 +185,13 @@ namespace ShowdownBot
 
         }
 
-
+        
 
 
         private void setupTypes()
         {
             types = new Dictionary<string, Type>();
+
             #region Declarations
             Type fire = new Type("fire");
             Type water = new Type("water");
@@ -260,6 +277,8 @@ namespace ShowdownBot
             fighting.nl = new Type[] { ghost };
             types.Add(fighting.value, fighting);
             #endregion
+
+            Global.types = this.types;
 
         }
     

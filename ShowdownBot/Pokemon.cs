@@ -6,7 +6,7 @@ using System.Text;
 namespace ShowdownBot
 {
    
-    struct Type
+    public struct Type
     {
         public string value;
         public Type[] se;    //2x against
@@ -20,11 +20,11 @@ namespace ShowdownBot
     /// If a move is non damaging (0 bp) it is considered
     /// to be a status move.
     /// </summary>
-    struct Move
+    public struct Move
     {
        public Type type;
        public float bp;
-       bool selfStatus;
+       public bool selfStatus;
        public Move(Type t, float p) { type = t; bp = p; selfStatus = false; }
        public Move(Type t, bool s) { type = t; bp = 0.0f; selfStatus = s; }
 

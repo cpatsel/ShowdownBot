@@ -185,7 +185,14 @@ namespace ShowdownBot
 
         }
 
-        
+        public float attacks(Move move, Pokemon enemy)
+        {
+            //Simple method of determining damage.
+            //TODO: factor in stab and other params.
+            float dmg = damageCalc(move.type, enemy.type1);
+            dmg += damageCalc(move.type, enemy.type2);
+            return dmg;
+        }
 
 
         private void setupTypes()

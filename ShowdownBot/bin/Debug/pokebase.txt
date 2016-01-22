@@ -43,7 +43,7 @@ name:zapdos,type1:electric,type2:flying
 name:dragonite,type1:dragon,type2:flying
 name:mew,type1:psychic,type2:psychic
 name:xatu,type1:psychic,type2:flying,ability1:magic_bounce
-name:ampharos:type1:electric,type1:electric,item:MSTONE
+name:ampharos,type1:electric,type1:electric,item:MSTONE
 name:ampharos-mega,type1:electric,type1:dragon,item:MSTONE
 name:azumarill,type1:water,type1:fairy
 name:sudowoodo,type1:rock,type1:rock,ability1:sturdy

@@ -19,8 +19,12 @@ namespace ShowdownBot
         public static ConsoleColor errColor = ConsoleColor.Red;
         public static ConsoleColor botInfoColor = ConsoleColor.Magenta;
         public static ConsoleColor defaultColor = ConsoleColor.White;
+        //Options
         public static bool showDebug = false;
+
+        //Encyclopedia
         public static Dictionary<string, Type> types;
+        public static Dictionary<string, Move> moves;
       
     }
 }

@@ -16,19 +16,7 @@ namespace ShowdownBot
     }
 
 
-    /// <summary>
-    /// If a move is non damaging (0 bp) it is considered
-    /// to be a status move.
-    /// </summary>
-    public struct Move
-    {
-       public Type type;
-       public float bp;
-       public bool selfStatus;
-       public Move(Type t, float p) { type = t; bp = p; selfStatus = false; }
-       public Move(Type t, bool s) { type = t; bp = 0.0f; selfStatus = s; }
-
-    }
+  
 
     /// <summary>
     /// Information is read from file line by line, with the following parameters
@@ -115,7 +103,7 @@ namespace ShowdownBot
     /// </summary>
     /// <param name="t1">attacking move</param>
     /// <param name="t2">defending type</param>
-    /// <returns></returns>
+    /// <returns>The damage multiplier</returns>
         public float damageCalc(Type type1,Type type2)
         {
             Type t1 = types[type1.value];
@@ -139,7 +127,7 @@ namespace ShowdownBot
                 for (int i = 0; i < t1.res.Length; i++)
                 {
                     if (t2.value == t1.res[i].value)
-                        return -0.5f;
+                        return 0.5f;
                 }
             }
             return 1;
@@ -147,14 +135,15 @@ namespace ShowdownBot
 
         /// <summary>
         /// Predicts how well the pokemon matches up against
-        /// the opponent
+        /// the opponent. This only takes into account the pokemon's
+        /// typing as compared to it's opponent's.
         /// </summary>
         /// <param name="enemy">the opposing pokemon</param>
         /// <returns>a float in range 0-2</returns>
         public float checkTypes(Pokemon enemy)
         {
             if (enemy == null) return 0;
-            float[] p = {1,1,1,1};
+            float[] p = {-1,-1,-1,-1};
             p[0] += damageCalc(enemy.type1, type1);
             p[1] += damageCalc(enemy.type1, type2);
             p[2] += damageCalc(enemy.type2, type1);
@@ -190,7 +179,9 @@ namespace ShowdownBot
             //Simple method of determining damage.
             //TODO: factor in stab and other params.
             float dmg = damageCalc(move.type, enemy.type1);
-            dmg += damageCalc(move.type, enemy.type2);
+            if (enemy.type1.value != enemy.type2.value ||
+                enemy.type2.value != null)
+                dmg = damageCalc(move.type, enemy.type2) * dmg;
             return dmg;
         }
 

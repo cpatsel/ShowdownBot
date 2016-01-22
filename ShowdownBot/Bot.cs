@@ -1016,18 +1016,21 @@ namespace ShowdownBot
             for (int i = 0; i < 4; i++)
             {
                 WatiN.Core.Button b = mainBrowser.Button(Find.ByName("chooseMove") && Find.ByValue((i + 1).ToString()));
-                string name = b.OuterText;
+                string[] html = b.OuterHtml.Split(new string[] { "data-move=\"" }, StringSplitOptions.None);
+                //var nametag = Array.Find(html, s => s.StartsWith("data-move"));
+                string[] name = html[1].Split('"');
                 string[] temp = b.ClassName.Split('-');
                 string type = temp[1];
+                
                 //No reliable way to get power of each move yet.
                 try
                 {
-                    moves[i] = lookupMove(name, Global.types[type]);
+                    moves[i] = lookupMove(name[0], Global.types[type]);
                 }
                 catch
                 {
-                    c.writef("Unknown move " + name, Global.warnColor);
-                    moves[i] = new Move(name, Global.types[type.ToLower()]);
+                    c.writef("Unknown move " + name[0], Global.warnColor);
+                    moves[i] = new Move(name[0], Global.types[type.ToLower()]);
                 }
             }
             return moves;

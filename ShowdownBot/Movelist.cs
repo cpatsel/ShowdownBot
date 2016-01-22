@@ -9,6 +9,10 @@ namespace ShowdownBot
     /// <summary>
     /// If a move is non damaging (0 bp) it is considered
     /// to be a status move.
+    /// Moves not defined below are considered unknown, and
+    /// do not account for BP in decision making, only typing.
+    /// Therefore it is advisable to define all commonly used
+    /// status moves.
     /// </summary>
     public class Move
     {
@@ -22,7 +26,7 @@ namespace ShowdownBot
         public bool phase = false; //Is a phasing move? ie. Whirlwind and Haze
 
         public Move(string n, Type t, float p) { name = n; type = t; bp = p; }
-        public Move(string n, Type t) { name = n; type = t; unknown = true; }
+        public Move(string n, Type t) { name = n; type = t; unknown = true; bp = -1; }
 
     }
 
@@ -38,7 +42,8 @@ namespace ShowdownBot
             Move toxic = new Move("Toxic", Global.types["poison"], 0); toxic.status = true; Global.moves.Add("Toxic", toxic);
             Move willo = new Move("Will-O-Wisp", Global.types["fire"], 0); willo.status = true; Global.moves.Add("Will-O-Wisp", willo);
             Move swordsdance = new Move("Swords Dance", Global.types["normal"], 0); swordsdance.boost = true; Global.moves.Add("Swords Dance", swordsdance);
-
+            Move dragondance = new Move("Dragon Dance", Global.types["dragon"], 0); dragondance.boost = true; Global.moves.Add("Dragon Dance", dragondance);
+            Move roost = new Move("Roost", Global.types["flying"], 0); roost.support = true; Global.moves.Add("Roost", roost);
         }
     }
 }

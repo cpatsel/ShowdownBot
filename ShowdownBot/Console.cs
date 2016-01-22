@@ -164,6 +164,10 @@ namespace ShowdownBot
                             threadBot.SetApartmentState(ApartmentState.STA);
                             threadBot.Start();
                         }
+                        else
+                        {
+                            write("Unknown state " + args[1]);
+                        }
                     }
                     else
                     {

@@ -211,3 +211,4 @@ name:diancie,type1:rock,type2:fairy,ability1:magic_bounce,item:MSTONE
 name:dianciemega,type1:rock,type2:fairy,ability1:magic_bounce,item:MSTONE
 name:hoopa,type1:psychic,type2:ghost
 name:hoopaunbound,type1:psychic,type2:dark
+name:rotom

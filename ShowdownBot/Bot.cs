@@ -32,14 +32,14 @@ namespace ShowdownBot
         State activeState;
         AiMode modeCurrent;
         IE mainBrowser;
-        
+        Movelist movelist;
         float move1Weight = 0.4f;
         float move2Weight = 0.3f;
         float move3Weight = 0.2f;
         float move4Weight = 0.1f;
         bool needLogout, isLoggedIn;
         bool isRunning;
-        int lastAction;
+        LastBattleAction lastAction;
         //////////////
         //Bot states
         public enum State
@@ -61,11 +61,11 @@ namespace ShowdownBot
 
         public enum LastBattleAction
         {
-            ATTACK_SUCCESS,
-            ATTACK_FAILURE,
-            STATUS,
-            BOOST,
-            SWITCH
+            ACTION_ATTACK_SUCCESS,
+            ACTION_ATTACK_FAILURE,
+            ACTION_STATUS,
+            ACTION_BOOST,
+            ACTION_SWITCH
         };
         #endregion
 
@@ -78,7 +78,11 @@ namespace ShowdownBot
             modeCurrent = AiMode.RANDOM; //TODO: set default in config to be read
             pokedex = new Dictionary<string, Pokemon>();
             ReadFile();
+            Global.setupTypes();
             BuildPokedex();
+            Global.moves = new Dictionary<string,Move>();
+            movelist = new Movelist();
+            movelist.initialize();
             testDCalc();
         }
 
@@ -165,6 +169,7 @@ namespace ShowdownBot
         }
         private void ReadFile()
         {
+          
             if (!File.Exists("botInfo.txt"))
             {
                 c.writef("Could not load config (maybe it's missing?)", "[ERROR]", Global.errColor);
@@ -877,12 +882,15 @@ namespace ShowdownBot
         {
             /*
              * Check types must be interpreted here.
-             * It returns a 0-2 value, with 2 being
+             * It returns a 0-8 value, with 2 being
              * the most dangerous, 0 being least.
              * and 1 being an even fight
              */
-            float danger = you.checkTypes(opponent);
-            c.writef("Danger is: " + danger.ToString(), "[DEBUG]", Global.okColor);
+            
+            float yve = you.checkTypes(opponent);
+            float evy = opponent.checkTypes(you);
+            float danger = (yve + evy) / 2; //danger becomes the average of your offensive matchup and defensive matchup
+            c.writef("Offense:" +yve.ToString()+" Defense:"+evy.ToString()+"\nDanger: "+danger.ToString(), "[DEBUG]", Global.okColor);
             /*
              * Now, adjust danger according to 
              * characteristics like our role
@@ -890,7 +898,7 @@ namespace ShowdownBot
              * For example,  
              * */
             danger += you.checkKOChance(opponent);
-
+            c.writef("Updated danger: " + danger.ToString(), "[DEBUG]", Global.okColor);
             //Now determine % chance we will switch
             float chance;
             if (danger <= 0.5)
@@ -980,10 +988,36 @@ namespace ShowdownBot
             float[] rankings = new float[4]; //ranking of each move
             float bestMove = 0f;
             int choice = 1;
+            float risk = getRisk(mainBrowser, you, enemy);
             Move[] moves = getMoves();
             for (int i = 0; i<4; i++)
             {
-                rankings[i] = you.attacks(moves[i],enemy); 
+                //For now, only determine the best attacking move.
+                if (moves[i].bp == 0)
+                {
+                    if (moves[i].boost && lastAction == LastBattleAction.ACTION_BOOST)
+                        rankings[i] = 0;
+                    //placeholder
+                    if (moves[i].boost && risk < 0.5)
+                        rankings[i] = 2;
+
+
+                }
+                else if (moves[i].bp > 0 || moves[i].bp == -1)
+                {
+                    rankings[i] = you.attacks(moves[i], enemy);
+                    //prune early if the attack is 100% ineffective
+                    if (rankings[i] == 0) continue;
+                    if (moves[i].type.value == "ground" && (enemy.type2.value == "flying" || enemy.ability1 == "levitate"))
+                    {
+                        rankings[i] = 0;
+                        continue;
+                    }
+                    if (moves[i].type == you.type1 || moves[i].type == you.type2)
+                        rankings[i] += 0.5f;
+                }
+                c.writef(moves[i].name + "'s rank: " + rankings[i].ToString(), "[DEBUG]", Global.okColor);
+
             }
             for (int i = 0; i<4; i++)
             {
@@ -993,6 +1027,12 @@ namespace ShowdownBot
                     choice = i+1;
                 }
             }
+
+            //figure out what move we've chosen
+            Move chosenMove = moves[choice - 1];
+            if (chosenMove.boost) lastAction = LastBattleAction.ACTION_BOOST;
+            else
+                lastAction = LastBattleAction.ACTION_ATTACK_SUCCESS;
             if (checkMove(mainBrowser))
             {
                 WatiN.Core.Button b = mainBrowser.Button(Find.ByName("chooseMove") && Find.ByValue(choice.ToString()));
@@ -1022,27 +1062,20 @@ namespace ShowdownBot
                 string[] temp = b.ClassName.Split('-');
                 string type = temp[1];
                 
-                //No reliable way to get power of each move yet.
-                try
-                {
-                    moves[i] = lookupMove(name[0], Global.types[type]);
-                }
-                catch
-                {
-                    c.writef("Unknown move " + name[0], Global.warnColor);
-                    moves[i] = new Move(name[0], Global.types[type.ToLower()]);
-                }
+                
+                    moves[i] = lookupMove(name[0], Global.types[type.ToLower()]);
+                   // c.writef("Move " + i.ToString() + " " + name[0], Global.botInfoColor);
+                
             }
             return moves;
         }
+        //possibly redundant
         private Move lookupMove(string n, Type t)
         {
             Move m;
-            try
-            {
+            if (Global.moves.ContainsKey(n))
                 m = Global.moves[n];
-            }
-            catch
+            else
             {
                 c.writef("Unknown move " + n, Global.warnColor);
                 m = new Move(n, t);

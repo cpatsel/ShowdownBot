@@ -32,13 +32,14 @@ namespace ShowdownBot
         State activeState;
         AiMode modeCurrent;
         IE mainBrowser;
+        
         float move1Weight = 0.4f;
         float move2Weight = 0.3f;
         float move3Weight = 0.2f;
         float move4Weight = 0.1f;
         bool needLogout, isLoggedIn;
         bool isRunning;
-
+        int lastAction;
         //////////////
         //Bot states
         public enum State
@@ -58,6 +59,14 @@ namespace ShowdownBot
             ANALYTIC
         };
 
+        public enum LastBattleAction
+        {
+            ATTACK_SUCCESS,
+            ATTACK_FAILURE,
+            STATUS,
+            BOOST,
+            SWITCH
+        };
         #endregion
 
         Consol c;
@@ -242,32 +251,34 @@ namespace ShowdownBot
             c.writef("Done performing tasks.", Global.okColor);
         }
 
+        
+
         private bool OpenSite(string site)
         {
             using (var browser = new IE(site))
             {
                 mainBrowser = browser;
                 //wait a second for page to load.
-                browser.WaitForComplete(160);
-                System.Threading.Thread.Sleep(5000);
-                if (!browser.Button(Find.ByName(LoginButton)).Exists)
+               // browser.NativeDocument.Body.SetFocus();
+                browser.WaitForComplete(200);
+                if (browser.Span(Find.ByClass("username")).Exists)
                 {
-                  c.writef("Cannot find login button", "[WARNING]", Global.warnColor);
-                  
-                  System.Threading.Thread.Sleep(2000);
-                  if (browser.Span(Find.ByClass("username")).Exists)
-                  {
-                      c.writef("Assuming already logged in.", Global.okColor);
-                  }
-                  else
-                  {
-                      c.writef("There was a problem logging in.","[ERROR]",Global.errColor);
-                      return false;
-                  }
+                    c.writef("Assuming already logged in.", Global.okColor);
                 }
                 else
                 {
                     c.write("Login found, attempting to login as" + username);
+                    try
+                    {
+                      //  browser.DomContainer.Eval("$('button[name=login]').click();");
+                    }
+                    catch (Exception e)
+                    {
+                        c.writef(e.ToString(), Global.warnColor);
+                    }
+
+                   // WatiN.Core.Button b = browser.Button(Find.ByName("openSounds"));
+                  //  b.Click();
                     if (Login(browser))
                     {
                         c.write("Successfully logged in as " + username);
@@ -878,7 +889,7 @@ namespace ShowdownBot
              * and the opponent's defense type.
              * For example,  
              * */
-            danger -= you.checkKOChance(opponent);
+            danger += you.checkKOChance(opponent);
 
             //Now determine % chance we will switch
             float chance;
@@ -922,7 +933,7 @@ namespace ShowdownBot
             else
                 return false;
         }
-        //TODO: This doesn't account for instances where there are less than 4 moves.
+       
         private Pokemon pickPokeAnalytic(IE browser, Pokemon enemy)
         {
             //Loop over all pokemon
@@ -947,11 +958,23 @@ namespace ShowdownBot
                 }
             }
             b = browser.Button(Find.ByValue(bestChoice.ToString()) && Find.ByName("chooseSwitch"));
-            Pokemon nextPoke = pokedex[b.OuterText.ToLower()];
-            b.Click();
-            return nextPoke;
+            if (b.Exists)
+            {
+                Pokemon nextPoke = pokedex[b.OuterText.ToLower()];
+                b.Click();
+                return nextPoke;
+            }
+            else
+            {
+                b = browser.Button(Find.ByName("chooseSwitch") && Find.ByValue(pickPokeRandomly(browser).ToString()));
+                Pokemon nextPoke = pokedex[b.OuterText.ToLower()];
+                b.Click();
+                return nextPoke;
+            }
+            
         }
-
+        //TODO: This doesn't account for instances where there are less than 4 moves.
+ 
         private string pickMoveAnalytic(Pokemon you, Pokemon enemy)
         {
             float[] rankings = new float[4]; //ranking of each move
@@ -993,14 +1016,36 @@ namespace ShowdownBot
             for (int i = 0; i < 4; i++)
             {
                 WatiN.Core.Button b = mainBrowser.Button(Find.ByName("chooseMove") && Find.ByValue((i + 1).ToString()));
+                string name = b.OuterText;
                 string[] temp = b.ClassName.Split('-');
                 string type = temp[1];
                 //No reliable way to get power of each move yet.
-                moves[i] = new Move(Global.types[type.ToLower()], false);
+                try
+                {
+                    moves[i] = lookupMove(name, Global.types[type]);
+                }
+                catch
+                {
+                    c.writef("Unknown move " + name, Global.warnColor);
+                    moves[i] = new Move(name, Global.types[type.ToLower()]);
+                }
             }
             return moves;
         }
-
+        private Move lookupMove(string n, Type t)
+        {
+            Move m;
+            try
+            {
+                m = Global.moves[n];
+            }
+            catch
+            {
+                c.writef("Unknown move " + n, Global.warnColor);
+                m = new Move(n, t);
+            }
+            return m;
+        }
    #endregion
 
 

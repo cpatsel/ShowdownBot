@@ -21,14 +21,8 @@ namespace ShowdownBot
         {
             return (rh.value != lh.value);
         }
-        public static bool operator ==(Type rh, string lh)
-        {
-            return (rh.value == lh.ToLower());
-        }
-        public static bool operator !=(Type rh, string lh)
-        {
-            return (rh.value != lh.ToLower());
-        }
+
+        
     }
     public enum Status
     {
@@ -189,9 +183,9 @@ namespace ShowdownBot
 
         public bool immunityCheck(Type t, Pokemon p)
         {
-            if (t == "ground" && p.ability1 == "levitate")
+            if (t.value == "ground" && p.ability1 == "levitate")
                 return true;
-            if (t == "fire" && p.ability1 == "flashfire")
+            if (t.value == "fire" && p.ability1 == "flashfire")
                 return true;
             return false;
         }
@@ -199,12 +193,12 @@ namespace ShowdownBot
 
         public float matchup(Pokemon p)
         {
-            return heuristic(p.type1, p) + heuristic(p.type2, p);
+            return heuristic(p.type1, p,false) + heuristic(p.type2, p,false);
         }
 
         public float heuristic(Move m, Pokemon p)
         {
-            return heuristic(m.type, p);
+            return heuristic(m.type, p, true);
         }
 
         /// <summary>
@@ -214,13 +208,16 @@ namespace ShowdownBot
         /// <param name="t">Attacking move type</param>
         /// <param name="p">Pokemon attacking</param>
         /// <returns></returns>
-        public float heuristic(Type t, Pokemon p)
+        public float heuristic(Type t, Pokemon p, bool countStab)
         {
             float eff1 = damageCalc(t, this.type1);
             float eff2 = damageCalc(t, this.type2);
             float stab = 1;
-            if (t == p.type1 || t == p.type2)
-                stab = 1.5f;
+            if (countStab)
+            {
+                if (t == p.type1 || t == p.type2)
+                    stab = 1.5f;
+            }
             float immunityFromAbility = 1;
             if (immunityCheck(t, this))
                 immunityFromAbility = 0;

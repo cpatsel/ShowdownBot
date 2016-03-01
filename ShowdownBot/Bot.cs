@@ -40,6 +40,7 @@ namespace ShowdownBot
         bool needLogout, isLoggedIn;
         bool isRunning;
         LastBattleAction lastAction;
+        string status;
         //////////////
         //Bot states
         public enum State
@@ -497,12 +498,15 @@ namespace ShowdownBot
                 }
                 else if (modeCurrent == AiMode.ANALYTIC)
                 {
-                    
+
                     if (turn != lastTurn)
+                    {
                         enemy = getActivePokemon(browser);
+                        status = updateYourPokemon();
+                    }
                     battleAnalytic(browser,ref active, enemy, ref turn);
                 }
-
+                
             } while (activeState == State.BATTLEOU);
             return true;
         }
@@ -662,7 +666,7 @@ namespace ShowdownBot
             else if (needSwitch(browser, getRisk(
                                     browser, active, enemy)))
             {
-                lastTurn = turn;
+               
                 c.writef("I'm switching out.", "Turn "+turn.ToString(), Global.botInfoColor);
                 active = pickPokeAnalytic(browser, enemy);
                 turn++;
@@ -670,7 +674,13 @@ namespace ShowdownBot
             }
             else if (checkMove(browser))
             {
-                lastTurn = turn;
+                //for now, automatically activate mega
+                WatiN.Core.CheckBox box = browser.CheckBox(Find.ByName("megaevo"));
+                if (box.Exists && !box.Checked)
+                {
+                    box.Click();
+                }
+               
                 c.writef("I'm picking move " + pickMoveAnalytic(active, enemy), "Turn " + turn.ToString(), Global.botInfoColor);
                 turn++;
             }
@@ -825,6 +835,7 @@ namespace ShowdownBot
         private Pokemon getActivePokemon(IE browser)
         {
             //I feel like there's an easier way to do this.
+            
             c.write("Getting active Pokemon");
             IElementContainer elem = (IElementContainer)browser.Element(Find.ByClass("rightbar"));
             Div ticon = elem.Div(Find.ByClass("teamicons"));
@@ -849,6 +860,18 @@ namespace ShowdownBot
                 p = null;
             }
             return p;
+        }
+        private string updateYourPokemon()
+        {
+            IE browser = mainBrowser;
+
+            string currentStatus = "healthy";
+            IElementContainer elem = (IElementContainer)browser.Element(Find.ByClass("statbar rstatbar"));
+            Div status = elem.Div(Find.ByClass("status"));
+            currentStatus = status.OuterText;
+            c.writef("Status:", Global.botInfoColor);
+            return currentStatus;
+
         }
         string parseNameFromPage(Div divcollection)
         {
@@ -1038,9 +1061,8 @@ namespace ShowdownBot
                 WatiN.Core.Button b = mainBrowser.Button(Find.ByName("chooseMove") && Find.ByValue(choice.ToString()));
                 if (b.Exists)
                 {
-                    string n = b.OuterText;
                     b.Click();
-                    return n;
+                    return chosenMove.name;
                 }
                 else
                     return "Move "+choice.ToString();

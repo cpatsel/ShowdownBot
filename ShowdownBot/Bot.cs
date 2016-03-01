@@ -628,6 +628,7 @@ namespace ShowdownBot
                 {
                     WatiN.Core.Button but = b.Button(Find.ByName("chooseSwitch") &&
                                             Find.ByValue(pickPokeRandomly(b).ToString()));
+                    //todo change this to analytic pick
                     but.Click();
                 }
                 else
@@ -661,15 +662,31 @@ namespace ShowdownBot
             else if (checkSwitch(browser))
             {
                 active = pickPokeAnalytic(browser, enemy);
+                if (active == null)
+                {
+                    c.writef("Can't find new pokemon, unable to continue.", "[ERROR]", Global.errColor);
+                    return true;
+                }
+                return false;
             }
             //Preemptively switch out of bad situations
-            else if (needSwitch(browser, getRisk(
-                                    browser, active, enemy)))
+            else if (needSwitch(active,enemy))
             {
                
                 c.writef("I'm switching out.", "Turn "+turn.ToString(), Global.botInfoColor);
-                active = pickPokeAnalytic(browser, enemy);
+                Pokemon temp  = pickPokeAnalytic(browser, enemy);
+                if (temp == null)
+                {
+                    c.writef("Couldn't pick a pokemon. Going with moves instead.", "[!]", Global.warnColor);
+                    pickMoveAnalytic(active, enemy);
+
+                }
+                else
+                {
+                    active = temp;
+                }
                 turn++;
+                return false;
                 
             }
             else if (checkMove(browser))
@@ -682,6 +699,7 @@ namespace ShowdownBot
                 }
                
                 c.writef("I'm picking move " + pickMoveAnalytic(active, enemy), "Turn " + turn.ToString(), Global.botInfoColor);
+                c.writef("Last Move: " + lastAction.ToString(), "DEBUG", Global.okColor);
                 turn++;
             }
 
@@ -866,10 +884,10 @@ namespace ShowdownBot
             IE browser = mainBrowser;
 
             string currentStatus = "healthy";
-            IElementContainer elem = (IElementContainer)browser.Element(Find.ByClass("statbar rstatbar"));
-            Div status = elem.Div(Find.ByClass("status"));
-            currentStatus = status.OuterText;
-            c.writef("Status:", Global.botInfoColor);
+            //IElementContainer elem = (IElementContainer)browser.Element(Find.ByClass("statbar rstatbar"));
+            //Div status = elem.Div(Find.ByClass("status"));
+            //currentStatus = status.OuterText;
+            //c.writef("Status:", Global.botInfoColor);
             return currentStatus;
 
         }
@@ -940,16 +958,14 @@ namespace ShowdownBot
             return chance;
         }
 
-        private bool needSwitch(IE browser, float chance)
+        private bool needSwitch(Pokemon you, Pokemon enemy)
         {
-            if (isLastMon(browser))
+            if (isLastMon(mainBrowser))
                 return false;
-            Random rand = new Random();
-            float decision = (float)rand.NextDouble();
-            if (decision <= chance)
+            float tolerance = 2.5f;
+            if (you.matchup(enemy) > tolerance)
                 return true;
-            else
-                return false;
+            else return false;
         }
         private bool isLastMon(IE browser)
         {
@@ -968,8 +984,8 @@ namespace ShowdownBot
         private Pokemon pickPokeAnalytic(IE browser, Pokemon enemy)
         {
             //Loop over all pokemon
-            int bestChoice = 1;
-            float highestdamage = 0;
+            int bestChoice = 1000;
+            float highestdamage = 5000f;
             WatiN.Core.Button b;
             for (int i = 1; i <= 5; i++)
             {
@@ -978,29 +994,42 @@ namespace ShowdownBot
                 if (b.Exists)
                 {
                     Pokemon p = pokedex[b.OuterText.ToLower()];
-                    float temp = enemy.checkTypes(p);
-                    temp += enemy.checkKOChance(p);
-                    if (temp > highestdamage)
+                    if (bestChoice == 1000)
+                        bestChoice = i; //set a default value that can be accessed.
+                    float temp = p.matchup(enemy);
+                    //negate the return here in order to coincide with the defensive switching in the loop above.
+                    //this should prevent eternally switching pokemon
+                   // temp += enemy.checkKOChance(p);
+                    if (temp < highestdamage)
                     {
                         highestdamage = temp;
                         bestChoice = i;
                     }
+                    c.writef(p.name + " value:" + temp, "[DEBUG]", Global.okColor);
+
 
                 }
+                
             }
             b = browser.Button(Find.ByValue(bestChoice.ToString()) && Find.ByName("chooseSwitch"));
+            Pokemon nextPoke = pokedex[b.OuterText.ToLower()];
+            b.Click();
+            return nextPoke;
             if (b.Exists)
             {
-                Pokemon nextPoke = pokedex[b.OuterText.ToLower()];
+                Pokemon nnextPoke = pokedex[b.OuterText.ToLower()];
                 b.Click();
-                return nextPoke;
+                return nnextPoke;
             }
             else
             {
+                /*
                 b = browser.Button(Find.ByName("chooseSwitch") && Find.ByValue(pickPokeRandomly(browser).ToString()));
                 Pokemon nextPoke = pokedex[b.OuterText.ToLower()];
                 b.Click();
                 return nextPoke;
+                 */
+                return null;
             }
             
         }
@@ -1011,33 +1040,26 @@ namespace ShowdownBot
             float[] rankings = new float[4]; //ranking of each move
             float bestMove = 0f;
             int choice = 1;
-            float risk = getRisk(mainBrowser, you, enemy);
+            float risk = you.matchup(enemy);
             Move[] moves = getMoves();
             for (int i = 0; i<4; i++)
             {
                 //For now, only determine the best attacking move.
                 if (moves[i].bp == 0)
                 {
-                    if (moves[i].boost && lastAction == LastBattleAction.ACTION_BOOST)
+                    if (moves[i].boost && (lastAction == LastBattleAction.ACTION_BOOST))
                         rankings[i] = 0;
                     //placeholder
-                    if (moves[i].boost && risk < 0.5)
+                    else if (moves[i].boost && risk <= 1)
                         rankings[i] = 2;
 
 
                 }
                 else if (moves[i].bp > 0 || moves[i].bp == -1)
                 {
-                    rankings[i] = you.attacks(moves[i], enemy);
-                    //prune early if the attack is 100% ineffective
-                    if (rankings[i] == 0) continue;
-                    if (moves[i].type.value == "ground" && (enemy.type2.value == "flying" || enemy.ability1 == "levitate"))
-                    {
-                        rankings[i] = 0;
-                        continue;
-                    }
-                    if (moves[i].type == you.type1 || moves[i].type == you.type2)
-                        rankings[i] += 0.5f;
+                    rankings[i] = enemy.heuristic(moves[i], you);
+                    
+                    
                 }
                 c.writef(moves[i].name + "'s rank: " + rankings[i].ToString(), "[DEBUG]", Global.okColor);
 

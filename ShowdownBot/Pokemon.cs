@@ -22,6 +22,15 @@ namespace ShowdownBot
             return (rh.value != lh.value);
         }
     }
+    public enum Status
+    {
+        STATE_PAR,
+        STATE_TOX,
+        STATE_BRN,
+        STATE_SLP,
+        STATE_FRZ,
+        STATE_HEALTHY
+    };
 
 
   
@@ -55,6 +64,8 @@ namespace ShowdownBot
         float apct = 100f;
         string firstmove = "NA";
         Dictionary<string,Type> types;
+
+        Status currentStatus = Status.STATE_HEALTHY;
         #endregion
 
         public Pokemon(string d)

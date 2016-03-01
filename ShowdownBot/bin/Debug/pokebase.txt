@@ -118,6 +118,7 @@ name:roserade
 name:lopunny,firstmove:FAKEOUT
 name:lopunny-mega
 name:bronzong
+name:gastrodon,type1:water,type2:ground,ability1:stormdrain
 name:garchomp,type1:dragon,type2:ground,ability1:rough_skin,item:rocky_helmet
 name:garchomp-mega,type1:dragon,type2:ground
 name:lucario
@@ -172,7 +173,7 @@ name:eelektross
 name:chandelure
 name:haxorus
 name:golurk
-name:bisharp
+name:bisharp,type1:dark,type2:steel,ability1:defiant
 name:hydreigon
 name:volcarona
 name:cobalion
@@ -208,7 +209,7 @@ name:avalugg
 name:noivern,type1:dragon,type2:flying
 name:zygarde,type1:dragon,type2:ground
 name:diancie,type1:rock,type2:fairy,ability1:magic_bounce,item:MSTONE
-name:dianciemega,type1:rock,type2:fairy,ability1:magic_bounce,item:MSTONE
+name:diancie-mega,type1:rock,type2:fairy,ability1:magic_bounce,item:MSTONE
 name:hoopa,type1:psychic,type2:ghost
 name:hoopaunbound,type1:psychic,type2:dark
 name:rotom,type1:electric,type2:water,ability1:levitate

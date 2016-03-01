@@ -1,6 +1,6 @@
 ﻿#This is used to initialize certain variables.
 #Don't forget to change it!
-[USERNAME]=HingleCringleberry
-[PASSWORD]=topkek
-[OWNER]=Dr. Fug
+[USERNAME]=changeMe
+[PASSWORD]=changeMeToo
+[OWNER]=yourusername
 [SHOW_DEBUG]=true

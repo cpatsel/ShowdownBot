@@ -1,6 +1,6 @@
 ***REMOVED***
 ***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+[USERNAME]=HingleCringleberry
+[PASSWORD]=***REMOVED***
+[OWNER]=Dr. Fug
 ***REMOVED***

@@ -107,8 +107,8 @@ name:regirock
 name:regice
 name:registeel
 name:latias
-name:latias-mega
-name:latios
+name:latias-mega,type1:dragon,type2:psychic,ability1:levitate
+name:latios,type1:dragon,type2:psychic,ability1:levitate
 name:latios-mega
 name:jirachi,type1:steel,type2:psychic,ability1:serene_grace
 name:infernape
@@ -134,7 +134,7 @@ name:togekiss
 name:yanmega
 name:leafeon
 name:glaceon
-name:gliscor
+name:gliscor,type1:ground,type2:flying,ability1:poisonheal
 name:mamoswine
 name:porygonz
 name:gallade
@@ -142,7 +142,7 @@ name:gallade-mega
 name:froslass
 name:rotomwash
 name:azelf
-name:heatran
+name:heatran,type1:fire,type2:steel,ability1:flashfire
 name:cresselia
 name:manaphy
 name:darkrai
@@ -166,7 +166,7 @@ name:amoonguss
 name:jellicent
 name:alomomola
 name:galvantula
-name:ferrothorn
+name:ferrothorn,type1:grass,type2:steel,ability1:ironbarbs
 name:klinklang
 name:eelektross
 name:chandelure
@@ -211,4 +211,4 @@ name:diancie,type1:rock,type2:fairy,ability1:magic_bounce,item:MSTONE
 name:dianciemega,type1:rock,type2:fairy,ability1:magic_bounce,item:MSTONE
 name:hoopa,type1:psychic,type2:ghost
 name:hoopaunbound,type1:psychic,type2:dark
-name:rotom
+name:rotom,type1:electric,type2:water,ability1:levitate

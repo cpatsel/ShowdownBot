@@ -21,6 +21,14 @@ namespace ShowdownBot
         {
             return (rh.value != lh.value);
         }
+        public static bool operator ==(Type rh, string lh)
+        {
+            return (rh.value == lh.ToLower());
+        }
+        public static bool operator !=(Type rh, string lh)
+        {
+            return (rh.value != lh.ToLower());
+        }
     }
     public enum Status
     {
@@ -174,6 +182,50 @@ namespace ShowdownBot
             }
             return val;
             
+        }
+
+
+
+
+        public bool immunityCheck(Type t, Pokemon p)
+        {
+            if (t == "ground" && p.ability1 == "levitate")
+                return true;
+            if (t == "fire" && p.ability1 == "flashfire")
+                return true;
+            return false;
+        }
+
+
+        public float matchup(Pokemon p)
+        {
+            return heuristic(p.type1, p) + heuristic(p.type2, p);
+        }
+
+        public float heuristic(Move m, Pokemon p)
+        {
+            return heuristic(m.type, p);
+        }
+
+        /// <summary>
+        /// Gives a specialised value of the effectiveness
+        /// of a move t from pokemon p towards the defender.
+        /// </summary>
+        /// <param name="t">Attacking move type</param>
+        /// <param name="p">Pokemon attacking</param>
+        /// <returns></returns>
+        public float heuristic(Type t, Pokemon p)
+        {
+            float eff1 = damageCalc(t, this.type1);
+            float eff2 = damageCalc(t, this.type2);
+            float stab = 1;
+            if (t == p.type1 || t == p.type2)
+                stab = 1.5f;
+            float immunityFromAbility = 1;
+            if (immunityCheck(t, this))
+                immunityFromAbility = 0;
+
+            return (eff1 * eff2 * stab * immunityFromAbility);
         }
 
         /// <summary>

@@ -42,8 +42,8 @@ namespace ShowdownBot
             Move toxic = new Move("Toxic", Global.types["poison"], 0); toxic.status = true; Global.moves.Add("Toxic", toxic);
             Move willo = new Move("Will-O-Wisp", Global.types["fire"], 0); willo.status = true; Global.moves.Add("Will-O-Wisp", willo);
             Move swordsdance = new Move("Swords Dance", Global.types["normal"], 0); swordsdance.boost = true; Global.moves.Add("Swords Dance", swordsdance);
-            Move dragondance = new Move("Dragon Dance", Global.types["dragon"], 0); dragondance.boost = true; Global.moves.Add("Dragon Dance", dragondance);
-            Move roost = new Move("Roost", Global.types["flying"], 0); roost.support = true; Global.moves.Add("Roost", roost);
+            Move dragondance = new Move("Dragon Dance", Global.types["dragon"], 0); dragondance.boost = true; Global.moves.Add(dragondance.name, dragondance);
+            Move roost = new Move("Roost", Global.types["flying"], 0); roost.support = true; Global.moves.Add(roost.name, roost);
         }
     }
 }

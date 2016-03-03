@@ -962,6 +962,10 @@ namespace ShowdownBot
         {
             if (isLastMon(mainBrowser))
                 return false;
+            //if the pokemon is at low health, don't bother
+            WatiN.Core.Element e = mainBrowser.Element(Find.ByClass("critical"));
+            if (e.Exists)
+                return false;
             float tolerance = 2.5f;
             if (you.matchup(enemy) > tolerance)
                 return true;
@@ -1096,6 +1100,7 @@ namespace ShowdownBot
 
         private Move[] getMoves()
         {
+            //todo deal with moves with no pp/disabled
             Move[] moves = new Move[4];
             for (int i = 0; i < 4; i++)
             {

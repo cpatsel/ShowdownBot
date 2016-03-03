@@ -162,6 +162,9 @@ namespace ShowdownBot
             float dmg = getRealBP(m);
             float stab = 1;
             float ability = 1;
+            float immunity = 1;
+            if (immunityCheck(m.type,enemy))
+                immunity = 0;
             if (m.type == this.type1 || m.type == this.type2)
             {
                 stab = 1.5f;
@@ -174,7 +177,7 @@ namespace ShowdownBot
             else if (this.item == "lifeorb")
                 additional = 1.3f;
 
-            return (dmg * mult * stab * ability * additional);
+            return (dmg * mult * stab * ability * additional * immunity);
         }
 
         /// <summary>

@@ -1059,9 +1059,9 @@ namespace ShowdownBot
 
 
                 }
-                else if (moves[i].bp > 0 || moves[i].bp == -1)
+                else if (moves[i].bp != 0)
                 {
-                    rankings[i] = enemy.heuristic(moves[i], you);
+                    rankings[i] = you.damageCalcTotal(moves[i], enemy);
                     
                     
                 }

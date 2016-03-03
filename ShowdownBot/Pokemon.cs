@@ -154,6 +154,54 @@ namespace ShowdownBot
             return 1;
         }
 
+
+        public float damageCalcTotal(Move m, Pokemon enemy)
+        {
+            float mult = damageCalc(m.type, enemy.type1);
+            mult = mult * damageCalc(m.type, enemy.type2);
+            float dmg = getRealBP(m);
+            float stab = 1;
+            float ability = 1;
+            if (m.type == this.type1 || m.type == this.type2)
+            {
+                stab = 1.5f;
+            }
+            //do ability calculations
+
+            float additional = 1;
+            if (this.item == "choiceband" || this.item == "choicespecs")
+                additional = 1.5f;
+            else if (this.item == "lifeorb")
+                additional = 1.3f;
+
+            return (dmg * mult * stab * ability * additional);
+        }
+
+        /// <summary>
+        /// Used to handle moves whose BP is unknown. -ate ability moves are handled
+        /// here to prevent miscalculation, as well as other moves who change type or have
+        /// varying power.
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        private float getRealBP(Move m)
+        {
+            if (m.bp > -1)
+                return m.bp;
+            else if (m.bp == -2)
+            {
+                if (m.name == "Gyro Ball")
+                    return 70; //calculate speeds later
+            }
+            else
+            {
+                if (m.name == "Return" || m.name == "Frustration")
+                    return 100;
+                if (m.name == "Hidden Power")
+                    return 60;
+            }
+            return 20; //assume default
+        }
         /// <summary>
         /// Predicts how well the pokemon matches up against
         /// the opponent. This only takes into account the pokemon's

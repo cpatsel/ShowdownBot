@@ -247,11 +247,11 @@ namespace ShowdownBot
                 }
                 else if (activeState == State.RANDOMBATTLE)
                 { 
-                    challengePlayer(mainBrowser);
+                    challengePlayer(mainBrowser,owner,"ou");
                 }
                 else if (activeState == State.BATTLEOU)
                 {
-                    challengePlayer(mainBrowser);
+                    challengePlayer(mainBrowser,owner,"ou");
                 }
             }
             c.writef("Done performing tasks.", Global.okColor);
@@ -261,12 +261,13 @@ namespace ShowdownBot
 
         private bool OpenSite(string site)
         {
+            
             using (var browser = new IE(site))
             {
                 mainBrowser = browser;
                 //wait a second for page to load.
                // browser.NativeDocument.Body.SetFocus();
-                browser.WaitForComplete(200);
+              //  browser.WaitForComplete();
                 if (browser.Span(Find.ByClass("username")).Exists)
                 {
                     c.writef("Assuming already logged in.", Global.okColor);
@@ -713,57 +714,38 @@ namespace ShowdownBot
         /// If no player is specified, it defaults to owner.
         /// </summary>
         /// <param name="b"></param>
-        private void challengePlayer(IE b, string user)
+        private void challengePlayer(IE b, string user, string format)
         {
             string player = user;
             IE browser = b;
-            c.writef("Waiting for page to load", "[DEBUG]", Global.okColor);
-            browser.WaitForComplete(160);
-            if (activeState == State.RANDOMBATTLE)
-            {
-                if (b == null)
-                    c.writef("current browser is null", "[DEBUG]", Global.okColor);
-                c.write("Searching for "+ player);
-                if (!browser.Button(Find.ByName("finduser")).Exists)
-                    c.writef("finduser button does not exist!", "[DEBUG]", Global.warnColor);
-                browser.Button(Find.ByName("finduser")).Click();
-                browser.TextField(Find.ByName("data")).TypeText(player);
-               // System.Windows.Forms.SendKeys.SendWait("{ENTER}");
-                browser.Button(Find.ByText("Open")).Click();
-                c.write("Contacting user for random battle");
-                browser.Button(Find.ByName("challenge")).Click();
-                browser.Button(Find.ByName("makeChallenge")).Click();
-                c.write("Challenge made, awaiting response.");
-                ////TODO: Check for the battle buttons/timer button. More reliable than checking for text.
-                browser.WaitUntilContainsText("Format:");
-                c.writef("Battle starting!", Global.botInfoColor);
-                randomBattle(browser);
-            }
-            else if (activeState == State.BATTLEOU)
-            {
-                c.write("Searching for " + player);
-                if (!browser.Button(Find.ByName("finduser")).Exists)
-                    c.writef("finduser button does not exist!", "[DEBUG]", Global.okColor);
-                browser.Button(Find.ByName("finduser")).Click();
-                browser.TextField(Find.ByName("data")).TypeText(player);
-                browser.Button(Find.ByText("Open")).Click();
-                c.write("Contacting user for OU battle");
-                browser.Button(Find.ByName("challenge")).Click();
-                //Select format
-                browser.Button(Find.ByName("format")).Click();
-                browser.Button(Find.ByValue("ou")).Click();
-                //TODO: implement a way to select alternate teams/ have more than one team.
-                browser.Button(Find.ByName("makeChallenge")).Click();
-                c.write("Challenge made, awaiting response.");
-                ////TODO: Check for the battle buttons/timer button. More reliable than checking for text.
-                browser.WaitUntilContainsText("Format:");
-                c.writef("Battle starting!", Global.botInfoColor);
-                ouBattle(browser);
-            }
+            
+            c.write("Searching for " + player);
+            if (!browser.Button(Find.ByName("finduser")).Exists)
+                c.writef("finduser button does not exist!", "[DEBUG]", Global.okColor);
+            browser.Eval("$('button[name=finduser]').trigger('click')");
+            browser.Eval("$('input[name=data]').val('"+player+"')");
+            browser.Eval("$('input[name=data]').submit()");
+            System.Threading.Thread.Sleep(2000);
+            c.write("Contacting user for OU battle");
+            browser.Eval("$('button[name=challenge]').trigger('click')");
+            System.Threading.Thread.Sleep(2000);    
+            //Select format
+            browser.Eval("$('.challenge').find('button[name=format]').click()");
+            System.Threading.Thread.Sleep(2000); 
+            browser.Eval("$('.popupmenu').find('button[name=selectFormat][value="+format+"]').trigger('click')");
+            System.Threading.Thread.Sleep(2000);
+            //TODO: implement a way to select alternate teams/ have more than one team.
+            browser.Eval("$('button[name=makeChallenge]').trigger('click')");
+            c.write("Challenge made, awaiting response.");
+            ////TODO: Check for the battle buttons/timer button. More reliable than checking for text.
+            browser.WaitUntilContainsText("Format:");
+            c.writef("Battle starting!", Global.botInfoColor);
+            ouBattle(browser);
+            
         }
         private void challengePlayer(IE b)
         {
-            challengePlayer(b, owner);
+            challengePlayer(b, owner, "random");
         }
 
         private int determineMoveRandomly(IE b)

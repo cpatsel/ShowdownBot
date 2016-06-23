@@ -114,6 +114,15 @@ namespace ShowdownBot
             Move swave = new Move("Sludge Wave", Global.types["poison"], 95); swave.group = "special"; Global.moves.Add(swave.name, swave);
 
             #endregion
+
+            #region Flying
+            Move brabir = new Move("Brave Bird", Global.types["flying"], 120); brabir.group = "physical"; Global.moves.Add(brabir.name, brabir);
+            #endregion
+
+            #region Fairy
+            Move plyr = new Move("Play Rough", Global.types["fairy"], 90); plyr.group = "physical"; Global.moves.Add(plyr.name, plyr);
+
+            #endregion
         }
     }
 }

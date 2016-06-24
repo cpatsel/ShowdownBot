@@ -137,44 +137,52 @@ namespace ShowdownBot
                     DisplayHelp();
                    
                 }
-                else if (args[0] == "cs" || args[0] == "changestate")
+                else if (args[0] == "challenge" || args[0] == "cp")
                 {
-                    if (args[1] != null)
-                    {
-                        if (args[1] == "idle")
-                        {
-                            cmd = () => bot.changeState(ShowdownBot.Bot.State.IDLE);
-                            ts = new ThreadStart(cmd);
-                            threadBot = new Thread(ts);
-                            threadBot.SetApartmentState(ApartmentState.STA);
-                            threadBot.Start();
-                        }
-                        else if (args[1] == "randombattle" || args[1] == "rb")
-                        {
-                            cmd = () => bot.changeState(ShowdownBot.Bot.State.RANDOMBATTLE);
-                            ts = new ThreadStart(cmd);
-                            threadBot = new Thread(ts);
-                            threadBot.SetApartmentState(ApartmentState.STA);
-                            threadBot.Start();
-                        }
-                        else if (args[1] == "overused" || args[1] == "ou")
-                        {
-                            cmd = () => bot.changeState(ShowdownBot.Bot.State.BATTLEOU);
-                            ts = new ThreadStart(cmd);
-                            threadBot = new Thread(ts);
-                            threadBot.SetApartmentState(ApartmentState.STA);
-                            threadBot.Start();
-                        }
-                        else
-                        {
-                            write("Unknown state " + args[1]);
-                        }
-                    }
-                    else
-                    {
-                        writef("Acceptable arguments are idle, ou, random", "[SYSTEM]", Global.sysColor);
-                    }
+                    cmd = () => bot.changeState(State.CHALLENGE);
+                    ts = new ThreadStart(cmd);
+                    threadBot = new Thread(ts);
+                    threadBot.SetApartmentState(ApartmentState.STA);
+                    threadBot.Start();
                 }
+                //else if (args[0] == "cs" || args[0] == "changestate")
+                //{
+                //    if (args[1] != null)
+                //    {
+                //        if (args[1] == "idle")
+                //        {
+                //            cmd = () => bot.changeState(ShowdownBot.Bot.State.IDLE);
+                //            ts = new ThreadStart(cmd);
+                //            threadBot = new Thread(ts);
+                //            threadBot.SetApartmentState(ApartmentState.STA);
+                //            threadBot.Start();
+                //        }
+                //        else if (args[1] == "randombattle" || args[1] == "rb")
+                //        {
+                //            cmd = () => bot.changeState(ShowdownBot.Bot.State.RANDOMBATTLE);
+                //            ts = new ThreadStart(cmd);
+                //            threadBot = new Thread(ts);
+                //            threadBot.SetApartmentState(ApartmentState.STA);
+                //            threadBot.Start();
+                //        }
+                //        else if (args[1] == "overused" || args[1] == "ou")
+                //        {
+                //            cmd = () => bot.changeState(ShowdownBot.Bot.State.BATTLEOU);
+                //            ts = new ThreadStart(cmd);
+                //            threadBot = new Thread(ts);
+                //            threadBot.SetApartmentState(ApartmentState.STA);
+                //            threadBot.Start();
+                //        }
+                //    else
+                //    {
+                //        write("Unknown state " + args[1]);
+                //    }
+                //}
+                //    else
+                //    {
+                //        writef("Acceptable arguments are idle, ou, random", "[SYSTEM]", Global.sysColor);
+                //    }
+                //}
                 else if (args[0] == "m" || args[0] == "mode")
                 {
                     if (args[1] != null)
@@ -218,6 +226,11 @@ namespace ShowdownBot
                     threadBot = new Thread(ts);
                     threadBot.SetApartmentState(ApartmentState.STA);
                     threadBot.Start();
+                    cmd = () => bot.closeBrowser();
+                    ts = new ThreadStart(cmd);
+                    threadBot = new Thread(ts);
+                    threadBot.SetApartmentState(ApartmentState.STA);
+                    threadBot.Start();
                     //temp.Close();
                     Environment.Exit(0);
                     this.Close();
@@ -230,7 +243,7 @@ namespace ShowdownBot
                     write("Bot is running:" + bot.getStatus().ToString() + "\n"
                         + "Current state: " + bot.getState().ToString() + "\n"
                         + "Current mode: " + bot.getMode().ToString() + "\n"
-                        
+
                         );
                 }
                 else if (args[0] == "visible" || args[0] == "v")

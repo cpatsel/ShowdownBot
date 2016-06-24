@@ -25,7 +25,7 @@ namespace ShowdownBot
         public bool boost = false; //Is a boosting move? ie. Swords Dance
         public bool status = false; //Is a status move? ie. Toxic
         public bool support = false; //Is a supporting move? ie. Baton Pass
-        public bool phase = false; //Is a phasing move? ie. Whirlwind and Haze
+        public bool phase = false; //Is a phasing move? ie. Whirlwind
         public bool field = false; //Hazard move?
         public Move(string n, Type t, float p) { name = n; type = t; bp = p; }
         public Move(string n, Type t) { name = n; type = t; unknown = true; bp = -1; }
@@ -41,6 +41,8 @@ namespace ShowdownBot
 
         public void initialize()
         {
+           /// The way the bot functions, it's imperative to at least define status moves that it will use, otherwise it is likely that
+           /// it will either never pick them or pick them at inappropriate times.
         #region Status Moves
             Move toxic = new Move("Toxic", Global.types["poison"], 0); toxic.status = true; Global.moves.Add("Toxic", toxic);
             Move willo = new Move("Will-O-Wisp", Global.types["fire"], 0); willo.status = true; Global.moves.Add("Will-O-Wisp", willo);

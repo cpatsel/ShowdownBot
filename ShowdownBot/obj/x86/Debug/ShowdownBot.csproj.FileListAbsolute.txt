@@ -24,3 +24,9 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\Sho
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.csproj.GenerateResource.Cache
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\botInfo.txt
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\pokebase.txt
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\WebDriver.dll
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\WebDriver.Support.dll
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\WebDriver.pdb
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\WebDriver.xml
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\WebDriver.Support.pdb
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\WebDriver.Support.xml

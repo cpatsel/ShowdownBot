@@ -50,7 +50,7 @@ namespace ShowdownBot
     /// </summary>
     /// Role: Ph,Sp,Mix,Lead,Status,Stall,any(unknown/versatile)
     /// Deftype: Ph,Sp,bulk,any
-    class Pokemon
+    public class Pokemon
     {
         string data; //The string containing all data to be read for this pokemon.
 

@@ -66,9 +66,16 @@
     <Reference Include="WatiN.Core">
       <HintPath>..\..\..\..\WatIN\bin\net40\WatiN.Core.dll</HintPath>
     </Reference>
+    <Reference Include="WebDriver">
+      <HintPath>..\..\..\selenium\net40\WebDriver.dll</HintPath>
+    </Reference>
+    <Reference Include="WebDriver.Support">
+      <HintPath>..\..\..\selenium\net40\WebDriver.Support.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bot.cs" />
+    <Compile Include="BotModule.cs" />
     <Compile Include="Console.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -82,6 +89,8 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Global.cs" />
+    <Compile Include="modules\AnalyticModule.cs" />
+    <Compile Include="modules\RandomModule.cs" />
     <Compile Include="Movelist.cs" />
     <Compile Include="Pokemon.cs" />
     <Compile Include="Program.cs" />

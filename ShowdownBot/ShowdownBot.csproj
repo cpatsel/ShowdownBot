@@ -63,9 +63,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WatiN.Core">
-      <HintPath>..\..\..\..\WatIN\bin\net40\WatiN.Core.dll</HintPath>
-    </Reference>
     <Reference Include="WebDriver">
       <HintPath>..\..\..\selenium\net40\WebDriver.dll</HintPath>
     </Reference>
@@ -82,12 +79,6 @@
     <Compile Include="Console.Designer.cs">
       <DependentUpon>Console.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Global.cs" />
     <Compile Include="modules\AnalyticModule.cs" />
     <Compile Include="modules\RandomModule.cs" />
@@ -97,9 +88,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Console.resx">
       <DependentUpon>Console.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

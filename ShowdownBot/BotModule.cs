@@ -95,9 +95,9 @@ namespace ShowdownBot
         /// <returns>can switch?</returns>
          protected bool checkSwitch()
         {
-            if (browser.FindElements(By.Name("chooseMove")).Count != 0 &&
+            if (browser.FindElements(By.Name("chooseMove")).Count == 0 &&
                 browser.FindElements(By.Name("chooseSwitch")).Count !=0 &&
-                browser.FindElements(By.Name("undoChoice")).Count != 0)
+                browser.FindElements(By.Name("undoChoice")).Count == 0)
             {
                 return true;
             }

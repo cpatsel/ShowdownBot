@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WatiN.Core;
 using System.Drawing;
 using System.Net.NetworkInformation;
 using System.Windows.Forms;

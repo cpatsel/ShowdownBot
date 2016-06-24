@@ -5,13 +5,25 @@ using System.Text;
 
 namespace ShowdownBot
 {
+    public enum State
+    {
+        IDLE,
+        BATTLE,
+        SEARCH,
+        CHALLENGE,
+        BUSY
+
+    };
+
+    
+
     /// <summary>
     /// Contains variables utilized by multiple classes.
     /// </summary>
    
   public static  class Global
     {
-        // //Helper Information
+        //---------Helper Information
         //Colors
         public static ConsoleColor warnColor = ConsoleColor.Yellow;
         public static ConsoleColor okColor = ConsoleColor.Green;
@@ -25,6 +37,7 @@ namespace ShowdownBot
         //Encyclopedia
         public static Dictionary<string, Type> types;
         public static Dictionary<string, Move> moves;
+        public static Dictionary<string, Pokemon> pokedex;
 
         public static void setupTypes()
         {
@@ -116,6 +129,29 @@ namespace ShowdownBot
             types.Add(fighting.value, fighting);
             #endregion
 
+        }
+
+        /// <summary>
+        /// Safer and easier method of looking up a pokemon in the pokedex
+        /// than to just access the field directly.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static Pokemon lookup(string name)
+        {
+             Pokemon p;
+            try
+            {
+               p = pokedex[name.ToLower()];
+            }
+            catch(Exception e)
+            {
+                Console.ForegroundColor = errColor;
+                Console.WriteLine(e);
+                Console.ResetColor();
+                return null;
+            }
+            return p;
         }
       
     }

@@ -15,11 +15,8 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\Sho
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.pdb
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\ShowdownBot.exe
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\ShowdownBot.pdb
-C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\Interop.SHDocVw.dll
-C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\WatiN.Core.xml
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.csprojResolveAssemblyReference.cache
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.Consol.resources
-C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.Form1.resources
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.Properties.Resources.resources
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.csproj.GenerateResource.Cache
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\botInfo.txt

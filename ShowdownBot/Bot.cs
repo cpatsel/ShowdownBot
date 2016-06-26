@@ -238,7 +238,7 @@ namespace ShowdownBot
         private void Update()
         {
             
-            mainModule = randomModule;
+            mainModule = analyticModule;
             c.write("Ready.");
             //changeState(State.IDLE);
             while (isRunning)

@@ -1,3 +1,4 @@
+name:error,type1:normal
 name:venusaur,type1:Grass,type2:Poison,ability1:NA,ability2:NA,apct:100%,speed:125,item:MSTONE,deftype:BULK
 name:venusaur-mega,type1:Grass,type2:Poison,ability1:Thick_Fat,ability2:Thick_Fat,apct:100%,speed:TODO,item:MSTONE,deftype:BULK
 name:charizard,type1:Fire,type2:Flying,ability1:Solar_Power,ability2:Blaze,apct:100%,speed:TODO,item:MSTONE
@@ -212,4 +213,5 @@ name:diancie,type1:rock,type2:fairy,ability1:magic_bounce,item:MSTONE
 name:diancie-mega,type1:rock,type2:fairy,ability1:magic_bounce,item:MSTONE
 name:hoopa,type1:psychic,type2:ghost
 name:hoopaunbound,type1:psychic,type2:dark
+name:rotom-wash,type1:electric,type2:water,ability1:levitate
 name:rotom,type1:electric,type2:water,ability1:levitate

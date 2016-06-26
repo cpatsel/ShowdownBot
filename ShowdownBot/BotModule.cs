@@ -127,8 +127,10 @@ namespace ShowdownBot
              Move[] moves = new Move[4];
              for (int i = 0; i < 4; i++)
              {
-                 var b = browser.FindElement(By.CssSelector("button[name='chooseMove'][value='"+(i+1).ToString()+"']"));
-                 string[] html = b.GetAttribute("outerhtml").Split(new string[]{"data-move=\""},StringSplitOptions.None);
+                 IWebElement b = browser.FindElement(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"));
+                 string htmla = (string)((IJavaScriptExecutor)browser).ExecuteScript("return arguments[0].outerHTML;",b); 
+                 string[] html = htmla.Split(new string[] { "data-move=\"" }, StringSplitOptions.None);
+                 //string[] html = b.GetAttribute("innerhtml").Split(new string[]{"data-move=\""},StringSplitOptions.None);
                  var nametag = Array.Find(html, s => s.StartsWith("data-move"));
                  string[] name = html[1].Split('"');
                  string[] temp = b.GetAttribute("class").Split('-');

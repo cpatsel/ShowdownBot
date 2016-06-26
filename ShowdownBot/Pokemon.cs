@@ -199,7 +199,7 @@ namespace ShowdownBot
             else
             {
                 if (m.name == "Return" || m.name == "Frustration")
-                    return 100;
+                    return 102;
                 if (m.name == "Hidden Power")
                     return 60;
             }

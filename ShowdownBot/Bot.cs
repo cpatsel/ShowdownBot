@@ -38,10 +38,6 @@ namespace ShowdownBot
         AiMode modeCurrent;
         IWebDriver mainBrowser;
         Movelist movelist;
-        float move1Weight = 0.4f;
-        float move2Weight = 0.3f;
-        float move3Weight = 0.2f;
-        float move4Weight = 0.1f;
         bool needLogout, isLoggedIn;
         bool isRunning;
 
@@ -243,28 +239,7 @@ namespace ShowdownBot
             //changeState(State.IDLE);
             while (isRunning)
             {
-
-                //if (modeCurrent == AiMode.ANALYTIC)
-                //{
-                //    mainModule = analyticModule;
-
-                //}
-                //else if (modeCurrent == AiMode.RANDOM)
-                //    mainModule = randomModule;
-
                 mainModule.Update();
-                //if (activeState == State.IDLE)
-                //{
-                //    System.Threading.Thread.Sleep(5000);
-                //}
-                //else if (activeState == State.RANDOMBATTLE)
-                //{ 
-                //    challengePlayer(owner,"ou");
-                //}
-                //else if (activeState == State.BATTLEOU)
-                //{
-                //    challengePlayer(owner,"ou");
-                //}
             }
             c.writef("Done performing tasks.", Global.okColor);
         }
@@ -312,101 +287,6 @@ namespace ShowdownBot
             return reply.Status == IPStatus.Success;
            }
 
-        /// <summary>
-        /// Determines actions based on the predetermined weight of each moveslot.
-        /// </summary>
-        /// <param name="b">browser</param>
-        /// <param name="turn"></param>
-        /// <returns>state of the battle (over/true, ongoing/false)</returns>
-        //private bool battleBiased(ref int turn)
-        //{
-        //     //browser = b;
-        //    int moveSelection;
-        //    int pokeSelection;
-
-        //    if (checkMove())
-        //    {
-        //        //WatiN.Core.CheckBox box = browser.CheckBox(Find.ByName("megaevo"));
-        //        //if (box.Exists && !box.Checked)
-        //        //{
-        //        //    c.writef("I'm mega evolving this turn.", Global.botInfoColor);
-        //        //    box.Click();
-        //        //}
-
-        //        moveSelection = pickMoveBiased();
-        //        c.writef("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", Global.botInfoColor);
-        //        //browser.Button(Find.ByValue(moveSelection.ToString())).Click(); //Select move
-        //        System.Threading.Thread.Sleep(2000);
-        //        turn++;
-        //    }
-        //    else if (checkSwitch())
-        //    {
-        //        //TODO: check if it's the first turn, and then select appropriate lead.
-        //        c.writef("Switching pokemon.", Global.botInfoColor);
-        //        pokeSelection = pickPokeRandomly();
-        //        c.writef("New pokemon selected: " + pokeSelection.ToString(), Global.botInfoColor);
-        //      //  browser.Button(Find.ByValue(pokeSelection.ToString())).Click();
-        //        System.Threading.Thread.Sleep(2000);
-        //    }
-        //    else if (checkBattleEnd())
-        //    {
-
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        // c.write("Sleeping for 2 secs");
-        //        System.Threading.Thread.Sleep(2000);
-        //    }
-        //    return false;
-        //}
-
-      
-
-        #region Biased Mode
-
-            private int pickMoveBiased( )
-        {
-            // browser = b;
-            
-            //HashSet<int> exclude = new HashSet<int>();
-            //int choice;
-            //choice = getIndexBiased();
-            //while (!browser.Button(Find.ByValue(choice.ToString())).Exists) 
-            //{
-            //    //If the move we've chosen does not exist, just cycle through until we get one.
-            //    c.writef("Bad move choice: " + choice.ToString() + "Picking another", "[DEBUG]", Global.okColor);
-            //    exclude.Add(choice);
-            //    choice = GetRandomExcluding(exclude, 1, 4);
-            //}
-
-            return 0;//choice;
-        }
-
-            /// <summary>
-            /// Helper method for pickMoveBiased.
-            /// </summary>
-            /// <returns>Choice index based on the specified weights.</returns>
-            private int getIndexBiased()
-            {
-                int choice;
-                Random rand = new Random();
-                float percent = (float)rand.NextDouble();
-                if (percent >= 0 && percent <= move4Weight)
-                    choice = 4;
-                else if (percent > move4Weight && percent <= move3Weight)
-                    choice = 3;
-                else if (percent > move3Weight && percent <= move2Weight)
-                    choice = 2;
-                else
-                    choice = 1;
-
-                return choice;
-            }
-
-        #endregion
-
-
             public Consol getConsole()
             {
                 return c;
@@ -415,12 +295,6 @@ namespace ShowdownBot
             {
                 return owner;
             }
-
-        #region Analytic Functions
-
-
-
-
 
         private void BuildPokedex()
         {
@@ -444,65 +318,6 @@ namespace ShowdownBot
             }
             c.writef("Pokedex built!", Global.okColor);
         }
-
-        
-
-        
-       
-
-        private float getRisk( Pokemon you, Pokemon opponent)
-        {
-            /*
-             * Check types must be interpreted here.
-             * It returns a 0-8 value, with 2 being
-             * the most dangerous, 0 being least.
-             * and 1 being an even fight
-             */
-            
-            float yve = you.checkTypes(opponent);
-            float evy = opponent.checkTypes(you);
-            float danger = (yve + evy) / 2; //danger becomes the average of your offensive matchup and defensive matchup
-            c.writef("Offense:" +yve.ToString()+" Defense:"+evy.ToString()+"\nDanger: "+danger.ToString(), "[DEBUG]", Global.okColor);
-            /*
-             * Now, adjust danger according to 
-             * characteristics like our role
-             * and the opponent's defense type.
-             * For example,  
-             * */
-            danger += you.checkKOChance(opponent);
-            c.writef("Updated danger: " + danger.ToString(), "[DEBUG]", Global.okColor);
-            //Now determine % chance we will switch
-            float chance;
-            if (danger <= 0.5)
-                chance = 0; //don't worry about it
-            else if ((danger > 0.5) && (danger < 1))
-                chance = 0.1f;
-            else if (danger == 1)
-                 chance = 0.15f;
-            else if ( (danger > 1) && (danger <= 1.5))
-                 chance = 0.25f;
-            else if ((danger > 1.5) && (danger <= 1.999))
-                chance = 0.5f;
-            else
-                chance = 0.9f;
-            
-            return chance;
-        }
-
-       
-       
-        
-      
-        
-        
-   #endregion
-
-
-
-
-        
-
-        
 
 
     }//End of Class

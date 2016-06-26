@@ -183,7 +183,7 @@ namespace ShowdownBot
                 //        writef("Acceptable arguments are idle, ou, random", "[SYSTEM]", Global.sysColor);
                 //    }
                 //}
-                else if (args[0] == "m" || args[0] == "mode")
+                else if (args[0] == "m" || args[0] == "mode" || args[0] == "module")
                 {
                     if (args[1] != null)
                     {

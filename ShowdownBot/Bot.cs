@@ -77,6 +77,8 @@ namespace ShowdownBot
             movelist = new Movelist();
             movelist.initialize();
 
+            initialise();
+
             
            
         }
@@ -84,7 +86,13 @@ namespace ShowdownBot
         public State getState() { return mainModule.getState(); }
         public AiMode getMode() { return modeCurrent; }
         public bool getStatus() { return isRunning; }
-        
+
+
+        public void initialise()
+        {
+            analyticModule = new AnalyticModule(this, mainBrowser);
+            randomModule = new RandomModule(this, mainBrowser);
+        }
         public void changeState(State nstate)
         {
             c.write("Changing state to: " + nstate.ToString());
@@ -96,6 +104,19 @@ namespace ShowdownBot
         {
             c.write("Changing AI mode from " + modeCurrent.ToString() + " to: " + nmode.ToString());
             modeCurrent = nmode;
+            switch (modeCurrent)
+            {
+                case AiMode.ANALYTIC:
+                    {
+                        mainModule = analyticModule;
+                        break;
+                    }
+                case AiMode.RANDOM:
+                    {
+                        mainModule = randomModule;
+                        break;
+                    }
+            }
         }
 
         public void Start(bool auth)
@@ -216,8 +237,7 @@ namespace ShowdownBot
         }
         private void Update()
         {
-            analyticModule = new AnalyticModule(this, mainBrowser);
-            randomModule = new RandomModule(this, mainBrowser);
+            
             mainModule = randomModule;
             c.write("Ready.");
             //changeState(State.IDLE);
@@ -256,6 +276,9 @@ namespace ShowdownBot
             FirefoxProfileManager pm = new FirefoxProfileManager();
             FirefoxProfile ffp = pm.GetProfile("sdb");
             mainBrowser = new FirefoxDriver(ffp);
+
+
+            initialise();
             mainBrowser.Navigate().GoToUrl(site);
             mainBrowser.Manage().Timeouts().ImplicitlyWait(System.TimeSpan.FromSeconds(10));
             mainBrowser.FindElement(By.Name(LoginButton)).Click();
@@ -275,11 +298,10 @@ namespace ShowdownBot
             FirefoxProfile ffp = pm.GetProfile("sdb");
             mainBrowser = new FirefoxDriver(ffp);
             mainBrowser.Navigate().GoToUrl(site);
+            initialise();
             c.write("Opened site, skipping authentication steps.");
             c.write("Moving onto next task");
-            Update();
-               
-                
+            Update(); 
             return true;
         
         }
@@ -289,20 +311,6 @@ namespace ShowdownBot
             var reply = ping.Send(site);
             return reply.Status == IPStatus.Success;
            }
-       
-
-        
-
-        
-
-
-
-       
-
-       
-
-
-    
 
         /// <summary>
         /// Determines actions based on the predetermined weight of each moveslot.
@@ -353,15 +361,7 @@ namespace ShowdownBot
         //    return false;
         //}
 
-        #region Random Mode
-
-        
-
-        
-
-
-
-        #endregion
+      
 
         #region Biased Mode
 
@@ -492,10 +492,7 @@ namespace ShowdownBot
        
        
         
-        //TODO: This doesn't account for instances where there are less than 4 moves.
- 
-        
-
+      
         
         
    #endregion

@@ -28,8 +28,8 @@ namespace ShowdownBot.modules
         public override void battle()
         {
             int turn = 1;
-            int lastTurn = 1;
-
+            int lastTurn = 0;
+            wait(5000); //give battle time to load
             //Select lead
             string lead;
             c.writef("Selecting first pokemon as lead", Global.botInfoColor);
@@ -49,11 +49,11 @@ namespace ShowdownBot.modules
             Pokemon enemy = null;
             do
             {
-                    if (turn != lastTurn)
-                    {
-                        enemy = getActivePokemon();
-                        active = updateYourPokemon();
-                    }
+                   
+                    wait();
+                    enemy = getActivePokemon();
+                    active = updateYourPokemon();
+                    
                     battleAnalytic(ref active, enemy, ref turn);
                 
 
@@ -62,9 +62,6 @@ namespace ShowdownBot.modules
 
         private bool battleAnalytic(ref Pokemon active, Pokemon enemy, ref int turn)
         {
-
-            int moveSelection;
-            int pokeSelection;
             if (enemy == null)
             {
                 if (checkSwitch())
@@ -78,6 +75,7 @@ namespace ShowdownBot.modules
                 else
                     return false;
             }
+            
             /* 
              * small ( maybe <10% ) chance of doing something random (so as to not be entirely predictable)
              * first we do risk assessment
@@ -117,6 +115,7 @@ namespace ShowdownBot.modules
             {
 
                 c.writef("I'm switching out.", "Turn " + turn.ToString(), Global.botInfoColor);
+                wait();
                 Pokemon temp = pickPokeAnalytic(enemy);
                 if (temp == null)
                 {
@@ -134,16 +133,18 @@ namespace ShowdownBot.modules
             }
             else if (checkMove())
             {
-                if (browser.FindElements(By.Name("megaevo")).Count !=0)
+                if (browser.FindElements(By.Name("megaevo")).Count != 0)
                     browser.FindElement(By.Name("megaevo")).Click();
                 //for now, automatically activate mega
-                c.writef("I'm picking move " + pickMoveAnalytic(active, enemy), "Turn " + turn.ToString(), Global.botInfoColor);
+                string mv = pickMoveAnalytic(active, enemy);
+                c.writef("I'm picking move " + mv, "Turn " + turn.ToString(), Global.botInfoColor);
                 c.writef("Last Move: " + lastAction.ToString(), "DEBUG", Global.okColor);
+
                 turn++;
             }
 
             else
-                System.Threading.Thread.Sleep(2000);
+                wait();
 
             return false;
         }
@@ -153,10 +154,12 @@ namespace ShowdownBot.modules
             //Loop over all pokemon
             int bestChoice = 1000;
             float highestdamage = 5000f;
-            
+            wait();
             for (int i = 1; i <= 5; i++)
             {
-                Pokemon p = Global.lookup(browser.FindElement(By.CssSelector("button[name='chooseSwitch'][value='" + i.ToString() + "']")).Text);
+                if (browser.FindElements(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")).Count == 0)
+                    continue;
+                Pokemon p = Global.lookup(browser.FindElement(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")).Text);
                 if (bestChoice == 1000)
                     bestChoice = i; //set a default value that can be accessed.
                 float temp = p.matchup(enemy);
@@ -174,7 +177,8 @@ namespace ShowdownBot.modules
 
 
             }
-            var b = browser.FindElement(By.CssSelector("button[name=chooseSwitch][value=" + bestChoice.ToString() + "']"));
+            
+            var b = browser.FindElement(By.CssSelector("button[value='" + bestChoice.ToString() + "'][name=chooseSwitch]"));
             Pokemon nextPoke = Global.lookup(b.Text);
             b.Click();
             return nextPoke;
@@ -226,6 +230,7 @@ namespace ShowdownBot.modules
             if (checkMove())
             {
                 //  mainBrowser.Eval("$('button[name=chooseMove][value=" + choice.ToString() + "]').click()");
+                browser.FindElement(By.CssSelector("button[value='" + choice.ToString() + "'][name='chooseMove']")).Click();
                 return chosenMove.name;
             }
             else
@@ -236,6 +241,9 @@ namespace ShowdownBot.modules
         private bool needSwitch(Pokemon you, Pokemon enemy)
         {
             if (isLastMon())
+                return false;
+            //If the cancel button exists, we have either already made our switch, or have made a move this turn.
+            if (browser.FindElements(By.Name("undoChoice")).Count != 0)
                 return false;
             //if the pokemon is at low health, don't bother
             //WatiN.Core.Element e = mainBrowser.Element(Find.ByClass("critical"));
@@ -251,7 +259,8 @@ namespace ShowdownBot.modules
             for (int i = 1; i <= 5; i++)
             {
                 //    if (browser.Button(Find.ByValue(i.ToString()) && Find.ByName("chooseSwitch")).Exists)
-                totalMons++;
+                if (browser.FindElements(By.CssSelector("button[value='"+i.ToString()+"']")).Count != 0)
+                    totalMons++;
             }
             if (totalMons == 0)
                 return true;

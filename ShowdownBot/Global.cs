@@ -147,9 +147,9 @@ namespace ShowdownBot
             catch(Exception e)
             {
                 Console.ForegroundColor = errColor;
-                Console.WriteLine(e);
+                Console.WriteLine("ON POKEMON LOOKUP "+name+":\n"+e);
                 Console.ResetColor();
-                return null;
+                return pokedex["error"];
             }
             return p;
         }

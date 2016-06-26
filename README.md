@@ -1,46 +1,38 @@
 # ShowdownBot
-A bot for Pokemon Showdown made using C# and the WatiN library.
+A bot for Pokemon Showdown made using C# and the Selenium library.
 
 ##Requirements
-The bot may require .NET framework 4.0 in order to run. This may not be the case in the future, but for now it is. Installer Soon™
+  * .NET Framework 4.0
+  * Firefox 46 (There seems to be problems for 47, at least for me)
 
 ##Getting started
 Before running the program, be sure to edit the botInfo.txt file. The file contains the following parameters.
 * username - Name of the bot's account.
 * password - its password.
 * owner - This is the name of your account. Technically, it's the name of the account who the bot will challenge
-* site - The website the bot opens up. It defaults to the showdown website, but alternatives running the same software should be compatible (as long as they're formatted the same way) [Temporarily removed].
+* show_debug - Set this to true if you want to see debug messages in the console, false if you do not.
 
-To start the bot, use the command **start**. This will attempt to log in as the specified user in the config.
+Next you will need to set up a Firefox profile for the bot to use. Open the run console (Windows key + R) and type
+> firefox.exe -ProfileManager -no-remote
+
+Click create a profile. In the future, you can customise what name the profile will have, but for now, the bot will be looking for a profile named "sdb".
+
+Once you have the prerequisites configured, to start the bot, use the command **start**. This will attempt to log in as the specified user in the config.
 If you leave an account logged in on the browser, you can use **startf** to skip the login/logout process.
 
-Once the bot has been started, you will need to change it's state.
+To start a battle, switch to the desired module (see below) and type **challenge** or **cp** to challenge the owner.
 
-##States
-The bot is controlled through manipulating various states. They are:
-* Battlerandom - Initiates a Random Battle.
-* BattleOU - Initiates an OU battle
-* Idle - The bot waits for further instruction
-* ChallengePlr - Challenges a specific player (unimplemented)
+## Modules
+The bot works by using various modules. They are:
+  * Random - The bot randomly picks moves and pokemon, and does not switch pokemon unless one faints.
+  * Biased - The same as Random, except moveslots are weighted.
+  * Analytic - The bot compares the two pokemon battling and acts accordingly.
 
-Currently, both battlerandom and battleou are set to challenge the "owner", instead of battling on the ladder.
+To switch modules, simply type **module** or **m** followed by one of the module types above, in lowercase.
 
-The state can be changed with the command **changestate** and any of the above parameters. As an example, to change state to BattleOU type:
-> changestate ou
 
-Changing state within a battle may have unintended consequences, and for the time being should be avoided.
-
-##Modes
-The bot has different AI modes that determine how it will battle.
-* Random - The bot will pick moves at random. It will not switch pokemon until one has fainted.
-* Bias - The bot will pick a random move based on the predetermined weight for each moveslot.
-* Analytic - (Unimplemented)
-
-To change the mode, enter the **mode** command followed by the parameter (random / r, bias / b). ie.
-> mode b
-
-Modes can be changed amidst a battle.
 
 ##Other commands
 * info - Displays the bot's current mode and state.
 * kill - Stops the bot.
+* exit - Kills the bot and closes the console and browser.

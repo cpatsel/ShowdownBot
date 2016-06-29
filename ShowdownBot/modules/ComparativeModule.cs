@@ -27,7 +27,7 @@ namespace ShowdownBot.modules
                 c.write("MT database already setup.");
                 return;
             }
-            using (StreamReader sr = new StreamReader("./mtdb.sdb"))
+            using (StreamReader sr = new StreamReader(Global.DBPATH))
             {
                 while (!sr.EndOfStream)
                 {

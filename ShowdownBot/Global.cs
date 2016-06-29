@@ -153,6 +153,22 @@ namespace ShowdownBot
             }
             return p;
         }
+        public static Move moveLookup(string name)
+        {
+            Move m;
+            try
+            {
+                m = moves[name];
+            }
+            catch (Exception e)
+            {
+                Console.ForegroundColor = warnColor;
+                Console.WriteLine("ON MOVE LOOKUP " + name + ":\n" + e);
+                Console.ResetColor();
+                return new Move(name, types["normal"]);
+            }
+            return m;
+        }
       
     }
 }

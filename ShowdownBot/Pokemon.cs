@@ -67,7 +67,7 @@ namespace ShowdownBot
         string firstmove = "NA";
         Dictionary<string,Type> types;
 
-        Status currentStatus = Status.STATE_HEALTHY;
+        
         #endregion
 
         public Pokemon(string d)

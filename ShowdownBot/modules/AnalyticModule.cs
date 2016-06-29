@@ -28,7 +28,7 @@ namespace ShowdownBot.modules
         public override void battle()
         {
             int turn = 1;
-            int lastTurn = 0;
+            
             wait(5000); //give battle time to load
             //Select lead
             string lead;
@@ -38,12 +38,6 @@ namespace ShowdownBot.modules
             //TODO: actually pick this analytically.
             lead = browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Text;
             browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Click();
-
-            //while (browser.Eval("$('.whatdo').text()") == "How will you start the battle?")
-            //{
-
-            //        lead = SelectLead();
-            //}
 
             Pokemon active = Global.lookup(lead);
             Pokemon enemy = null;

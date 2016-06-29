@@ -19,10 +19,11 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\S
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.Properties.Resources.resources
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\ShowdownBot.csproj.GenerateResource.Cache
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\botInfo.txt
-C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\pokebase.txt
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDriver.dll
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDriver.Support.dll
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDriver.pdb
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDriver.xml
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDriver.Support.pdb
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDriver.Support.xml
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\data\pokebase.txt
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\sdbicon_cpm_icon.ico

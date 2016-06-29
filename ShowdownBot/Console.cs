@@ -217,6 +217,14 @@ namespace ShowdownBot
                         writef("Acceptable arguments are idle, ou, random", "[SYSTEM]", Global.sysColor);
                     }
                 }
+                else if (args[0] == "dump" || args[0] == "dumplog")
+                {
+                    cmd = () => bot.saveLog();
+                    ts = new ThreadStart(cmd);
+                    threadBot = new Thread(ts);
+                    threadBot.SetApartmentState(ApartmentState.STA);
+                    threadBot.Start();
+                }
                 else if (args[0] == "exit")
                 {
                     writef("Shutting down.", "[SYSTEM]", Global.sysColor);
@@ -240,11 +248,18 @@ namespace ShowdownBot
                 }
                 else if (args[0] == "info")
                 {
-                    write("Bot is running:" + bot.getStatus().ToString() + "\n"
-                        + "Current state: " + bot.getState().ToString() + "\n"
-                        + "Current mode: " + bot.getMode().ToString() + "\n"
+                    if (!bot.getStatus())
+                    {
+                        write("No bot running.");
+                    }
+                    else
+                    {
+                        write("Bot is running:" + bot.getStatus().ToString() + "\n"
+                            + "Current state: " + bot.getState().ToString() + "\n"
+                            + "Current mode: " + bot.getMode().ToString() + "\n"
 
-                        );
+                            );
+                    }
                 }
                 else if (args[0] == "visible" || args[0] == "v")
                 {
@@ -253,6 +268,24 @@ namespace ShowdownBot
                 else if (args[0] == "clear" || args[0] == "cls")
                 {
                     Console.Clear();
+                }
+                else if (args[0] == "learn" || args[0] == "l")
+                {
+                    
+                    if (!paramCheck(2,args,"learn")){
+
+                      return;
+                    }
+                    if (args[1] == "d" || args[1] == "download")
+                    {
+                        if (paramCheck(3,args,"learn"))
+                        {
+                            botUseCommand(() => bot.learn(Int32.Parse(args[2])));
+                        }
+                    }
+                    
+                    
+                    
                 }
                 else
                 {
@@ -267,6 +300,35 @@ namespace ShowdownBot
           
             writef("Available commands are: start, startf, exit, changestate, info", "[SYSTEM]", Global.sysColor);
             
+        }
+        private bool paramCheck(int correctParams, string[] args,string c="none")
+        {
+            if (args.Length < correctParams)
+            {
+                help(c);
+                return false;
+            }
+            else return true;
+        }
+
+        private void help(string cmnd)
+        {
+            if (cmnd == "learn")
+            {
+                writef("learn:\n" +
+                    "alias: l\n" +
+                    "arguments: \t d [number of replays to download]\n" +
+                    "\t \t b [build database]", "system", Global.sysColor);
+            }
+        }
+
+
+        private void botUseCommand(Action cmd)
+        {
+            ts = new ThreadStart(cmd);
+            threadBot = new Thread(ts);
+            threadBot.SetApartmentState(ApartmentState.STA);
+            threadBot.Start();
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)

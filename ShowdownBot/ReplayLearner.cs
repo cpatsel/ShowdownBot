@@ -105,7 +105,7 @@ namespace ShowdownBot
                 }
             }
 
-            using (StreamWriter sw = new StreamWriter("./mtdb.sdb",true))
+            using (StreamWriter sw = new StreamWriter(Global.DBPATH,true))
             {
 
                 for (int i = 0; i < movelist.Count; i++)

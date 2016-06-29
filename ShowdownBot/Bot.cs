@@ -23,7 +23,7 @@ namespace ShowdownBot
         #region Bot Info
 
         string site = "http://play.pokemonshowdown.com";
-        string username; 
+        string username = "No Username Set!"; 
         string password;
         string owner; //More uses for this later, right now it's used to initiate the challenge.
         
@@ -43,6 +43,7 @@ namespace ShowdownBot
 
         BotModule mainModule;
         BotModule analyticModule;
+        BotModule biasedModule;
         BotModule randomModule;
         //////////////
         //Bot states
@@ -73,8 +74,6 @@ namespace ShowdownBot
             movelist = new Movelist();
             movelist.initialize();
 
-            initialise();
-
             
            
         }
@@ -86,8 +85,18 @@ namespace ShowdownBot
 
         public void initialise()
         {
+
+            FirefoxProfileManager pm = new FirefoxProfileManager();
+            FirefoxProfile ffp = pm.GetProfile("sdb");
+            mainBrowser = new FirefoxDriver(ffp);
+
+            DesiredCapabilities d = new DesiredCapabilities();
+            
+
             analyticModule = new AnalyticModule(this, mainBrowser);
             randomModule = new RandomModule(this, mainBrowser);
+            biasedModule = new BiasedModule(this, mainBrowser);
+
         }
         public void changeState(State nstate)
         {
@@ -112,6 +121,11 @@ namespace ShowdownBot
                         mainModule = randomModule;
                         break;
                     }
+                case AiMode.BIAS:
+                    {
+                        mainModule = biasedModule;
+                        break;
+                    }
             }
         }
 
@@ -125,7 +139,8 @@ namespace ShowdownBot
             loginAttempts = 0;
             isRunning = true;
             c.write("Opening site.");
-            //changeState(State.BUSY);
+            initialise();
+
             if (auth)
             {
                 if (!OpenSite(site))
@@ -248,12 +263,6 @@ namespace ShowdownBot
 
         private bool OpenSite(string site)
         {
-            FirefoxProfileManager pm = new FirefoxProfileManager();
-            FirefoxProfile ffp = pm.GetProfile("sdb");
-            mainBrowser = new FirefoxDriver(ffp);
-
-
-            initialise();
             mainBrowser.Navigate().GoToUrl(site);
             mainBrowser.Manage().Timeouts().ImplicitlyWait(System.TimeSpan.FromSeconds(10));
             mainBrowser.FindElement(By.Name(LoginButton)).Click();
@@ -269,11 +278,8 @@ namespace ShowdownBot
         }
         private bool OpenSiteNoAuth(string site)
         {
-            FirefoxProfileManager pm = new FirefoxProfileManager();
-            FirefoxProfile ffp = pm.GetProfile("sdb");
-            mainBrowser = new FirefoxDriver(ffp);
+            
             mainBrowser.Navigate().GoToUrl(site);
-            initialise();
             c.write("Opened site, skipping authentication steps.");
             c.write("Moving onto next task");
             Update(); 
@@ -319,7 +325,65 @@ namespace ShowdownBot
             c.writef("Pokedex built!", Global.okColor);
         }
 
+        public void learn(int number)
+        {
+            if (isRunning)
+            {
+                c.writef("Bot is already running! Please stop it before continuing.", "error", Global.errColor);
+                return;
+            }
+            c.writef("Initiating learning mode.", "bot", Global.botInfoColor);
+            isRunning = true;
+            bool isLearning = true;
+            if (number > 0)
+                initialise();
+            ReplayLearner rl = new ReplayLearner(mainBrowser,c);
 
+            if (number > 0)
+            {
+                c.writef("Now downloading " + number.ToString() + " replays.", "bot", Global.botInfoColor);
+                rl.download(number);
+            }
+            else
+            {
+                rl.learn();
+            }
+            
+            isLearning = false;
+
+        }
+        
+        /// <summary>
+        /// Doesn't do much of anything with firefox unfortunately.
+        /// </summary>
+        public void saveLog()
+        {
+            if (!isRunning)
+            {
+                c.writef("No browser is running!", "error", Global.errColor);
+                return;
+            }
+
+            if (!Directory.Exists(@"./logs"))
+            {
+                Directory.CreateDirectory(@"./logs");
+            }
+            string date = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+            string fn = @"./logs/" + date + ".txt";
+            IList<LogEntry> list = mainBrowser.Manage().Logs.GetLog("har");
+            using (StreamWriter sw = new StreamWriter(fn))
+            {
+               
+                for (int i = 0; i < list.Count; i++)
+                {
+                    sw.WriteLine(list[i].Message);
+                }
+                sw.Close();
+            }
+            c.write("log_" + date + ".txt created.");
+
+        }
+       
     }//End of Class
 
 }

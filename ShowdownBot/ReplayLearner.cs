@@ -56,9 +56,13 @@ namespace ShowdownBot
         }
         public void learn()
         {
+            string path = @"./rpdata/";
             string[] files = Directory.GetFiles(@"./rpdata/");
             string[] fileContents = new string[files.Length];
-            
+            if (!Directory.Exists(path + @"old/"))
+            {
+                Directory.CreateDirectory(path + @"old/");
+            }
             for (int i = 0; i < files.Length; i++)
             {
                 using (StreamReader sr = new StreamReader(files[i])){
@@ -76,8 +80,11 @@ namespace ShowdownBot
                 //split the log by line feed (ascii 10)
                 string[] cleanLog = log.Split((char)10);
                 runThroughLog(cleanLog);
-                c.write("Processed " + files[i] + "");
+                string fn = Path.GetFileName(files[i]);
+                File.Move(files[i], path + @"old/" + fn);
+                c.write("Processed " + fn + "");
             }
+            c.writef("Done!", "replayprocessor", Global.okColor);
         }
 
         private void runThroughLog(string[] log)
@@ -92,7 +99,7 @@ namespace ShowdownBot
                 {
                     movelist.Add(log[i]);
                 }
-                else if (log[i].Contains("|switch|"))
+                else if (log[i].Contains("|switch|") || log[i].Contains("|drag|"))
                 {
                     switchlist.Add(log[i]);
                 }
@@ -123,7 +130,7 @@ namespace ShowdownBot
             p2 = getRealName(p2, switchlist);
 
             //now concat it alltogether into an easily readable string
-            return p1 + "|" + move + "|" + p2 + "$";
+            return p1.ToLower() + "|" + move + "|" + p2.ToLower();
 
         }
         private string getRealName(string name, List<string> switchlist)

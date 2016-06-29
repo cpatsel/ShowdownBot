@@ -82,6 +82,7 @@
     <Compile Include="Global.cs" />
     <Compile Include="modules\AnalyticModule.cs" />
     <Compile Include="modules\BiasedModule.cs" />
+    <Compile Include="modules\ComparativeModule.cs" />
     <Compile Include="modules\RandomModule.cs" />
     <Compile Include="Movelist.cs" />
     <Compile Include="Pokemon.cs" />

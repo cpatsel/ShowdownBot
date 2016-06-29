@@ -10,7 +10,7 @@ namespace ShowdownBot.modules
 
     class ComparativeModule: BotModule
     {
-        bool setup = false;
+        public bool setup = false;
         List<string> db;
         public ComparativeModule( Bot m,IWebDriver b)
             : base(m, b)

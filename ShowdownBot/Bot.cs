@@ -308,14 +308,14 @@ namespace ShowdownBot
         private void BuildPokedex()
         {
             c.write("Building pokedex, this may take a moment...");
-            if (!File.Exists("pokebase.txt"))
+            if (!File.Exists(Global.POKEBASEPATH))
             {
                 c.writef("Could not find pokebase.txt.","[ERROR]",Global.errColor);
                 c.writef("Analytic battle mode will not work correctly.",Global.warnColor);
                 c.writef("Continuing operation.",Global.okColor);
                 return;
             }
-            using (var reader = new StreamReader("pokebase.txt"))
+            using (var reader = new StreamReader(Global.POKEBASEPATH))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)

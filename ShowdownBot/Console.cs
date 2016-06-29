@@ -278,14 +278,22 @@ namespace ShowdownBot
                     }
                     if (args[1] == "d" || args[1] == "download")
                     {
-                        if (paramCheck(3,args,"learn"))
+                        if (paramCheck(3, args, "learn"))
                         {
                             botUseCommand(() => bot.learn(Int32.Parse(args[2])));
                         }
                     }
+                    else
+                    {
+                        botUseCommand(() => bot.learn(0));
+                    }
                     
                     
                     
+                }
+                else if (args[0] == "simulate" || args[0] == "sim")
+                {
+                    botUseCommand(() => bot.simulate(args[1], args[2]));
                 }
                 else
                 {

@@ -45,6 +45,7 @@ namespace ShowdownBot
         BotModule analyticModule;
         BotModule biasedModule;
         BotModule randomModule;
+        ComparativeModule compareModule;
         //////////////
         //Bot states
         
@@ -83,19 +84,21 @@ namespace ShowdownBot
         public bool getStatus() { return isRunning; }
 
 
-        public void initialise()
+        public void initialise(bool browser=true)
         {
+            if (browser)
+            {
+                FirefoxProfileManager pm = new FirefoxProfileManager();
+                FirefoxProfile ffp = pm.GetProfile("sdb");
+                mainBrowser = new FirefoxDriver(ffp);
 
-            FirefoxProfileManager pm = new FirefoxProfileManager();
-            FirefoxProfile ffp = pm.GetProfile("sdb");
-            mainBrowser = new FirefoxDriver(ffp);
-
-            DesiredCapabilities d = new DesiredCapabilities();
-            
+                DesiredCapabilities d = new DesiredCapabilities();
+            }
 
             analyticModule = new AnalyticModule(this, mainBrowser);
             randomModule = new RandomModule(this, mainBrowser);
             biasedModule = new BiasedModule(this, mainBrowser);
+            compareModule = new ComparativeModule(this, mainBrowser);
 
         }
         public void changeState(State nstate)
@@ -327,11 +330,6 @@ namespace ShowdownBot
 
         public void learn(int number)
         {
-            if (isRunning)
-            {
-                c.writef("Bot is already running! Please stop it before continuing.", "error", Global.errColor);
-                return;
-            }
             c.writef("Initiating learning mode.", "bot", Global.botInfoColor);
             isRunning = true;
             bool isLearning = true;
@@ -348,11 +346,20 @@ namespace ShowdownBot
             {
                 rl.learn();
             }
-            
+  
             isLearning = false;
-
+            c.writef("Stopping learning processes.", "bot", Global.botInfoColor);
         }
-        
+
+
+        public void simulate(string you, string enemy)
+        {
+            if (!isRunning)
+                initialise(false);
+            compareModule.buildDB();
+            compareModule.simulate(Global.lookup(you), Global.lookup(enemy));
+        }
+
         /// <summary>
         /// Doesn't do much of anything with firefox unfortunately.
         /// </summary>

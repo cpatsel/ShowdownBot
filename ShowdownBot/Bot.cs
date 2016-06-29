@@ -27,18 +27,17 @@ namespace ShowdownBot
         string password;
         string owner; //More uses for this later, right now it's used to initiate the challenge.
         
-        Dictionary<string,Pokemon> pokedex;
+        
         // ///Site Info
         string LoginButton = "login";
         string nameField = "username";
         string passwordField = "password";
         // ///Vars
-        int loginAttempts;
-        
+
+        string challengee;
         AiMode modeCurrent;
         IWebDriver mainBrowser;
         Movelist movelist;
-        bool needLogout, isLoggedIn;
         bool isRunning;
 
         BotModule mainModule;
@@ -82,6 +81,9 @@ namespace ShowdownBot
         public State getState() { return mainModule.getState(); }
         public AiMode getMode() { return modeCurrent; }
         public bool getStatus() { return isRunning; }
+        public Consol getConsole(){ return c;}
+        public string getOwner() { return owner;}
+        public string getChallengee() { return challengee;}
 
 
         public void initialise(bool browser=true)
@@ -139,7 +141,6 @@ namespace ShowdownBot
                 c.writef("Bot is already running!", Global.warnColor);
                 return;
             }
-            loginAttempts = 0;
             isRunning = true;
             c.write("Opening site.");
             initialise();
@@ -167,10 +168,6 @@ namespace ShowdownBot
                 c.writef("Bot is not running!", Global.warnColor);
                 return;
             }
-            if (needLogout)
-            {
-              //  Logout();
-            }
             c.write("Bot is shutting down.");
            // changeState(State.BUSY);
             isRunning = false;
@@ -178,7 +175,11 @@ namespace ShowdownBot
             
             
         }
-
+        public void challenge(string p)
+        {
+            challengee = p;
+            changeState(State.CHALLENGE);
+        }
         public void closeBrowser()
         {
             mainBrowser.Quit();
@@ -252,9 +253,8 @@ namespace ShowdownBot
         private void Update()
         {
             
-            mainModule = analyticModule;
+            mainModule = randomModule;
             c.write("Ready.");
-            //changeState(State.IDLE);
             while (isRunning)
             {
                 mainModule.Update();
@@ -296,14 +296,6 @@ namespace ShowdownBot
             return reply.Status == IPStatus.Success;
            }
 
-            public Consol getConsole()
-            {
-                return c;
-            }
-            public string getOwner()
-            {
-                return owner;
-            }
 
         private void BuildPokedex()
         {
@@ -321,7 +313,7 @@ namespace ShowdownBot
                 while ((line = reader.ReadLine()) != null)
                 {
                     Pokemon p = new Pokemon(line);
-                  //  c.writef("Adding pokemon " + p.name, "[DEBG]", Global.defaultColor);
+                
                     Global.pokedex.Add(p.name, p);
                 }
             }
@@ -356,7 +348,8 @@ namespace ShowdownBot
         {
             if (!isRunning)
                 initialise(false);
-            compareModule.buildDB();
+            if (!compareModule.setup)
+                compareModule.buildDB();
             compareModule.simulate(Global.lookup(you), Global.lookup(enemy));
         }
 
@@ -370,7 +363,7 @@ namespace ShowdownBot
                 c.writef("No browser is running!", "error", Global.errColor);
                 return;
             }
-
+            
             if (!Directory.Exists(@"./logs"))
             {
                 Directory.CreateDirectory(@"./logs");

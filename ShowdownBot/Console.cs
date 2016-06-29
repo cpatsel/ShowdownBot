@@ -139,11 +139,10 @@ namespace ShowdownBot
                 }
                 else if (args[0] == "challenge" || args[0] == "cp")
                 {
-                    cmd = () => bot.changeState(State.CHALLENGE);
-                    ts = new ThreadStart(cmd);
-                    threadBot = new Thread(ts);
-                    threadBot.SetApartmentState(ApartmentState.STA);
-                    threadBot.Start();
+                    if (paramCheck(2, args))
+                        botUseCommand(() => bot.challenge(args[1]));
+                    else
+                        botUseCommand(() => bot.challenge(bot.getOwner()));
                 }
                 //else if (args[0] == "cs" || args[0] == "changestate")
                 //{

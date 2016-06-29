@@ -40,7 +40,7 @@ namespace ShowdownBot
             }
             else if (activeState == State.CHALLENGE)
             {
-                challengePlayer(manager.getOwner(), format);
+                challengePlayer(manager.getChallengee(), format);
             }
             else if (activeState == State.BATTLE)
             {

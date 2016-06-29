@@ -14,7 +14,7 @@ namespace ShowdownBot
         BUSY
 
     };
-
+    
     
 
     /// <summary>
@@ -34,6 +34,8 @@ namespace ShowdownBot
         //Options
         public static bool showDebug = false;
 
+        public static string DBPATH = @"./data/mtdb.sdb";
+        public static string POKEBASEPATH = @"./data/pokebase.txt";
         //Encyclopedia
         public static Dictionary<string, Type> types;
         public static Dictionary<string, Move> moves;

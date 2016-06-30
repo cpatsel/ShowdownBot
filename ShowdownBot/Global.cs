@@ -24,6 +24,7 @@ namespace ShowdownBot
   public static  class Global
     {
         //---------Helper Information
+        public const string VERSION = "0.1.0";
         //Colors
         public static ConsoleColor warnColor = ConsoleColor.Yellow;
         public static ConsoleColor okColor = ConsoleColor.Green;
@@ -33,7 +34,7 @@ namespace ShowdownBot
         public static ConsoleColor defaultColor = ConsoleColor.White;
         //Options
         public static bool showDebug = false;
-
+        public static string FF_PROFILE = "sdb";
         public static string DBPATH = @"./data/mtdb.sdb";
         public static string POKEBASEPATH = @"./data/pokebase.txt";
         //Encyclopedia

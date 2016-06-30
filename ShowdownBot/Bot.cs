@@ -91,7 +91,7 @@ namespace ShowdownBot
             if (browser)
             {
                 FirefoxProfileManager pm = new FirefoxProfileManager();
-                FirefoxProfile ffp = pm.GetProfile("sdb");
+                FirefoxProfile ffp = pm.GetProfile(Global.FF_PROFILE);
                 mainBrowser = new FirefoxDriver(ffp);
 
                 DesiredCapabilities d = new DesiredCapabilities();
@@ -184,6 +184,7 @@ namespace ShowdownBot
         {
             mainBrowser.Quit();
         }
+
         private void ReadFile()
         {
           
@@ -207,6 +208,7 @@ namespace ShowdownBot
                     }
                 }
             }
+            
             c.writef("Bot's owner set to: " + owner, "[DEBUG]", Global.okColor);
         }
 
@@ -227,6 +229,11 @@ namespace ShowdownBot
                 case "[PASSWORD]":
                     {
                         password = val;
+                        break;
+                    }
+                case "[PROFILE]":
+                    {
+                        Global.FF_PROFILE = val;
                         break;
                     }
                 case "[SHOW_DEBUG]":

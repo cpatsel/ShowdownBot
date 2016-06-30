@@ -3,4 +3,5 @@
 [USERNAME]=changeMe
 [PASSWORD]=changeMeToo
 [OWNER]=yourusername
+[PROFILE]=sdb
 [SHOW_DEBUG]=true

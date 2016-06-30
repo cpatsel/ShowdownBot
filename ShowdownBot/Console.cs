@@ -21,13 +21,11 @@ namespace ShowdownBot
        
         public Consol()
         {
-            //temp = f;
-            //bot = new Bot(this);
+
             ts = new ThreadStart(() => bot = new Bot(this));
             threadBot = new Thread(ts);
             threadBot.SetApartmentState(ApartmentState.STA);
             threadBot.Start();
-           // threadBot.Join();
             InitializeComponent();
             richTextBox1.WordWrap = false;
             write("Console initialized.");
@@ -132,14 +130,21 @@ namespace ShowdownBot
                     threadBot.SetApartmentState(ApartmentState.STA);
                     threadBot.Start();
                 }
-                else if ( t == "help")
+                else if (args[0] == "help")
                 {
-                    DisplayHelp();
+                    if (args.Length > 1)
+                        help(args[1]);
+                    else
+                        DisplayHelp();
                    
+                }
+                else if (args[0] == "version")
+                {
+                    writef("ShowdownBot v" + Global.VERSION, "system", Global.sysColor);
                 }
                 else if (args[0] == "challenge" || args[0] == "cp")
                 {
-                    if (paramCheck(2, args))
+                    if (args.Length == 2)
                         botUseCommand(() => bot.challenge(args[1]));
                     else
                         botUseCommand(() => bot.challenge(bot.getOwner()));
@@ -184,7 +189,7 @@ namespace ShowdownBot
                 //}
                 else if (args[0] == "m" || args[0] == "mode" || args[0] == "module")
                 {
-                    if (args[1] != null)
+                    if (paramCheck(2,args,"m"))
                     {
                         if (args[1] == "random" || args[1] == "r")
                         {
@@ -211,10 +216,7 @@ namespace ShowdownBot
                             threadBot.Start();
                         }
                     }
-                    else
-                    {
-                        writef("Acceptable arguments are idle, ou, random", "[SYSTEM]", Global.sysColor);
-                    }
+                    
                 }
                 else if (args[0] == "dump" || args[0] == "dumplog")
                 {
@@ -270,10 +272,11 @@ namespace ShowdownBot
                 }
                 else if (args[0] == "learn" || args[0] == "l")
                 {
-                    
-                    if (!paramCheck(2,args,"learn")){
 
-                      return;
+                    if (!paramCheck(2, args, "learn"))
+                    {
+
+                        return;
                     }
                     if (args[1] == "d" || args[1] == "download")
                     {
@@ -286,9 +289,9 @@ namespace ShowdownBot
                     {
                         botUseCommand(() => bot.learn(0));
                     }
-                    
-                    
-                    
+
+
+
                 }
                 else if (args[0] == "simulate" || args[0] == "sim")
                 {
@@ -305,7 +308,8 @@ namespace ShowdownBot
         private void DisplayHelp()
         {
           
-            writef("Available commands are: start, startf, exit, changestate, info", "[SYSTEM]", Global.sysColor);
+            writef("Available commands are: challenge, clear, dump, exit, info,\n kill, module, "+
+                    "start, startf, version", "[SYSTEM]", Global.sysColor);
             
         }
         private bool paramCheck(int correctParams, string[] args,string c="none")
@@ -320,13 +324,37 @@ namespace ShowdownBot
 
         private void help(string cmnd)
         {
+            string desc ="";
+            string alias = "None";
+            string arguments ="None";
             if (cmnd == "learn")
             {
-                writef("learn:\n" +
-                    "alias: l\n" +
-                    "arguments: \t d [number of replays to download]\n" +
-                    "\t \t b [build database]", "system", Global.sysColor);
+                desc = "learn: Starts the bot's replay learning and downloading features";
+                alias = "l";
+                arguments = "\t [d][#] - Download # replays.\n" +
+                         "\t \t [b] - Build database from replays.";
             }
+            else if (cmnd == "challenge" || cmnd == "cp")
+            {
+                desc = "challenge: Have the bot challenge a player";
+                alias = "cp";
+                arguments = "\t [... =owner] - Challenge specified player.\n";
+                         
+            }
+            else if (cmnd == "exit")
+            {
+                desc = "exit: Kills the bot and quits the program.";
+            }
+            else if (cmnd == "module" || cmnd == "m")
+            {
+                desc = "module: Switch the bot's AI module.";
+                alias = "mode, m";
+                arguments = "\t [...] - Module (Analytic, Random, Biased)";
+            }
+
+            writef(desc+"\n" +
+                    "alias: "+alias+"\n" +
+                    "arguments: "+arguments, "system", Global.sysColor);
         }
 
 

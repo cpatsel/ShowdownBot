@@ -64,22 +64,18 @@ namespace ShowdownBot
             string player = user;
 
             c.write("Searching for " + player);
-            System.Threading.Thread.Sleep(2000);
             browser.FindElement(By.Name("finduser")).Click();
-            System.Threading.Thread.Sleep(2000);
+            wait();
             IWebElement e = browser.FindElement(By.Name("data"));
             e.SendKeys(player);
-            System.Threading.Thread.Sleep(2000);
             e.Submit();
-            System.Threading.Thread.Sleep(2000);
             c.write("Contacting user for OU battle");
-            System.Threading.Thread.Sleep(2000);
+            wait();
             browser.FindElement(By.Name("challenge")).Click();
-            System.Threading.Thread.Sleep(2000);
+            wait();
             browser.FindElement(By.Name("format")).Click();
-            System.Threading.Thread.Sleep(2000);
+            wait();
             browser.FindElement(By.CssSelector("button[name='selectFormat'][value='" + format + "']")).Click();
-            System.Threading.Thread.Sleep(2000);
             browser.FindElement(By.Name("makeChallenge")).Click();
             ////TODO: implement a way to select alternate teams/ have more than one team.
             c.writef("Battle starting!", Global.botInfoColor);

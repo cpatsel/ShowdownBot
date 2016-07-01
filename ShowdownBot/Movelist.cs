@@ -94,7 +94,8 @@ namespace ShowdownBot
             #region Steel
             Move gyro = new Move("Gyro Ball", Global.types["steel"], -2); gyro.group = "physical"; Global.moves.Add(gyro.name, gyro);
             Move flashc = new Move("Flash Cannon", Global.types["steel"], 80); flashc.group = "special"; Global.moves.Add(flashc.name, flashc);
-
+            Move ih = new Move("Iron Head", Global.types["steel"], 80); ih.group = "physical"; Global.moves.Add(ih.name, ih);
+            
             #endregion
 
             #region Electric

@@ -13,7 +13,8 @@ Before running the program, be sure to edit the botInfo.txt file. The file conta
 * show_debug - Set this to true if you want to see debug messages in the console, false if you do not.
 
 To set up a Firefox profile for the bot to use, open the run console (Windows key + R) and type
-` firefox.exe -ProfileManager -no-remote`
+
+`firefox.exe -ProfileManager -no-remote`
 
 Click create a profile. Make sure the name of this profile corresponds to the name in the botInfo.txt. If you do not create a profile, the bot will automatically use its own, however it is recommended to do so as there is no other way to save team and site information.
 

@@ -149,44 +149,6 @@ namespace ShowdownBot
                     else
                         botUseCommand(() => bot.challenge(bot.getOwner()));
                 }
-                //else if (args[0] == "cs" || args[0] == "changestate")
-                //{
-                //    if (args[1] != null)
-                //    {
-                //        if (args[1] == "idle")
-                //        {
-                //            cmd = () => bot.changeState(ShowdownBot.Bot.State.IDLE);
-                //            ts = new ThreadStart(cmd);
-                //            threadBot = new Thread(ts);
-                //            threadBot.SetApartmentState(ApartmentState.STA);
-                //            threadBot.Start();
-                //        }
-                //        else if (args[1] == "randombattle" || args[1] == "rb")
-                //        {
-                //            cmd = () => bot.changeState(ShowdownBot.Bot.State.RANDOMBATTLE);
-                //            ts = new ThreadStart(cmd);
-                //            threadBot = new Thread(ts);
-                //            threadBot.SetApartmentState(ApartmentState.STA);
-                //            threadBot.Start();
-                //        }
-                //        else if (args[1] == "overused" || args[1] == "ou")
-                //        {
-                //            cmd = () => bot.changeState(ShowdownBot.Bot.State.BATTLEOU);
-                //            ts = new ThreadStart(cmd);
-                //            threadBot = new Thread(ts);
-                //            threadBot.SetApartmentState(ApartmentState.STA);
-                //            threadBot.Start();
-                //        }
-                //    else
-                //    {
-                //        write("Unknown state " + args[1]);
-                //    }
-                //}
-                //    else
-                //    {
-                //        writef("Acceptable arguments are idle, ou, random", "[SYSTEM]", Global.sysColor);
-                //    }
-                //}
                 else if (args[0] == "m" || args[0] == "mode" || args[0] == "module")
                 {
                     if (paramCheck(2,args,"m"))

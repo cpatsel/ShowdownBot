@@ -75,8 +75,12 @@ namespace ShowdownBot
             data = d;
             //initialize the two types to a default
             types = Global.types;
-            type1 = type2 = types["normal"];
+            type1 = type2 = types["error"];
             initValues();
+            //Register single types as a dual of the same type.
+            if (type1 != types["error"] && type2 == types["error"])
+                type2 = type1;
+                
 
         }
 
@@ -205,6 +209,7 @@ namespace ShowdownBot
             }
             return 20; //assume default
         }
+
         /// <summary>
         /// Predicts how well the pokemon matches up against
         /// the opponent. This only takes into account the pokemon's

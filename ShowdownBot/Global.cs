@@ -65,6 +65,8 @@ namespace ShowdownBot
             Type ghost = new Type("ghost");
             Type rock = new Type("rock");
             Type fighting = new Type("fighting");
+
+            Type error = new Type("error");
             #endregion
 
             #region Characteristics
@@ -130,6 +132,8 @@ namespace ShowdownBot
             fighting.res = new Type[] { bug, fairy, flying, poison, psychic };
             fighting.nl = new Type[] { ghost };
             types.Add(fighting.value, fighting);
+
+            types.Add(error.value, error);
             #endregion
 
         }

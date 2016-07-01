@@ -56,6 +56,8 @@ namespace ShowdownBot.modules
 
         private bool battleAnalytic(ref Pokemon active, Pokemon enemy, ref int turn)
         {
+            //Extra check to make sure we pick a lead.
+            //Possibly redundant
             if (enemy == null)
             {
                 if (checkSwitch())
@@ -69,24 +71,6 @@ namespace ShowdownBot.modules
                 else
                     return false;
             }
-            
-            /* 
-             * small ( maybe <10% ) chance of doing something random (so as to not be entirely predictable)
-             * first we do risk assessment
-             *      if we should switch, find most suitable candidate
-             *  then pick a move
-             *  firstly, preempt set-up if afflicable/relevant
-             *  
-             *      if sweeper
-             *          check for nullifying abilits like wonder guard/levitate etc.
-             *          avoid picking an attack nullified by opponent's type
-             *          pick the most powerful attack against the enemy's types
-             *      if support/cleric
-             *          check field for already present status, and avoid doubling up.
-             *      
-             *      else if all choices are equally bad/good just pick a random one.   
-             * 
-            */
 
             if (checkBattleEnd())
             {
@@ -252,7 +236,7 @@ namespace ShowdownBot.modules
             int totalMons = 0;
             for (int i = 1; i <= 5; i++)
             {
-                //    if (browser.Button(Find.ByValue(i.ToString()) && Find.ByName("chooseSwitch")).Exists)
+                
                 if (browser.FindElements(By.CssSelector("button[value='"+i.ToString()+"']")).Count != 0)
                     totalMons++;
             }

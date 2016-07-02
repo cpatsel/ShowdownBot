@@ -142,6 +142,11 @@ namespace ShowdownBot
                 {
                     writef("ShowdownBot v" + Global.VERSION, "system", Global.sysColor);
                 }
+                else if (args[0] == "format" || args[0] == "f")
+                {
+                    if (paramCheck(2,args,args[0]))
+                        botUseCommand(() => bot.changeFormat(args[1]));
+                }
                 else if (args[0] == "challenge" || args[0] == "cp")
                 {
                     if (args.Length == 2)
@@ -151,7 +156,7 @@ namespace ShowdownBot
                 }
                 else if (args[0] == "m" || args[0] == "mode" || args[0] == "module")
                 {
-                    if (paramCheck(2,args,"m"))
+                    if (paramCheck(2, args, "m"))
                     {
                         if (args[1] == "random" || args[1] == "r")
                         {
@@ -178,7 +183,7 @@ namespace ShowdownBot
                             threadBot.Start();
                         }
                     }
-                    
+
                 }
                 else if (args[0] == "dump" || args[0] == "dumplog")
                 {
@@ -217,11 +222,7 @@ namespace ShowdownBot
                     }
                     else
                     {
-                        write("Bot is running:" + bot.getStatus().ToString() + "\n"
-                            + "Current state: " + bot.getState().ToString() + "\n"
-                            + "Current mode: " + bot.getMode().ToString() + "\n"
-
-                            );
+                        botUseCommand(() => bot.printInfo());
                     }
                 }
                 else if (args[0] == "visible" || args[0] == "v")
@@ -302,6 +303,12 @@ namespace ShowdownBot
                 alias = "cp";
                 arguments = "\t [... =owner] - Challenge specified player.\n";
                          
+            }
+            else if (cmnd == "format" || cmnd == "f")
+            {
+                desc = "format: Change the bot module's selected format.";
+                alias = "f";
+                arguments = "\t [...] - Format name";
             }
             else if (cmnd == "exit")
             {

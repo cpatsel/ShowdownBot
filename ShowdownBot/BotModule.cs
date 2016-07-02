@@ -222,7 +222,7 @@ namespace ShowdownBot
             
              while (browser.FindElements(By.CssSelector("button[value='"+choice.ToString()+"']")).Count == 0)
              {
-                 c.writef("Bad pokemon " + choice.ToString() + ". Rolling for another.", Global.botInfoColor);
+                 c.writef("Bad pokemon " + choice.ToString() + ". Rolling for another.","debug", Global.botInfoColor);
 
                  exclude.Add(choice); //Steer it in the right direction by removing bad choices.
                  choice = GetRandomExcluding(exclude, 1, 5);
@@ -251,7 +251,7 @@ namespace ShowdownBot
              {
                  //The match is over
                  c.writef("The battle has ended! Returning to main menu.", Global.botInfoColor);
-
+                 browser.FindElement(By.Name("closeAndMainMenu")).Click();
                  activeState = State.IDLE;
                  return true;
              }
@@ -293,8 +293,15 @@ namespace ShowdownBot
         }
 
 
-        
-
+        public virtual void printInfo()
+        {
+            c.writef("Generic Bot info:\n" +
+                    "Format: " + format, Global.botInfoColor);
+        }
+        public void changeFormat(string nf)
+        {
+            format = nf;
+        }
         protected void wait(int timeInMiliseconds)
         {
             System.Threading.Thread.Sleep(timeInMiliseconds);

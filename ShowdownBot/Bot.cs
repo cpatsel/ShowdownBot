@@ -85,6 +85,13 @@ namespace ShowdownBot
         public string getOwner() { return owner;}
         public string getChallengee() { return challengee;}
 
+        public void printInfo()
+        {
+            c.writef("\nCurrent module: " + getMode().ToString() + "\n" +
+                "Current state: " + getState().ToString(),"bot", Global.botInfoColor);
+            mainModule.printInfo();
+        }
+
 
         public void initialise(bool browser=true)
         {
@@ -133,7 +140,11 @@ namespace ShowdownBot
                     }
             }
         }
-
+        public void changeFormat(string nf)
+        {
+            c.write("Changing format to "+nf.ToLower());
+            mainModule.changeFormat(nf.ToLower());
+        }
         public void Start(bool auth)
         {
             if (isRunning)
@@ -201,7 +212,7 @@ namespace ShowdownBot
                 while ((line = reader.ReadLine()) != null)
                 {
                     //ghetto commenting, avoid using inline comments :^)
-                    if (!line.StartsWith("#"))
+                    if (!line.StartsWith("#") && line != "")
                     {
                         string[] configparams = line.Split('=');
                         setInitVars(configparams[0], configparams[1]);
@@ -214,47 +225,34 @@ namespace ShowdownBot
 
         private void setInitVars(string key, string val)
         {
-            switch (key)
+            if (key == "[OWNER]")
+                owner = val;
+            else if (key == "[USERNAME]")
+                username = val;
+            else if (key == "[PASSWORD]")
+                password = val;
+            else if (key == "[PROFILE]")
+                Global.FF_PROFILE = val;
+            else if (key == "[SHOW_DEBUG]")
             {
-                case "[OWNER]":
-                    {
-                        owner = val;
-                        break;
-                    }
-                case "[USERNAME]":
-                    {
-                        username = val;
-                        break;
-                    }
-                case "[PASSWORD]":
-                    {
-                        password = val;
-                        break;
-                    }
-                case "[PROFILE]":
-                    {
-                        Global.FF_PROFILE = val;
-                        break;
-                    }
-                case "[SHOW_DEBUG]":
-                    {
-                        val = val.ToLower();
-                        if (val == "false")
-                            Global.showDebug = false;
-                        else if (val == "true")
-                            Global.showDebug = true;
-                        else
-                            c.writef("Unknown value " + val + " for SHOW_DEBUG", "WARNING", Global.warnColor);
-                        break;
-
-                    }
-
-                default:
-                    {
-                        //No match, do nothing.
-                        break;
-                    }
-
+                val = val.ToLower();
+                if (val == "false")
+                    Global.showDebug = false;
+                else if (val == "true")
+                    Global.showDebug = true;
+                else
+                    c.writef("Unknown value " + val + " for SHOW_DEBUG", "WARNING", Global.warnColor);
+            }
+            else if (key.StartsWith("[SLOT"))
+            {
+                if (key.Contains('1'))
+                    Global.m1wgt = float.Parse(val);
+                else if (key.Contains('2'))
+                    Global.m2wgt = float.Parse(val);
+                else if (key.Contains('3'))
+                    Global.m3wgt = float.Parse(val);
+                else
+                    Global.m4wgt = float.Parse(val);
             }
         }
         private void Update()

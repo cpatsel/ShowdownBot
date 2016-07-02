@@ -9,15 +9,21 @@ namespace ShowdownBot.modules
     class BiasedModule : BotModule
     {
 
-        const float M1WGT = 0.4f;
-        const float M2WGT = 0.3f;
-        const float M3WGT = 0.2f;
-        const float M4WGT = 0.1f;
-
+        float M1WGT;
+        float M2WGT;
+        float M3WGT;
+        float M4WGT;
+        float weightTotal;
+        
         public BiasedModule(Bot m, IWebDriver b)
             : base(m, b)
         {
-
+            format = "ou";
+            M1WGT = Global.m1wgt;
+            M2WGT = Global.m2wgt;
+            M3WGT = Global.m3wgt;
+            M4WGT = Global.m4wgt;
+            weightTotal = (M1WGT + M2WGT + M3WGT + M4WGT);
         }
 
         public override void battle()
@@ -102,19 +108,34 @@ namespace ShowdownBot.modules
         /// <returns>Choice index based on the specified weights.</returns>
         private int getIndexBiased()
         {
-            int choice;
+            int choice = 1;
             Random rand = new Random();
-            float percent = (float)rand.NextDouble();
-            if (percent >= 0 && percent <= M4WGT)
-                choice = 4;
-            else if (percent > M4WGT && percent <= M3WGT)
-                choice = 3;
-            else if (percent > M3WGT && percent <= M2WGT)
-                choice = 2;
-            else
-                choice = 1;
-
+            float cumulative = 0.0f;
+            float percent = (float)rand.NextDouble()*(weightTotal);
+            c.writef("Choosing move that meets " + percent.ToString(), "debug", Global.okColor);
+            List<float> weights = new List<float>{ M1WGT, M2WGT, M3WGT, M4WGT };
+            weights.Sort();
+            foreach (float wgt in weights)
+            {
+                percent -= wgt;
+                if (percent <= 0)
+                    return 5-choice;
+                choice++;
+            }
             return choice;
+
+        }
+
+        public override void printInfo()
+        {
+            c.writef("Biased mode info:\n" +
+                    "Format: " + format +
+                    "\nMove weight 1: "+M1WGT+
+                    "\nMove weight 2: "+M2WGT+
+                    "\nMove weight 3: "+M3WGT+
+                    "\nMove weight 4: "+M4WGT+
+                    "\nTotal: "+weightTotal
+                    ,Global.botInfoColor);
         }
     }
 }

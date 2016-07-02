@@ -9,9 +9,13 @@ Added
 * Changelog
 * Version command
 * User-set firefox profile
+* Customisable Biased weights.
+* Change formats with the format command.
+* Improved info command.
 
 Fixes
 
+* Bot will leave battle when it's over again.
 * Improved help
 
 ### **v0.1.0** ###

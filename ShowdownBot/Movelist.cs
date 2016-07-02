@@ -97,7 +97,7 @@ namespace ShowdownBot
             Move ih = new Move("Iron Head", Global.types["steel"], 80); ih.group = "physical"; Global.moves.Add(ih.name, ih);
             
             #endregion
-
+            
             #region Electric
             Move vosw = new Move("Volt Switch", Global.types["electric"], 70); vosw.group = "special"; Global.moves.Add(vosw.name, vosw);
 

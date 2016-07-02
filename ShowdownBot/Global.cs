@@ -34,6 +34,10 @@ namespace ShowdownBot
         public static ConsoleColor defaultColor = ConsoleColor.White;
         //Options
         public static bool showDebug = false;
+        public static float m1wgt = 0.4f;
+        public static float m2wgt = 0.3f;
+        public static float m3wgt = 0.2f;
+        public static float m4wgt = 0.1f;
         public static string FF_PROFILE = "sdb";
         public static string DBPATH = @"./data/mtdb.sdb";
         public static string POKEBASEPATH = @"./data/pokebase.txt";

@@ -42,6 +42,10 @@ namespace ShowdownBot
             {
                 challengePlayer(manager.getChallengee(), format);
             }
+            else if (activeState == State.SEARCH)
+            {
+                ladder();
+            }
             else if (activeState == State.BATTLE)
             {
                 battle();
@@ -83,6 +87,25 @@ namespace ShowdownBot
 
         }
 
+        public virtual void ladder()
+        {
+            c.writef("Searching for new opponent in " + format, "bot", Global.botInfoColor);
+            wait();
+            browser.FindElement(By.Name("format")).Click();
+            wait();
+            browser.FindElement(By.CssSelector("button[name='selectFormat'][value='" + format + "']")).Click();
+            wait();
+            browser.FindElement(By.Name("search")).Click();
+            c.write("Waiting for an opponent...");
+            wait();
+            
+            while (browser.FindElements(By.Name("cancelSearch")).Count != 0)
+            {
+                wait();
+            }
+            c.writef("Battle starting!", Global.botInfoColor);
+            changeState(State.BATTLE);
+        }
 
         #region Battle Information Functions
         /// <summary>

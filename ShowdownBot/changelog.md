@@ -6,6 +6,7 @@
 ----
 Added
 
+* Laddering (search for random opponent)
 * Changelog
 * Version command
 * User-set firefox profile

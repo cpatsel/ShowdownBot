@@ -26,6 +26,12 @@ namespace ShowdownBot
             Application.Run(new Consol());
             
         }
-
+        static void UnhandledExceptionTrapper(object sender, UnhandledExceptionEventArgs e)
+        {
+            Console.WriteLine(e.ToString());
+            Console.WriteLine("Shutting Down. Press enter to continue.");
+            Console.ReadLine();
+            Environment.Exit(1);
+        }
     }
 }

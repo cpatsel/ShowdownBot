@@ -13,7 +13,7 @@ Added
 * Customisable Biased weights.
 * Change formats with the format command.
 * Improved info command.
-
+* Better error handling
 Fixes
 
 * Bot will leave battle when it's over again.

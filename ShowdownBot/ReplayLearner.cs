@@ -7,20 +7,20 @@ using OpenQA.Selenium.Support.UI;
 using System.IO;
 namespace ShowdownBot
 {
-    
+
     class ReplayLearner
     {
         IWebDriver browser;
-        
+
         Consol c;
         public ReplayLearner(IWebDriver b, Consol con)
         {
             browser = b;
             c = con;
-            
-        }
 
-        public void download(int number=1)
+        }
+        //todo: see if there's a way to filter by elo rank to weed out the trash replays
+        public void download(int number = 1)
         {
             browser.Navigate().GoToUrl("https://replay.pokemonshowdown.com");
             System.Threading.Thread.Sleep(5000);
@@ -41,10 +41,10 @@ namespace ShowdownBot
              * at the moment. For now, let's assume the profile will automatically send the file where
              * it needs to be.
              */
-             
+
             for (int i = 0; i < number; i++)
             {
-                
+
                 list[i].Click();
                 System.Threading.Thread.Sleep(2000);
                 IWebElement dlb = browser.FindElement(By.PartialLinkText("Download"));
@@ -65,11 +65,12 @@ namespace ShowdownBot
             }
             for (int i = 0; i < files.Length; i++)
             {
-                using (StreamReader sr = new StreamReader(files[i])){
+                using (StreamReader sr = new StreamReader(files[i]))
+                {
                     string contents = sr.ReadToEnd();
                     fileContents[i] = contents;
                 }
-                
+
             }
 
             for (int i = 0; i < fileContents.Length; i++)
@@ -105,7 +106,7 @@ namespace ShowdownBot
                 }
             }
 
-            using (StreamWriter sw = new StreamWriter(Global.DBPATH,true))
+            using (StreamWriter sw = new StreamWriter(Global.DBPATH, true))
             {
 
                 for (int i = 0; i < movelist.Count; i++)
@@ -113,7 +114,7 @@ namespace ShowdownBot
                     sw.WriteLine(parseMove(movelist[i], switchlist));
                 }
             }
-            //todo: move the file out of this directory so it is not processed again.
+
         }
 
         /// <summary>
@@ -124,7 +125,7 @@ namespace ShowdownBot
         {
             string[] working = s.Split('|');
             string p1 = working[2].Split(' ')[1];
-            p1 = getRealName(p1,switchlist);
+            p1 = getRealName(p1, switchlist);
             string move = working[3];
             string p2 = working[4].Split(' ')[1];
             p2 = getRealName(p2, switchlist);
@@ -136,7 +137,7 @@ namespace ShowdownBot
         private string getRealName(string name, List<string> switchlist)
         {
             string info = switchlist.Find(x => x.Contains(name));
-            info  = info.Split('|')[3];
+            info = info.Split('|')[3];
             string names = info.Split(',')[0];
             return names;
         }

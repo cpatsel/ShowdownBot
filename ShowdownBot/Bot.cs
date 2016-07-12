@@ -25,7 +25,7 @@ namespace ShowdownBot
         string site = "http://play.pokemonshowdown.com";
         string username = "No Username Set!"; 
         string password;
-        string owner; //More uses for this later, right now it's used to initiate the challenge.
+        string owner;
         
         
         // ///Site Info
@@ -171,7 +171,7 @@ namespace ShowdownBot
 
 
         }
-        //TODO: add checks to other battle methods to break out of loop if bot is no longer running.
+        
         public void Kill()
         {
             if (!isRunning)
@@ -182,7 +182,7 @@ namespace ShowdownBot
             c.write("Bot is shutting down.");
            // changeState(State.BUSY);
             isRunning = false;
-           
+            
             
             
         }

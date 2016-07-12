@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using System.Threading;
+using System.Diagnostics;
+using System.IO;
 
 namespace ShowdownBot
 {
@@ -23,15 +25,31 @@ namespace ShowdownBot
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(HandleException);
             Application.Run(new Consol());
             
+
         }
-        static void UnhandledExceptionTrapper(object sender, UnhandledExceptionEventArgs e)
+
+
+
+        private static void HandleException(object sender, UnhandledExceptionEventArgs e)
         {
-            Console.WriteLine(e.ToString());
-            Console.WriteLine("Shutting Down. Press enter to continue.");
-            Console.ReadLine();
-            Environment.Exit(1);
+            Exception ex = (Exception)e.ExceptionObject;
+            using (StreamWriter sw = new StreamWriter("error.txt",true))
+            {
+               
+                sw.WriteLine("----------");
+                sw.WriteLine("["+DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")+"]");
+                sw.WriteLine("ERROR:"+ex.Message);
+                sw.WriteLine(ex.StackTrace);
+                
+            }
+            MessageBox.Show("A fatal error has occured. See error.txt for more info.");
+
+            
         }
+
     }
 }

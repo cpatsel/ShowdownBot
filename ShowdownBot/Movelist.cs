@@ -126,7 +126,7 @@ namespace ShowdownBot
 
             #region Fairy
             Move plyr = new Move("Play Rough", Global.types["fairy"], 90); plyr.group = "physical"; Global.moves.Add(plyr.name, plyr);
-            Move mnblst = new Move("Moonblast", Global.types["Fairy"], 90); mnblst.group = "special"; Global.moves.Add(mnblst.name, mnblst);
+            Move mnblst = new Move("Moonblast", Global.types["fairy"], 90); mnblst.group = "special"; Global.moves.Add(mnblst.name, mnblst);
             #endregion
         }
     }

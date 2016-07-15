@@ -29,7 +29,16 @@ namespace ShowdownBot.modules
         public override void battle()
         {
             int turn = 1;
-            wait(10000);
+            if (format != "randombattle")
+            {
+                while (browser.FindElements(By.CssSelector("button[name='chooseTeamPreview']")).Count == 0)
+                {
+                    //todo terminate this if after a while.
+                    wait();
+                }
+                pickLeadBiased();
+            }
+
             do
             {
                battleBiased(ref turn);
@@ -89,7 +98,7 @@ namespace ShowdownBot.modules
             HashSet<int> exclude = new HashSet<int>();
             int choice;
             choice = getIndexBiased();
-            while (browser.FindElements(By.CssSelector("button[value='"+choice.ToString()+"']")).Count == 0)
+            while (browser.FindElements(By.CssSelector("button[name=chooseMove][value='" + choice.ToString() + "']")).Count == 0)
             {
                 //If the move we've chosen does not exist, just cycle through until we get one.
                 c.writef("Bad move choice: " + choice.ToString() + "Picking another", "[DEBUG]", Global.okColor);
@@ -124,6 +133,17 @@ namespace ShowdownBot.modules
             }
             return choice;
 
+        }
+
+        private void pickLeadBiased()
+        {
+            int lead = getIndexBiased() - 1;
+            while (browser.FindElements(By.CssSelector("button[name='chooseTeamPreview']")).Count == 0)
+            {
+                wait();
+                c.writef("Picking lead...", Global.botInfoColor);
+            }
+            browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='" + lead + "']")).Click();
         }
 
         public override void printInfo()

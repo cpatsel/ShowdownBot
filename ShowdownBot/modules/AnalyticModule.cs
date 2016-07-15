@@ -36,8 +36,13 @@ namespace ShowdownBot.modules
             System.Threading.Thread.Sleep(5000); //let page load
 
             //TODO: actually pick this analytically.
-            lead = browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Text;
-            browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Click();
+            if (browser.FindElements(By.CssSelector("button[name='chooseTeamPreview']")).Count != 0)
+            {
+                lead = browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Text;
+                browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Click();
+            }
+            else
+                lead = "error";
 
             Pokemon active = Global.lookup(lead);
             Pokemon enemy = null;

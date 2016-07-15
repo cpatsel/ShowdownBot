@@ -18,7 +18,17 @@ namespace ShowdownBot.modules
         public override void battle()
         {
             int turn = 1;
-            wait(10000);
+            if (format != "randombattle")
+            {
+                while (browser.FindElements(By.CssSelector("button[name='chooseTeamPreview']")).Count == 0)
+                {
+                    //todo terminate this if after a while.
+                    wait();
+                }
+                int val = new Random().Next(0, 5);
+                browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='" + val + "']")).Click();
+            }
+            
             do
             {
                 battleRandomly(ref turn);
@@ -62,7 +72,7 @@ namespace ShowdownBot.modules
                 pokeSelection = pickPokeRandomly();
                 c.writef("New pokemon selected: " + pokeSelection.ToString(), Global.botInfoColor);
                 browser.FindElement(By.CssSelector("button[value='" + pokeSelection.ToString() + "']")).Click();
-                System.Threading.Thread.Sleep(2000);
+                //System.Threading.Thread.Sleep(2000);
             }
             else if (checkBattleEnd())
             {
@@ -70,7 +80,7 @@ namespace ShowdownBot.modules
             }
             else
             {
-                //c.write("Sleeping for 2 secs");
+                c.writef("Sleeping for 2 secs","debug",Global.defaultColor);
                 System.Threading.Thread.Sleep(2000);
             }
             return false;
@@ -82,7 +92,7 @@ namespace ShowdownBot.modules
             HashSet<int> exclude = new HashSet<int>();
             int choice = rand.Next(1, 4);
 
-            while (browser.FindElements(By.CssSelector("button[value='" + choice.ToString() + "']")).Count == 0)
+            while (browser.FindElements(By.CssSelector("button[name=chooseMove][value='" + choice.ToString() + "']")).Count == 0)
             {
                 c.writef("Bad move choice: " + choice.ToString() + "Picking another", "[DEBUG]", Global.okColor);
                 exclude.Add(choice);

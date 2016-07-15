@@ -100,7 +100,7 @@ namespace ShowdownBot
                 FirefoxProfileManager pm = new FirefoxProfileManager();
                 FirefoxProfile ffp = pm.GetProfile(Global.FF_PROFILE);
                 mainBrowser = new FirefoxDriver(ffp);
-
+                mainBrowser.Manage().Timeouts().ImplicitlyWait(System.TimeSpan.FromSeconds(10));
                 DesiredCapabilities d = new DesiredCapabilities();
             }
 
@@ -181,6 +181,7 @@ namespace ShowdownBot
             }
             c.write("Bot is shutting down.");
            // changeState(State.BUSY);
+            closeBrowser();
             isRunning = false;
             
             
@@ -272,7 +273,6 @@ namespace ShowdownBot
         private bool OpenSite(string site)
         {
             mainBrowser.Navigate().GoToUrl(site);
-            mainBrowser.Manage().Timeouts().ImplicitlyWait(System.TimeSpan.FromSeconds(10));
             mainBrowser.FindElement(By.Name(LoginButton)).Click();
             mainBrowser.FindElement(By.Name(nameField)).SendKeys(username);
             mainBrowser.FindElement(By.Name(nameField)).Submit();

@@ -1,9 +1,18 @@
 ## Changelog ##
 
 
-### **v0.2.0** ###
+### **v0.2.1 / 2016-07-15** ###
+---
+Fixes
+
+	* Modules will now correctly choose leads when necessary.
+	* Bot will close the browser when killed.
+	* Fixed compatibility issues with Firefox 47.0.1
+	* Updated selenium to 2.53.1
+
+### **v0.2.0 / _2016-07-12_** ###
 ----
-_2016-07-12_
+
 
 Added
 
@@ -24,9 +33,8 @@ Fixes
 
 
 
-### **v0.1.0** ###
+### **v0.1.0** *2016-06-29* ###
 ----
-*2016-06-29*
 
 * Initial development release.
 

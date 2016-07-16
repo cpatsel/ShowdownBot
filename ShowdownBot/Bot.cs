@@ -180,10 +180,10 @@ namespace ShowdownBot
                 return;
             }
             c.write("Bot is shutting down.");
-           // changeState(State.BUSY);
-            closeBrowser();
-            isRunning = false;
+           
             
+            isRunning = false;
+            closeBrowser();
             
             
         }

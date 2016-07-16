@@ -313,7 +313,7 @@ namespace ShowdownBot
                  browser.FindElement(by);
                  return true;
              }
-             catch(NoSuchElementException)
+             catch(Exception e) 
              {
                  return false;
              }

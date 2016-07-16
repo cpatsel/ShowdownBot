@@ -36,7 +36,7 @@ namespace ShowdownBot.modules
             System.Threading.Thread.Sleep(5000); //let page load
 
             //TODO: actually pick this analytically.
-            if (browser.FindElements(By.CssSelector("button[name='chooseTeamPreview']")).Count != 0)
+            if (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
             {
                 lead = browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Text;
                 browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Click();
@@ -116,7 +116,7 @@ namespace ShowdownBot.modules
             }
             else if (checkMove())
             {
-                if (browser.FindElements(By.Name("megaevo")).Count != 0)
+                if (elementExists(By.Name("megaevo")))
                     browser.FindElement(By.Name("megaevo")).Click();
                 //for now, automatically activate mega
                 string mv = pickMoveAnalytic(active, enemy);
@@ -140,7 +140,7 @@ namespace ShowdownBot.modules
             wait();
             for (int i = 1; i <= 5; i++)
             {
-                if (browser.FindElements(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")).Count == 0)
+                if (!elementExists(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")))
                     continue;
                 Pokemon p = Global.lookup(browser.FindElement(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")).Text);
                 if (bestChoice == 1000)
@@ -226,7 +226,7 @@ namespace ShowdownBot.modules
             if (isLastMon())
                 return false;
             //If the cancel button exists, we have either already made our switch, or have made a move this turn.
-            if (browser.FindElements(By.Name("undoChoice")).Count != 0)
+            if (elementExists(By.Name("undoChoice")))
                 return false;
             //if the pokemon is at low health, don't bother
             //WatiN.Core.Element e = mainBrowser.Element(Find.ByClass("critical"));
@@ -242,7 +242,7 @@ namespace ShowdownBot.modules
             for (int i = 1; i <= 5; i++)
             {
                 
-                if (browser.FindElements(By.CssSelector("button[value='"+i.ToString()+"']")).Count != 0)
+                if (elementExists(By.CssSelector("button[value='"+i.ToString()+"']")))
                     totalMons++;
             }
             if (totalMons == 0)

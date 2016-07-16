@@ -100,7 +100,7 @@ namespace ShowdownBot
                 FirefoxProfileManager pm = new FirefoxProfileManager();
                 FirefoxProfile ffp = pm.GetProfile(Global.FF_PROFILE);
                 mainBrowser = new FirefoxDriver(ffp);
-                mainBrowser.Manage().Timeouts().ImplicitlyWait(System.TimeSpan.FromSeconds(10));
+                
                 DesiredCapabilities d = new DesiredCapabilities();
             }
 

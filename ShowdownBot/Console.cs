@@ -63,13 +63,12 @@ namespace ShowdownBot
         }
         public void writef(string t, string header, ConsoleColor c)
         {
-
-            string date = GetDate();
-            Console.Write("[" + date + "]");
-            Console.ForegroundColor = c;
             header = header.Trim('[', ']').ToUpper();
             if ((!Global.showDebug) && (header == "DEBUG"))
             { Console.ResetColor(); return; }
+            string date = GetDate();
+            Console.Write("[" + date + "]");
+            Console.ForegroundColor = c;
             Console.Write("[" + header + "]");
             Console.ResetColor();
             Console.Write(t + "\n");

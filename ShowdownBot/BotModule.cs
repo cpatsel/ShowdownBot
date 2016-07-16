@@ -99,7 +99,7 @@ namespace ShowdownBot
             c.write("Waiting for an opponent...");
             wait();
             
-            while (browser.FindElements(By.Name("cancelSearch")).Count != 0)
+            while (elementExists(By.Name("cancelSearch")))
             {
                 wait();
             }
@@ -114,12 +114,14 @@ namespace ShowdownBot
         /// <returns>can switch?</returns>
          protected bool checkSwitch()
         {
-            if (browser.FindElements(By.Name("chooseMove")).Count == 0 &&
-                browser.FindElements(By.Name("chooseSwitch")).Count !=0 &&
-                browser.FindElements(By.Name("undoChoice")).Count == 0)
+
+            if (!elementExists(By.Name("chooseMove")) &&
+                elementExists(By.Name("chooseSwitch")) &&
+                !elementExists(By.Name("undoChoice")))
             {
                 return true;
             }
+
             return false;
         }
 
@@ -132,7 +134,7 @@ namespace ShowdownBot
          protected bool checkMove()
          {
              
-              if (browser.FindElements(By.Name("chooseMove")).Count != 0)
+              if (elementExists(By.Name("chooseMove")))
                      return true;
                  else
                      return false;
@@ -243,7 +245,7 @@ namespace ShowdownBot
              c.write("Choosing new pokemon");
              choice = rand.Next(1, 5);
             
-             while (browser.FindElements(By.CssSelector("button[value='"+choice.ToString()+"']")).Count == 0)
+             while (!elementExists(By.CssSelector("button[value='"+choice.ToString()+"']")))
              {
                  c.writef("Bad pokemon " + choice.ToString() + ". Rolling for another.","debug", Global.botInfoColor);
 
@@ -270,7 +272,7 @@ namespace ShowdownBot
 
          protected bool checkBattleEnd()
          {
-             if (browser.FindElements(By.Name("closeAndMainMenu")).Count != 0)
+             if (elementExists(By.Name("closeAndMainMenu")))
              {
                  //The match is over
                  c.writef("The battle has ended! Returning to main menu.", Global.botInfoColor);
@@ -304,6 +306,18 @@ namespace ShowdownBot
         #endregion
 
 
+         protected bool elementExists(By by)
+         {
+             try
+             {
+                 browser.FindElement(by);
+                 return true;
+             }
+             catch(NoSuchElementException)
+             {
+                 return false;
+             }
+         }
          
 
          public void changeState(State ns)

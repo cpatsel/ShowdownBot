@@ -31,7 +31,7 @@ namespace ShowdownBot.modules
             int turn = 1;
             if (format != "randombattle")
             {
-                while (browser.FindElements(By.CssSelector("button[name='chooseTeamPreview']")).Count == 0)
+                while (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
                 {
                     //todo terminate this if after a while.
                     wait();
@@ -63,7 +63,7 @@ namespace ShowdownBot.modules
 
             if (checkMove())
             {
-                if (browser.FindElements(By.Name("megaevo")).Count != 0)
+                if (elementExists(By.Name("megaevo")))
                 {
                     browser.FindElement(By.Name("megaevo")).Click();
                 }
@@ -98,7 +98,7 @@ namespace ShowdownBot.modules
             HashSet<int> exclude = new HashSet<int>();
             int choice;
             choice = getIndexBiased();
-            while (browser.FindElements(By.CssSelector("button[name=chooseMove][value='" + choice.ToString() + "']")).Count == 0)
+            while (!elementExists(By.CssSelector("button[name=chooseMove][value='" + choice.ToString() + "']")))
             {
                 //If the move we've chosen does not exist, just cycle through until we get one.
                 c.writef("Bad move choice: " + choice.ToString() + "Picking another", "[DEBUG]", Global.okColor);
@@ -138,7 +138,7 @@ namespace ShowdownBot.modules
         private void pickLeadBiased()
         {
             int lead = getIndexBiased() - 1;
-            while (browser.FindElements(By.CssSelector("button[name='chooseTeamPreview']")).Count == 0)
+            while (!elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
             {
                 wait();
                 c.writef("Picking lead...", Global.botInfoColor);

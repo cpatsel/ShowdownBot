@@ -20,7 +20,7 @@ namespace ShowdownBot.modules
             int turn = 1;
             if (format != "randombattle")
             {
-                while (browser.FindElements(By.CssSelector("button[name='chooseTeamPreview']")).Count == 0)
+                while (!elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
                 {
                     //todo terminate this if after a while.
                     wait();
@@ -55,14 +55,14 @@ namespace ShowdownBot.modules
 
                 //first check if there's a mega evo option
 
-                if (browser.FindElements(By.Name("megaevo")).Count != 0)
+                if (elementExists(By.Name("megaevo")))
                     browser.FindElement(By.Name("megaevo")).Click();
 
                 moveSelection = determineMoveRandomly();
                 c.writef("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", Global.botInfoColor);
                 //  browser.Button(Find.ByValue(moveSelection.ToString())).Click(); //Select move
                 browser.FindElement(By.CssSelector("button[value='" + moveSelection.ToString() + "']")).Click();
-                System.Threading.Thread.Sleep(2000);
+                wait();
                 turn++;
             }
             else if (checkSwitch())
@@ -72,7 +72,7 @@ namespace ShowdownBot.modules
                 pokeSelection = pickPokeRandomly();
                 c.writef("New pokemon selected: " + pokeSelection.ToString(), Global.botInfoColor);
                 browser.FindElement(By.CssSelector("button[value='" + pokeSelection.ToString() + "']")).Click();
-                //System.Threading.Thread.Sleep(2000);
+                wait();
             }
             else if (checkBattleEnd())
             {
@@ -80,8 +80,8 @@ namespace ShowdownBot.modules
             }
             else
             {
-                c.writef("Sleeping for 2 secs","debug",Global.defaultColor);
-                System.Threading.Thread.Sleep(2000);
+                //c.writef("Sleeping for 2 secs","debug",Global.defaultColor);
+                wait();
             }
             return false;
         }
@@ -92,7 +92,7 @@ namespace ShowdownBot.modules
             HashSet<int> exclude = new HashSet<int>();
             int choice = rand.Next(1, 4);
 
-            while (browser.FindElements(By.CssSelector("button[name=chooseMove][value='" + choice.ToString() + "']")).Count == 0)
+            while (!elementExists(By.CssSelector("button[name=chooseMove][value='" + choice.ToString() + "']")))
             {
                 c.writef("Bad move choice: " + choice.ToString() + "Picking another", "[DEBUG]", Global.okColor);
                 exclude.Add(choice);

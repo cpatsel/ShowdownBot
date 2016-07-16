@@ -2,7 +2,7 @@
 
 
 
-### v0.2.2 / 2016-07-15 ###
+### v0.2.2 / 2016-07-16 ###
 ----
 Fixes
 
@@ -11,7 +11,7 @@ Fixes
 * Fixed errors finding nonexistent elements.
 * Included readme with release.
 
-### **v0.2.1 / 2016-07-15** ###
+### v0.2.1 / 2016-07-15 ###
 ----
 Fixes
 
@@ -20,7 +20,7 @@ Fixes
 * Fixed compatibility issues with Firefox 47.0.1
 * Updated selenium to 2.53.1
 
-### **v0.2.0 / _2016-07-12_** ###
+### v0.2.0 / 2016-07-12 ###
 ----
 
 
@@ -43,7 +43,7 @@ Fixes
 
 
 
-### **v0.1.0** / *2016-06-29* ###
+### v0.1.0 / 2016-06-29 ###
 ----
 
 * Initial development release.

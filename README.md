@@ -5,7 +5,7 @@ For a list of recent changes and features, see [the changelog](ShowdownBot/chang
 
 ##Requirements
   * .NET Framework 4.0
-  * Firefox 46 (There seems to be problems for 47, at least for me)
+  * Firefox 47.0.1
 
 ##Getting started
 Before running the program, be sure to edit the botInfo.txt file. The file contains the following parameters.
@@ -23,7 +23,11 @@ Click create a profile. Make sure the name of this profile corresponds to the na
 Once you have the prerequisites configured, to start the bot, use the command **start**. This will attempt to log in as the specified user in the config.
 If you leave an account logged in on the browser, you can use **startf** to skip the login/logout process.
 
-To start a battle, switch to the desired module (see below) and type **challenge** or **cp** to challenge a player, or leave it blank to challenge the owner.
+To start a battle, switch to the desired module (see below) and type **challenge** or **cp** to challenge a player, or leave it blank to challenge the owner. 
+Additionally, to have the bot challenge a random player, type **search**.
+
+Each module has a default format it will search for matches or challenge players to. This can be changed with the **format** command. This command is case-sensitive and is typically whatever the format is called on Pokemon Showdown with no spaces and all lowercase. So Random Battle is "randombattle" and OU would be "ou". A more comprehensive list will be available soon.
+
 
 ## Modules
 The bot works by using various modules. They are:
@@ -32,7 +36,7 @@ The bot works by using various modules. They are:
   * Analytic - The bot compares the two pokemon battling and acts accordingly.
 
 To switch modules, simply type **module** or **m** followed by one of the module types above, in lowercase.
-
+Do note, that when switching modules with the module command, the bot's format will be reset. 
 
 
 ##Other commands

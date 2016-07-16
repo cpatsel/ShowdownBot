@@ -69,16 +69,19 @@ namespace ShowdownBot
 
             c.write("Searching for " + player);
             browser.FindElement(By.Name("finduser")).Click();
-            wait();
+            if(!waitUntilElementExists(By.Name("data"))) return;
             IWebElement e = browser.FindElement(By.Name("data"));
             e.SendKeys(player);
             e.Submit();
+
             c.write("Contacting user for OU battle");
-            wait();
+            if (!waitUntilElementExists(By.Name("challenge"))) return;
             browser.FindElement(By.Name("challenge")).Click();
-            wait();
+
+            if (!waitUntilElementExists(By.Name("format"))) return;
             browser.FindElement(By.Name("format")).Click();
-            wait();
+
+            if (!waitUntilElementExists(By.CssSelector("button[name='selectFormat'][value='" + format + "']"))) return;
             browser.FindElement(By.CssSelector("button[name='selectFormat'][value='" + format + "']")).Click();
             browser.FindElement(By.Name("makeChallenge")).Click();
             ////TODO: implement a way to select alternate teams/ have more than one team.
@@ -90,15 +93,16 @@ namespace ShowdownBot
         public virtual void ladder()
         {
             c.writef("Searching for new opponent in " + format, "bot", Global.botInfoColor);
-            wait();
+            if (!waitUntilElementExists(By.Name("format"))) return;
             browser.FindElement(By.Name("format")).Click();
-            wait();
+
+            if (!waitUntilElementExists(By.CssSelector("button[name='selectFormat'][value='" + format + "']"))) return;
             browser.FindElement(By.CssSelector("button[name='selectFormat'][value='" + format + "']")).Click();
-            wait();
+
+            if (!waitUntilElementExists(By.Name("search"))) return;
             browser.FindElement(By.Name("search")).Click();
             c.write("Waiting for an opponent...");
-            wait();
-            
+
             while (elementExists(By.Name("cancelSearch")))
             {
                 wait();
@@ -201,6 +205,11 @@ namespace ShowdownBot
            
              return p;
          }
+
+         /// <summary>
+         /// Alias for getActivePokemon("leftbar")
+         /// </summary>
+         /// <returns></returns>
          protected Pokemon updateYourPokemon()
          {
              Pokemon p = getActivePokemon("leftbar");
@@ -320,6 +329,7 @@ namespace ShowdownBot
          }
          
 
+
          public void changeState(State ns)
         {
             activeState = ns;
@@ -347,6 +357,33 @@ namespace ShowdownBot
         {
             //basic wait of 2 seconds
             wait(2000);
+        }
+
+        /// <summary>
+        /// Waits until either the specified element exists,
+        /// or it reaches MAX_WAITS
+        /// </summary>
+        /// <param name="by"></param>
+        /// <returns>true if the element was found
+        ///          false if it times out while searching.
+        /// </returns>
+        protected bool waitUntilElementExists(By by)
+        {
+            int counter = 0;
+            int MAX_WAITS = 30;
+            while (!elementExists(by))
+            {
+                wait();
+                if (counter >= MAX_WAITS)
+                {
+                    c.writef("Couldn't find element: " + by.ToString() + "\nAborting task.", "error", Global.errColor);
+                    changeState(State.IDLE);
+                    return false;
+                }
+                counter++;
+            }
+            return true;
+            
         }
             
     }

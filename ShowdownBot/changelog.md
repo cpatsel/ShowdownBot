@@ -8,6 +8,7 @@ Fixes
 
 * Fixed lengthy wait times in-between actions.
 * Fixed error when killing bot.
+* Fixed errors finding nonexistent elements.
 * Included readme with release.
 
 ### **v0.2.1 / 2016-07-15** ###

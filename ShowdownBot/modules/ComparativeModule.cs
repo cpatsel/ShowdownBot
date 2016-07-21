@@ -25,7 +25,7 @@ namespace ShowdownBot.modules
         {
             if (setup)
             {
-                c.write("MT database already setup.");
+                cwrite("MT database already setup.");
                 return;
             }
             using (StreamReader sr = new StreamReader(Global.DBPATH))
@@ -61,7 +61,7 @@ namespace ShowdownBot.modules
         public void simulate(Pokemon you, Pokemon enemy)
         {
             Move m = pickMove(you, enemy);
-            c.writef("I would pick " + m.name,"simulator",COLOR_SYS);
+            cwrite("I would pick " + m.name,"simulator",COLOR_SYS);
         }
 
     }

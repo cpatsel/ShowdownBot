@@ -51,10 +51,10 @@ namespace ShowdownBot
                 System.Threading.Thread.Sleep(2000);
                 IWebElement dlb = browser.FindElement(By.PartialLinkText("Download"));
                 dlb.Click();
-                c.writef("Downloaded " + browser.Url, "replaymanager", COLOR_BOT);
+                cwrite("Downloaded " + browser.Url, "replaymanager", COLOR_BOT);
                 //see note above
             }
-            c.writef("Done!", "replaymanager", COLOR_OK);
+            cwrite("Done!", "replaymanager", COLOR_OK);
         }
         public void learn()
         {
@@ -85,9 +85,9 @@ namespace ShowdownBot
                 runThroughLog(cleanLog);
                 string fn = Path.GetFileName(files[i]);
                 File.Move(files[i], path + @"old/" + fn);
-                c.write("Processed " + fn + "");
+                cwrite("Processed " + fn + "");
             }
-            c.writef("Done!", "replayprocessor", COLOR_OK);
+            cwrite("Done!", "replayprocessor", COLOR_OK);
         }
 
         private void runThroughLog(string[] log)

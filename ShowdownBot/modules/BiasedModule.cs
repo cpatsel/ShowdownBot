@@ -70,16 +70,16 @@ namespace ShowdownBot.modules
                 }
                 wait();
                 moveSelection = pickMoveBiased();
-                c.writef("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", COLOR_BOT);
+                cwrite("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", COLOR_BOT);
                 browser.FindElement(By.CssSelector("button[value='" + moveSelection.ToString() + "']")).Click();
                 turn++;
             }
             else if (checkSwitch())
             {
                 //TODO: check if it's the first turn, and then select appropriate lead.
-                c.writef("Switching pokemon.", COLOR_BOT);
+                cwrite("Switching pokemon.", COLOR_BOT);
                 pokeSelection = pickPokeRandomly();
-                c.writef("New pokemon selected: " + pokeSelection.ToString(), COLOR_BOT);
+                cwrite("New pokemon selected: " + pokeSelection.ToString(), COLOR_BOT);
                 browser.FindElement(By.CssSelector("button[value='" + pokeSelection.ToString() + "']")).Click();
                 wait();
             }
@@ -102,7 +102,7 @@ namespace ShowdownBot.modules
             while (!elementExists(By.CssSelector("button[name=chooseMove][value='" + choice.ToString() + "']")))
             {
                 //If the move we've chosen does not exist, just cycle through until we get one.
-                c.writef("Bad move choice: " + choice.ToString() + "Picking another", "[DEBUG]", COLOR_OK);
+                cwrite("Bad move choice: " + choice.ToString() + "Picking another", "[DEBUG]", COLOR_OK);
                 exclude.Add(choice);
                 choice = GetRandomExcluding(exclude, 1, 4);
             }
@@ -122,7 +122,7 @@ namespace ShowdownBot.modules
             Random rand = new Random();
             float cumulative = 0.0f;
             float percent = (float)rand.NextDouble()*(weightTotal);
-            c.writef("Choosing move that meets " + percent.ToString(), "debug", COLOR_OK);
+            cwrite("Choosing move that meets " + percent.ToString(), "debug", COLOR_OK);
             List<float> weights = new List<float>{ M1WGT, M2WGT, M3WGT, M4WGT };
             weights.Sort();
             foreach (float wgt in weights)
@@ -142,14 +142,14 @@ namespace ShowdownBot.modules
             while (!elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
             {
                 wait();
-                c.writef("Picking lead...", COLOR_BOT);
+                cwrite("Picking lead...", COLOR_BOT);
             }
             browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='" + lead + "']")).Click();
         }
 
         public override void printInfo()
         {
-            c.writef("Biased mode info:\n" +
+            cwrite("Biased mode info:\n" +
                     "Format: " + format +
                     "\nMove weight 1: "+M1WGT+
                     "\nMove weight 2: "+M2WGT+

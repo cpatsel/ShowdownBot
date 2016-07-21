@@ -86,14 +86,14 @@ namespace ShowdownBot
         {
             string player = user;
 
-            c.write("Searching for " + player);
+            cwrite("Searching for " + player);
             browser.FindElement(By.Name("finduser")).Click();
             if(!waitUntilElementExists(By.Name("data"))) return;
             IWebElement e = browser.FindElement(By.Name("data"));
             e.SendKeys(player);
             e.Submit();
 
-            c.write("Contacting user for OU battle");
+            cwrite("Contacting user for OU battle");
             if (!waitUntilElementExists(By.Name("challenge"))) return;
             browser.FindElement(By.Name("challenge")).Click();
 
@@ -104,14 +104,14 @@ namespace ShowdownBot
             browser.FindElement(By.CssSelector("button[name='selectFormat'][value='" + format + "']")).Click();
             browser.FindElement(By.Name("makeChallenge")).Click();
             ////TODO: implement a way to select alternate teams/ have more than one team.
-            c.writef("Battle starting!", COLOR_BOT);
+            cwrite("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
 
         }
 
         public virtual void ladder()
         {
-            c.writef("Searching for new opponent in " + format, "bot", COLOR_BOT);
+            cwrite("Searching for new opponent in " + format, "bot", COLOR_BOT);
             if (!waitUntilElementExists(By.Name("format"))) return;
             browser.FindElement(By.Name("format")).Click();
 
@@ -120,13 +120,13 @@ namespace ShowdownBot
 
             if (!waitUntilElementExists(By.Name("search"))) return;
             browser.FindElement(By.Name("search")).Click();
-            c.write("Waiting for an opponent...");
+            cwrite("Waiting for an opponent...");
 
             while (elementExists(By.Name("cancelSearch")))
             {
                 wait();
             }
-            c.writef("Battle starting!", COLOR_BOT);
+            cwrite("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
         }
 
@@ -187,12 +187,12 @@ namespace ShowdownBot
                      m = Global.moves[name[0]];
                  else
                  {
-                     c.writef("Unknown move " + name[0], COLOR_WARN);
+                     cwrite("Unknown move " + name[0], COLOR_WARN);
                      m = new Move(name[0], Global.types[type.ToLower()]);
                  }
                  moves[i] = m;
                  //   moves[i] = lookupMove(name[0], Global.types[type.ToLower()]);
-                  c.writef("Move " + i.ToString() + " " + name[0], COLOR_BOT);
+                  cwrite("Move " + i.ToString() + " " + name[0], COLOR_BOT);
 
              }
              return moves;
@@ -209,7 +209,7 @@ namespace ShowdownBot
          {
              //I feel like there's an easier way to do this.
 
-             c.write("Getting active Pokemon");
+             cwrite("Getting active Pokemon");
              var elems = browser.FindElement(By.ClassName(barclass));
              IList<IWebElement> ticon = elems.FindElements(By.ClassName("teamicons"));
              string temp = parseNameFromPage(ticon);
@@ -219,7 +219,7 @@ namespace ShowdownBot
                  return null;
              }
              ////Found the name, now look it up in the dex.
-             c.write("The current pokemon is "+temp);
+             cwrite("The current pokemon is "+temp);
              Pokemon p = Global.lookup(temp);
            
              return p;
@@ -270,12 +270,12 @@ namespace ShowdownBot
 
              HashSet<int> exclude = new HashSet<int>();
              int choice = rand.Next(1, 5);
-             c.write("Choosing new pokemon");
+             cwrite("Choosing new pokemon");
              choice = rand.Next(1, 5);
             
              while (!elementExists(By.CssSelector("button[value='"+choice.ToString()+"']")))
              {
-                 c.writef("Bad pokemon " + choice.ToString() + ". Rolling for another.","debug", COLOR_BOT);
+                 cwrite("Bad pokemon " + choice.ToString() + ". Rolling for another.","debug", COLOR_BOT);
 
                  exclude.Add(choice); //Steer it in the right direction by removing bad choices.
                  choice = GetRandomExcluding(exclude, 1, 5);
@@ -303,7 +303,7 @@ namespace ShowdownBot
              if (elementExists(By.Name("closeAndMainMenu")))
              {
                  //The match is over
-                 c.writef("The battle has ended! Returning to main menu.", COLOR_BOT);
+                 cwrite("The battle has ended! Returning to main menu.", COLOR_BOT);
                  browser.FindElement(By.Name("closeAndMainMenu")).Click();
                  activeState = State.IDLE;
                  return true;
@@ -346,7 +346,7 @@ namespace ShowdownBot
 
         public virtual void printInfo()
         {
-            c.writef("Generic Bot info:\n" +
+            cwrite("Generic Bot info:\n" +
                     "Format: " + format, COLOR_BOT);
         }
 

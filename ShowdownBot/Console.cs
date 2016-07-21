@@ -14,15 +14,12 @@ namespace ShowdownBot
 {
     public partial class Consol : Form
     {
-
-        // Form1 temp;
         Bot bot;
         Thread threadBot;
         ThreadStart ts;
         
         public Consol()
         {
-
             ts = new ThreadStart(() => bot = new Bot(this));
             threadBot = new Thread(ts);
             threadBot.SetApartmentState(ApartmentState.STA);
@@ -30,15 +27,7 @@ namespace ShowdownBot
             InitializeComponent();
             richTextBox1.WordWrap = false;
             write("Console initialized.");
-
-
         }
-
-        private void richTextBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
 
         /// <summary>
         /// Legacy write functions.
@@ -55,11 +44,6 @@ namespace ShowdownBot
         public void writef(string t, string header, ConsoleColor c)
         {
             cwrite(t, header, c);
-        }
-
-
-        private void textBox1_KeyDown(object sender, KeyEventArgs e)
-        {
         }
 
         private bool paramCheck(int correctParams, string[] args, string c = "none")

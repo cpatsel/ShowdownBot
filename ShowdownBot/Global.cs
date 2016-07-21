@@ -15,9 +15,6 @@ namespace ShowdownBot
         BUSY
 
     };
-    
-    
-
     /// <summary>
     /// Contains variables utilized by multiple classes.
     /// </summary>
@@ -174,7 +171,10 @@ namespace ShowdownBot
             }
             return m;
         }
-
+        /// <summary>
+        /// Sleeps the thread for the specified time.
+        /// </summary>
+        /// <param name="timeInMiliseconds"></param>
         public static void wait(int timeInMiliseconds)
         {
             System.Threading.Thread.Sleep(timeInMiliseconds);
@@ -184,6 +184,7 @@ namespace ShowdownBot
             //basic wait of 2 seconds
             wait(2000);
         }
+
 
         public static bool elementExists(By by)
         {

@@ -25,6 +25,7 @@ namespace ShowdownBot
     {
         //---------Helper Information
         public const string VERSION = "0.2.2";
+        public const string TITLEBAR = "Showdown Bot v" + VERSION;
         //Colors
         public static ConsoleColor warnColor = ConsoleColor.Yellow;
         public static ConsoleColor okColor = ConsoleColor.Green;

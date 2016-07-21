@@ -27,3 +27,4 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDr
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDriver.Support.xml
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\data\pokebase.txt
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\sdbicon_cpm_icon.ico
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\changelog.md

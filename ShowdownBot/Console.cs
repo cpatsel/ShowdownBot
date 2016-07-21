@@ -119,6 +119,10 @@ namespace ShowdownBot
                 threadBot.SetApartmentState(ApartmentState.STA);
                 threadBot.Start();
             }
+            else if (args[0] == "stop" || args[0] == "idle")
+            {
+                botUseCommand(() => bot.changeState(State.IDLE));
+            }
             else if (args[0] == "kill")
             {
 

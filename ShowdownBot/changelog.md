@@ -2,6 +2,12 @@
 
 
 
+### Unreleased ###
+----
+Added
+
+* Stop command
+
 ### v0.2.2 / 2016-07-16 ###
 ----
 Fixes

@@ -28,3 +28,4 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\WebDriv
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\WebDriver.Support.xml
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\sdbicon_cpm_icon.ico
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\data\pokebase.txt
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\changelog.md

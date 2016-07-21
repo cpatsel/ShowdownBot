@@ -4,7 +4,7 @@ A bot for Pokemon Showdown made using C# and the Selenium library.
 For a list of recent changes and features, see [the changelog](ShowdownBot/changelog.md)
 
 ##Requirements
-  * .NET Framework 4.0
+  * [.NET Framework 4.6](https://www.microsoft.com/en-us/download/details.aspx?id=48130)
   * Firefox 47.0.1
 
 ##Getting started

@@ -78,11 +78,17 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="BotModule.cs" />
+    <Compile Include="Console.CmdParser.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Console.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Console.Designer.cs">
       <DependentUpon>Console.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Console.Help.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Global.cs" />
     <Compile Include="modules\AnalyticModule.cs" />

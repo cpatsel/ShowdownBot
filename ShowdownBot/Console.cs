@@ -40,22 +40,12 @@ namespace ShowdownBot
 
         public void write(string t)
         {
-            //richTextBox1.AppendText("[" + GetDate() + "]" + t + "\n");
-            //richTextBox1.SelectionStart = richTextBox1.TextLength;
-            //richTextBox1.ScrollToCaret();
             Console.WriteLine("[" + GetDate() + "]" + t);
             Console.ResetColor();
         }
         public void writef(string t, ConsoleColor c)
         {
-            //int l = richTextBox1.TextLength;
             string date = GetDate();
-            //richTextBox1.AppendText("[" + date + "]" + t + "\n");
-
-            //richTextBox1.SelectionStart = l;
-            //richTextBox1.SelectionLength = t.Length + date.Length + 2;
-            //richTextBox1.SelectionColor = c;
-            //richTextBox1.ScrollToCaret();
             Console.ForegroundColor = c;
             Console.WriteLine("[" + date + "]" + t);
             Console.ResetColor();
@@ -92,10 +82,6 @@ namespace ShowdownBot
             }
         }
 
-
-        
-
-       
         private bool paramCheck(int correctParams, string[] args, string c = "none")
         {
             if (args.Length < correctParams)
@@ -105,9 +91,6 @@ namespace ShowdownBot
             }
             else return true;
         }
-
-       
-
 
         private void botUseCommand(Action cmd)
         {

@@ -16,6 +16,10 @@ namespace ShowdownBot
         protected Bot manager;
         protected Consol c;
         protected string format;
+        protected bool isContinuous;
+        protected int maxBattles;
+        protected int currentBattle;
+        protected State lastBattleState;
         public BotModule(Bot m, IWebDriver b)
         {
 
@@ -28,22 +32,36 @@ namespace ShowdownBot
         public virtual void init()
         {
             activeState = State.IDLE;
+            lastBattleState = State.IDLE;
             c = manager.getConsole();
-
+            maxBattles = 1;
+            isContinuous = false;
+            currentBattle = 0;
         }
         public virtual void Update()
         {
            
             if (activeState == State.IDLE)
             {
+                if (isContinuous)
+                {
+                    if (currentBattle < maxBattles)
+                    {
+                        changeState(lastBattleState);
+                        currentBattle++;
+                        return;
+                    }
+                }
                 System.Threading.Thread.Sleep(5000);
             }
             else if (activeState == State.CHALLENGE)
             {
+                lastBattleState = State.CHALLENGE;
                 challengePlayer(manager.getChallengee(), format);
             }
             else if (activeState == State.SEARCH)
             {
+                lastBattleState = State.SEARCH;
                 ladder();
             }
             else if (activeState == State.BATTLE)
@@ -330,7 +348,7 @@ namespace ShowdownBot
          
 
 
-         public void changeState(State ns)
+        public void changeState(State ns)
         {
             activeState = ns;
         }
@@ -344,6 +362,15 @@ namespace ShowdownBot
         {
             c.writef("Generic Bot info:\n" +
                     "Format: " + format, Global.botInfoColor);
+        }
+
+        public void setContinuous(bool v)
+        {
+            isContinuous = v;
+        }
+        public void setMaxBattles(int m)
+        {
+            maxBattles = m;
         }
         public void changeFormat(string nf)
         {

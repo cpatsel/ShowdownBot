@@ -60,6 +60,25 @@ namespace ShowdownBot
             {
                 if (args.Length == 2)
                     botUseCommand(() => bot.challenge(args[1]));
+                {
+                    if (args[2] == "-c")
+                    {
+                        try
+                        {
+                            botUseCommand(() => bot.setContinuousBattles(int.Parse(args[3])));
+                            botUseCommand(() => bot.challenge(args[1]));
+                        }
+                        catch
+                        {
+                            writef("Invalid argument " + args[3], "error", Global.errColor);
+                        }
+
+                    }
+                    else
+                    {
+                        help("challenge");
+                    }
+                }
                 else
                     botUseCommand(() => bot.challenge(bot.getOwner()));
             }

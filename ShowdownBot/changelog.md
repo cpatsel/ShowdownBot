@@ -6,6 +6,7 @@
 ----
 Added
 
+* Continuous battling
 * Stop command
 
 ### v0.2.2 / 2016-07-16 ###

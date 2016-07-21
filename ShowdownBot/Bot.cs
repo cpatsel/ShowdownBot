@@ -140,6 +140,11 @@ namespace ShowdownBot
                     }
             }
         }
+        public void setContinuousBattles(int max)
+        {
+            mainModule.setContinuous(true);
+            mainModule.setMaxBattles(max);
+        }
         public void changeFormat(string nf)
         {
             c.write("Changing format to "+nf.ToLower());
@@ -273,6 +278,7 @@ namespace ShowdownBot
         private bool OpenSite(string site)
         {
             mainBrowser.Navigate().GoToUrl(site);
+            
             mainBrowser.FindElement(By.Name(LoginButton)).Click();
             mainBrowser.FindElement(By.Name(nameField)).SendKeys(username);
             mainBrowser.FindElement(By.Name(nameField)).Submit();

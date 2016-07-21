@@ -60,6 +60,7 @@ namespace ShowdownBot
             {
                 if (args.Length == 2)
                     botUseCommand(() => bot.challenge(args[1]));
+                else if (args.Length == 4)
                 {
                     if (args[2] == "-c")
                     {

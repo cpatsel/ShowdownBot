@@ -1,4 +1,4 @@
-name:error,type1:normal
+name:error,type1:error
 name:venusaur,type1:Grass,type2:Poison,ability1:NA,ability2:NA,apct:100%,speed:125,item:MSTONE,deftype:BULK
 name:venusaur-mega,type1:Grass,type2:Poison,ability1:Thick_Fat,ability2:Thick_Fat,apct:100%,speed:TODO,item:MSTONE,deftype:BULK
 name:charizard,type1:Fire,type2:Flying,ability1:Solar_Power,ability2:Blaze,apct:100%,speed:TODO,item:MSTONE

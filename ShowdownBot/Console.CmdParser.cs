@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-
+using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot
 {
     partial class Consol
@@ -16,13 +16,13 @@ namespace ShowdownBot
             if (args[0] == "start")
             {
 
-                writef("Starting bot...", "[SYSTEM]", Global.sysColor);
+                writef("Starting bot...", "[SYSTEM]", COLOR_SYS);
                 botUseCommand(() => bot.Start(true));
             }
             else if (args[0] == "startf")
             {
 
-                writef("Starting bot without authentication...", "[SYSTEM]", Global.sysColor);
+                writef("Starting bot without authentication...", "[SYSTEM]", COLOR_SYS);
                 botUseCommand(() => bot.Start(false));
             }
             else if (args[0] == "stop" || args[0] == "idle")
@@ -32,7 +32,7 @@ namespace ShowdownBot
             else if (args[0] == "kill")
             {
 
-                writef("Killing bot.", "[SYSTEM]", Global.sysColor);
+                writef("Killing bot.", "[SYSTEM]", COLOR_SYS);
                 botUseCommand(() => bot.Kill());
             }
             else if (args[0] == "help")
@@ -49,7 +49,7 @@ namespace ShowdownBot
             }
             else if (args[0] == "version")
             {
-                writef("ShowdownBot v" + Global.VERSION, "system", Global.sysColor);
+                writef("ShowdownBot v" + SDB_VERSION, "system", COLOR_SYS);
             }
             else if (args[0] == "format" || args[0] == "f")
             {
@@ -71,7 +71,7 @@ namespace ShowdownBot
                         }
                         catch
                         {
-                            writef("Invalid argument " + args[3], "error", Global.errColor);
+                            writef("Invalid argument " + args[3], "error", COLOR_ERR);
                         }
 
                     }
@@ -109,8 +109,8 @@ namespace ShowdownBot
             }
             else if (args[0] == "exit")
             {
-                writef("Shutting down.", "[SYSTEM]", Global.sysColor);
-                writef("Killing bot.", "[SYSTEM]", Global.sysColor);
+                writef("Shutting down.", "[SYSTEM]", COLOR_SYS);
+                writef("Killing bot.", "[SYSTEM]", COLOR_SYS);
                 botUseCommand(() => bot.Kill());
                 Environment.Exit(0);
                 this.Close();
@@ -161,7 +161,7 @@ namespace ShowdownBot
             }
             else
             {
-                writef("Undefined command " + t, "[SYSTEM]", Global.sysColor);
+                writef("Undefined command " + t, "[SYSTEM]", COLOR_SYS);
 
             }
 

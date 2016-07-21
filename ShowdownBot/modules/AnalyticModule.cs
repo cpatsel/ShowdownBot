@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using OpenQA.Selenium;
-
+using static ShowdownBot.Global;
+using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot.modules
 {
     class AnalyticModule : BotModule
@@ -32,7 +33,7 @@ namespace ShowdownBot.modules
             wait(5000); //give battle time to load
             //Select lead
             string lead;
-            c.writef("Selecting first pokemon as lead", Global.botInfoColor);
+            cwrite("Selecting first pokemon as lead", COLOR_BOT);
             System.Threading.Thread.Sleep(5000); //let page load
 
             //TODO: actually pick this analytically.
@@ -88,7 +89,7 @@ namespace ShowdownBot.modules
                 active = pickPokeAnalytic(enemy);
                 if (active == null)
                 {
-                    c.writef("Can't find new pokemon, unable to continue.", "[ERROR]", Global.errColor);
+                    cwrite("Can't find new pokemon, unable to continue.", "[ERROR]", COLOR_ERR);
                     return true;
                 }
                 return false;
@@ -97,12 +98,12 @@ namespace ShowdownBot.modules
             else if (needSwitch(active, enemy))
             {
 
-                c.writef("I'm switching out.", "Turn " + turn.ToString(), Global.botInfoColor);
+                cwrite("I'm switching out.", "Turn " + turn.ToString(), COLOR_BOT);
                 wait();
                 Pokemon temp = pickPokeAnalytic(enemy);
                 if (temp == null)
                 {
-                    c.writef("Couldn't pick a pokemon. Going with moves instead.", "[!]", Global.warnColor);
+                    cwrite("Couldn't pick a pokemon. Going with moves instead.", "[!]", COLOR_WARN);
                     pickMoveAnalytic(active, enemy);
 
                 }
@@ -120,8 +121,8 @@ namespace ShowdownBot.modules
                     browser.FindElement(By.Name("megaevo")).Click();
                 //for now, automatically activate mega
                 string mv = pickMoveAnalytic(active, enemy);
-                c.writef("I'm picking move " + mv, "Turn " + turn.ToString(), Global.botInfoColor);
-                c.writef("Last Move: " + lastAction.ToString(), "DEBUG", Global.okColor);
+                cwrite("I'm picking move " + mv, "Turn " + turn.ToString(), COLOR_BOT);
+                cwrite("Last Move: " + lastAction.ToString(), "DEBUG", COLOR_OK);
 
                 turn++;
             }
@@ -154,7 +155,7 @@ namespace ShowdownBot.modules
                      highestdamage = temp;
                      bestChoice = i;
                  }
-                 c.writef(p.name + " value:" + temp, "[DEBUG]", Global.okColor);
+                 cwrite(p.name + " value:" + temp, "[DEBUG]", COLOR_OK);
 
 
 
@@ -193,7 +194,7 @@ namespace ShowdownBot.modules
 
 
                 }
-                c.writef(moves[i].name + "'s rank: " + rankings[i].ToString(), "[DEBUG]", Global.okColor);
+                cwrite(moves[i].name + "'s rank: " + rankings[i].ToString(), "[DEBUG]", COLOR_OK);
 
             }
             for (int i = 0; i < 4; i++)

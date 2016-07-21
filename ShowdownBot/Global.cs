@@ -1,8 +1,9 @@
-﻿using System;
+﻿using OpenQA.Selenium;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot
 {
     public enum State
@@ -14,9 +15,6 @@ namespace ShowdownBot
         BUSY
 
     };
-    
-    
-
     /// <summary>
     /// Contains variables utilized by multiple classes.
     /// </summary>
@@ -24,15 +22,7 @@ namespace ShowdownBot
   public static  class Global
     {
         //---------Helper Information
-        public const string VERSION = "0.2.2";
-        public const string TITLEBAR = "Showdown Bot v" + VERSION;
-        //Colors
-        public static ConsoleColor warnColor = ConsoleColor.Yellow;
-        public static ConsoleColor okColor = ConsoleColor.Green;
-        public static ConsoleColor sysColor = ConsoleColor.Cyan;
-        public static ConsoleColor errColor = ConsoleColor.Red;
-        public static ConsoleColor botInfoColor = ConsoleColor.Magenta;
-        public static ConsoleColor defaultColor = ConsoleColor.White;
+       
         //Options
         public static bool showDebug = false;
         public static float m1wgt = 0.4f;
@@ -46,7 +36,7 @@ namespace ShowdownBot
         public static Dictionary<string, Type> types;
         public static Dictionary<string, Move> moves;
         public static Dictionary<string, Pokemon> pokedex;
-
+        public static IWebDriver gBrowserInstance;
         public static void setupTypes()
         {
             types = new Dictionary<string, Type>();
@@ -158,7 +148,7 @@ namespace ShowdownBot
             }
             catch(Exception e)
             {
-                Console.ForegroundColor = errColor;
+                Console.ForegroundColor = COLOR_ERR;
                 Console.WriteLine("ON POKEMON LOOKUP "+name+":\n"+e);
                 Console.ResetColor();
                 return pokedex["error"];
@@ -174,14 +164,99 @@ namespace ShowdownBot
             }
             catch (Exception e)
             {
-                Console.ForegroundColor = warnColor;
+                Console.ForegroundColor = COLOR_WARN;
                 Console.WriteLine("ON MOVE LOOKUP " + name + ":\n" + e);
                 Console.ResetColor();
                 return new Move(name, types["normal"]);
             }
             return m;
         }
-      
+        /// <summary>
+        /// Sleeps the thread for the specified time.
+        /// </summary>
+        /// <param name="timeInMiliseconds"></param>
+        public static void wait(int timeInMiliseconds)
+        {
+            System.Threading.Thread.Sleep(timeInMiliseconds);
+        }
+        public static void wait()
+        {
+            //basic wait of 2 seconds
+            wait(2000);
+        }
+
+
+        public static bool elementExists(By by)
+        {
+            try
+            {
+                gBrowserInstance.FindElement(by);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// Waits until either the specified element exists,
+        /// or it reaches MAX_WAITS
+        /// </summary>
+        /// <param name="by"></param>
+        /// <returns>true if the element was found
+        ///          false if it times out while searching.
+        /// </returns>
+        public static bool waitUntilElementExists(By by)
+        {
+            int counter = 0;
+            int MAX_WAITS = 30;
+            while (!elementExists(by))
+            {
+                wait();
+                if (counter >= MAX_WAITS)
+                {
+                    cwrite("Couldn't find element: " + by.ToString() + "\nAborting task.", "error", COLOR_ERR);
+                    
+                    return false;
+                }
+                counter++;
+            }
+            return true;
+
+        }
+        public static void cwrite(string t)
+        {
+            Console.WriteLine("[" + GetDate() + "]" + t);
+            Console.ResetColor();
+        }
+        public static void cwrite(string t, ConsoleColor c)
+        {
+            string date = GetDate();
+            Console.ForegroundColor = c;
+            Console.WriteLine("[" + date + "]" + t);
+            Console.ResetColor();
+
+        }
+        public static void cwrite(string t, string header, ConsoleColor c)
+        {
+            header = header.Trim('[', ']').ToUpper();
+            if ((!Global.showDebug) && (header == "DEBUG"))
+            { Console.ResetColor(); return; }
+            string date = GetDate();
+            Console.Write("[" + date + "]");
+            Console.ForegroundColor = c;
+            Console.Write("[" + header + "]");
+            Console.ResetColor();
+            Console.Write(t + "\n");
+
+
+        }
+        public static string GetDate()
+        {
+            string dt = DateTime.Now.ToString("HH:mm:ss");
+            return dt;
+        }
+
     }
 }
        

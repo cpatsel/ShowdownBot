@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using OpenQA.Selenium;
-
+using static ShowdownBot.Global;
+using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot.modules
 {
     class RandomModule: BotModule
@@ -59,7 +60,7 @@ namespace ShowdownBot.modules
                     browser.FindElement(By.Name("megaevo")).Click();
 
                 moveSelection = determineMoveRandomly();
-                c.writef("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", Global.botInfoColor);
+                cwrite("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", COLOR_BOT);
                 //  browser.Button(Find.ByValue(moveSelection.ToString())).Click(); //Select move
                 browser.FindElement(By.CssSelector("button[value='" + moveSelection.ToString() + "']")).Click();
                 wait();
@@ -68,9 +69,9 @@ namespace ShowdownBot.modules
             else if (checkSwitch())
             {
 
-                c.writef("Switching pokemon.", Global.botInfoColor);
+                cwrite("Switching pokemon.", COLOR_BOT);
                 pokeSelection = pickPokeRandomly();
-                c.writef("New pokemon selected: " + pokeSelection.ToString(), Global.botInfoColor);
+                cwrite("New pokemon selected: " + pokeSelection.ToString(), COLOR_BOT);
                 browser.FindElement(By.CssSelector("button[value='" + pokeSelection.ToString() + "']")).Click();
                 wait();
             }
@@ -80,7 +81,7 @@ namespace ShowdownBot.modules
             }
             else
             {
-                //c.writef("Sleeping for 2 secs","debug",Global.defaultColor);
+                //cwrite("Sleeping for 2 secs","debug",Global.defaultColor);
                 wait();
             }
             return false;
@@ -94,7 +95,7 @@ namespace ShowdownBot.modules
 
             while (!elementExists(By.CssSelector("button[name=chooseMove][value='" + choice.ToString() + "']")))
             {
-                c.writef("Bad move choice: " + choice.ToString() + "Picking another", "[DEBUG]", Global.okColor);
+                cwrite("Bad move choice: " + choice.ToString() + "Picking another", "[DEBUG]", COLOR_OK);
                 exclude.Add(choice);
                 choice = GetRandomExcluding(exclude, 1, 4);
             }

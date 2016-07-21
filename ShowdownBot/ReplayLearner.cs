@@ -5,6 +5,8 @@ using System.Text;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System.IO;
+using static ShowdownBot.Global;
+using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot
 {
 
@@ -49,10 +51,10 @@ namespace ShowdownBot
                 System.Threading.Thread.Sleep(2000);
                 IWebElement dlb = browser.FindElement(By.PartialLinkText("Download"));
                 dlb.Click();
-                c.writef("Downloaded " + browser.Url, "replaymanager", Global.botInfoColor);
+                c.writef("Downloaded " + browser.Url, "replaymanager", COLOR_BOT);
                 //see note above
             }
-            c.writef("Done!", "replaymanager", Global.okColor);
+            c.writef("Done!", "replaymanager", COLOR_OK);
         }
         public void learn()
         {
@@ -85,7 +87,7 @@ namespace ShowdownBot
                 File.Move(files[i], path + @"old/" + fn);
                 c.write("Processed " + fn + "");
             }
-            c.writef("Done!", "replayprocessor", Global.okColor);
+            c.writef("Done!", "replayprocessor", COLOR_OK);
         }
 
         private void runThroughLog(string[] log)

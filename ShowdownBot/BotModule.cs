@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using OpenQA.Selenium;
-
+using static ShowdownBot.Global;
+using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot
 {
     /// <summary>
@@ -103,14 +104,14 @@ namespace ShowdownBot
             browser.FindElement(By.CssSelector("button[name='selectFormat'][value='" + format + "']")).Click();
             browser.FindElement(By.Name("makeChallenge")).Click();
             ////TODO: implement a way to select alternate teams/ have more than one team.
-            c.writef("Battle starting!", Global.botInfoColor);
+            c.writef("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
 
         }
 
         public virtual void ladder()
         {
-            c.writef("Searching for new opponent in " + format, "bot", Global.botInfoColor);
+            c.writef("Searching for new opponent in " + format, "bot", COLOR_BOT);
             if (!waitUntilElementExists(By.Name("format"))) return;
             browser.FindElement(By.Name("format")).Click();
 
@@ -125,7 +126,7 @@ namespace ShowdownBot
             {
                 wait();
             }
-            c.writef("Battle starting!", Global.botInfoColor);
+            c.writef("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
         }
 
@@ -186,12 +187,12 @@ namespace ShowdownBot
                      m = Global.moves[name[0]];
                  else
                  {
-                     c.writef("Unknown move " + name[0], Global.warnColor);
+                     c.writef("Unknown move " + name[0], COLOR_WARN);
                      m = new Move(name[0], Global.types[type.ToLower()]);
                  }
                  moves[i] = m;
                  //   moves[i] = lookupMove(name[0], Global.types[type.ToLower()]);
-                  c.writef("Move " + i.ToString() + " " + name[0], Global.botInfoColor);
+                  c.writef("Move " + i.ToString() + " " + name[0], COLOR_BOT);
 
              }
              return moves;
@@ -274,7 +275,7 @@ namespace ShowdownBot
             
              while (!elementExists(By.CssSelector("button[value='"+choice.ToString()+"']")))
              {
-                 c.writef("Bad pokemon " + choice.ToString() + ". Rolling for another.","debug", Global.botInfoColor);
+                 c.writef("Bad pokemon " + choice.ToString() + ". Rolling for another.","debug", COLOR_BOT);
 
                  exclude.Add(choice); //Steer it in the right direction by removing bad choices.
                  choice = GetRandomExcluding(exclude, 1, 5);
@@ -302,7 +303,7 @@ namespace ShowdownBot
              if (elementExists(By.Name("closeAndMainMenu")))
              {
                  //The match is over
-                 c.writef("The battle has ended! Returning to main menu.", Global.botInfoColor);
+                 c.writef("The battle has ended! Returning to main menu.", COLOR_BOT);
                  browser.FindElement(By.Name("closeAndMainMenu")).Click();
                  activeState = State.IDLE;
                  return true;
@@ -333,21 +334,6 @@ namespace ShowdownBot
         #endregion
 
 
-         protected bool elementExists(By by)
-         {
-             try
-             {
-                 browser.FindElement(by);
-                 return true;
-             }
-             catch(Exception e) 
-             {
-                 return false;
-             }
-         }
-         
-
-
         public void changeState(State ns)
         {
             activeState = ns;
@@ -361,7 +347,7 @@ namespace ShowdownBot
         public virtual void printInfo()
         {
             c.writef("Generic Bot info:\n" +
-                    "Format: " + format, Global.botInfoColor);
+                    "Format: " + format, COLOR_BOT);
         }
 
         public void setContinuous(bool v)
@@ -376,42 +362,7 @@ namespace ShowdownBot
         {
             format = nf;
         }
-        protected void wait(int timeInMiliseconds)
-        {
-            System.Threading.Thread.Sleep(timeInMiliseconds);
-        }
-        protected void wait()
-        {
-            //basic wait of 2 seconds
-            wait(2000);
-        }
 
-        /// <summary>
-        /// Waits until either the specified element exists,
-        /// or it reaches MAX_WAITS
-        /// </summary>
-        /// <param name="by"></param>
-        /// <returns>true if the element was found
-        ///          false if it times out while searching.
-        /// </returns>
-        protected bool waitUntilElementExists(By by)
-        {
-            int counter = 0;
-            int MAX_WAITS = 30;
-            while (!elementExists(by))
-            {
-                wait();
-                if (counter >= MAX_WAITS)
-                {
-                    c.writef("Couldn't find element: " + by.ToString() + "\nAborting task.", "error", Global.errColor);
-                    changeState(State.IDLE);
-                    return false;
-                }
-                counter++;
-            }
-            return true;
-            
-        }
             
     }
 }

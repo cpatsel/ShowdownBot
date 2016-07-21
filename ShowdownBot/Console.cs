@@ -8,7 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Threading;
-
+using static ShowdownBot.Global;
+using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot
 {
     public partial class Consol : Form
@@ -18,7 +19,7 @@ namespace ShowdownBot
         Bot bot;
         Thread threadBot;
         ThreadStart ts;
-
+        
         public Consol()
         {
 
@@ -38,48 +39,27 @@ namespace ShowdownBot
 
         }
 
+
+        /// <summary>
+        /// Legacy write functions.
+        /// </summary>
+        /// <param name="t"></param>
         public void write(string t)
         {
-            Console.WriteLine("[" + GetDate() + "]" + t);
-            Console.ResetColor();
+            cwrite(t);
         }
         public void writef(string t, ConsoleColor c)
         {
-            string date = GetDate();
-            Console.ForegroundColor = c;
-            Console.WriteLine("[" + date + "]" + t);
-            Console.ResetColor();
-
+            cwrite(t, c);
         }
         public void writef(string t, string header, ConsoleColor c)
         {
-            header = header.Trim('[', ']').ToUpper();
-            if ((!Global.showDebug) && (header == "DEBUG"))
-            { Console.ResetColor(); return; }
-            string date = GetDate();
-            Console.Write("[" + date + "]");
-            Console.ForegroundColor = c;
-            Console.Write("[" + header + "]");
-            Console.ResetColor();
-            Console.Write(t + "\n");
-
-
+            cwrite(t, header, c);
         }
-        private string GetDate()
-        {
-            string dt = DateTime.Now.ToString("HH:mm:ss");
-            return dt;
-        }
+
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
-                string input = textBox1.Text;
-                textBox1.Clear();
-                writef(input, "[USER]", Global.defaultColor);
-                Parse(input);
-            }
         }
 
         private bool paramCheck(int correctParams, string[] args, string c = "none")
@@ -103,7 +83,7 @@ namespace ShowdownBot
             }
             catch (Exception e)
             {
-                writef(e.ToString(), Global.errColor);
+                writef(e.ToString(), COLOR_ERR);
             }
         }
 

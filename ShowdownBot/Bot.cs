@@ -14,6 +14,7 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Firefox;
+using static ShowdownBot.GlobalConstants;
 using ShowdownBot.modules;
 
 namespace ShowdownBot
@@ -88,7 +89,7 @@ namespace ShowdownBot
         public void printInfo()
         {
             c.writef("\nCurrent module: " + getMode().ToString() + "\n" +
-                "Current state: " + getState().ToString(),"bot", Global.botInfoColor);
+                "Current state: " + getState().ToString(),"bot", COLOR_BOT);
             mainModule.printInfo();
         }
 
@@ -154,7 +155,7 @@ namespace ShowdownBot
         {
             if (isRunning)
             {
-                c.writef("Bot is already running!", Global.warnColor);
+                c.writef("Bot is already running!", COLOR_WARN);
                 return;
             }
             isRunning = true;
@@ -165,7 +166,7 @@ namespace ShowdownBot
             {
                 if (!OpenSite(site))
                 {
-                    c.writef("Failed to initiate bot.", "[ERROR]", Global.errColor);
+                    c.writef("Failed to initiate bot.", "[ERROR]", COLOR_ERR);
                 }
             }
             else
@@ -181,7 +182,7 @@ namespace ShowdownBot
         {
             if (!isRunning)
             {
-                c.writef("Bot is not running!", Global.warnColor);
+                c.writef("Bot is not running!", COLOR_WARN);
                 return;
             }
             c.write("Bot is shutting down.");
@@ -207,8 +208,8 @@ namespace ShowdownBot
           
             if (!File.Exists("botInfo.txt"))
             {
-                c.writef("Could not load config (maybe it's missing?)", "[ERROR]", Global.errColor);
-                c.writef("You can try starting without authenticating (startf)", Global.warnColor);
+                c.writef("Could not load config (maybe it's missing?)", "[ERROR]", COLOR_ERR);
+                c.writef("You can try starting without authenticating (startf)", COLOR_WARN);
                 return;
             }
             System.Threading.Thread.Sleep(1000);
@@ -226,7 +227,7 @@ namespace ShowdownBot
                 }
             }
             
-            c.writef("Bot's owner set to: " + owner, "[DEBUG]", Global.okColor);
+            c.writef("Bot's owner set to: " + owner, "[DEBUG]", COLOR_OK);
         }
 
         private void setInitVars(string key, string val)
@@ -247,7 +248,7 @@ namespace ShowdownBot
                 else if (val == "true")
                     Global.showDebug = true;
                 else
-                    c.writef("Unknown value " + val + " for SHOW_DEBUG", "WARNING", Global.warnColor);
+                    c.writef("Unknown value " + val + " for SHOW_DEBUG", "WARNING", COLOR_WARN);
             }
             else if (key.StartsWith("[SLOT"))
             {
@@ -270,7 +271,7 @@ namespace ShowdownBot
             {
                 mainModule.Update();
             }
-            c.writef("Done performing tasks.", Global.okColor);
+            c.writef("Done performing tasks.", COLOR_OK);
         }
 
         
@@ -313,9 +314,9 @@ namespace ShowdownBot
             c.write("Building pokedex, this may take a moment...");
             if (!File.Exists(Global.POKEBASEPATH))
             {
-                c.writef("Could not find pokebase.txt.","[ERROR]",Global.errColor);
-                c.writef("Analytic battle mode will not work correctly.",Global.warnColor);
-                c.writef("Continuing operation.",Global.okColor);
+                c.writef("Could not find pokebase.txt.","[ERROR]",COLOR_ERR);
+                c.writef("Analytic battle mode will not work correctly.",COLOR_WARN);
+                c.writef("Continuing operation.",COLOR_OK);
                 return;
             }
             using (var reader = new StreamReader(Global.POKEBASEPATH))
@@ -328,12 +329,12 @@ namespace ShowdownBot
                     Global.pokedex.Add(p.name, p);
                 }
             }
-            c.writef("Pokedex built!", Global.okColor);
+            c.writef("Pokedex built!", COLOR_OK);
         }
 
         public void learn(int number)
         {
-            c.writef("Initiating learning mode.", "bot", Global.botInfoColor);
+            c.writef("Initiating learning mode.", "bot", COLOR_BOT);
             isRunning = true;
             bool isLearning = true;
             if (number > 0)
@@ -342,7 +343,7 @@ namespace ShowdownBot
 
             if (number > 0)
             {
-                c.writef("Now downloading " + number.ToString() + " replays.", "bot", Global.botInfoColor);
+                c.writef("Now downloading " + number.ToString() + " replays.", "bot", COLOR_BOT);
                 rl.download(number);
             }
             else
@@ -351,7 +352,7 @@ namespace ShowdownBot
             }
   
             isLearning = false;
-            c.writef("Stopping learning processes.", "bot", Global.botInfoColor);
+            c.writef("Stopping learning processes.", "bot", COLOR_BOT);
         }
 
 
@@ -371,7 +372,7 @@ namespace ShowdownBot
         {
             if (!isRunning)
             {
-                c.writef("No browser is running!", "error", Global.errColor);
+                c.writef("No browser is running!", "error", COLOR_ERR);
                 return;
             }
             

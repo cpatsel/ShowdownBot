@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using static ShowdownBot.Global;
+using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot
 {
     /// <summary>
@@ -14,7 +15,7 @@ namespace ShowdownBot
         {
 
             writef("Available commands are: challenge, clear, dump, exit, info,\n kill, module, " +
-                    "start, startf, stop, version", "[SYSTEM]", Global.sysColor);
+                    "start, startf, stop, version", "[SYSTEM]", COLOR_SYS);
 
         }
 
@@ -61,13 +62,13 @@ namespace ShowdownBot
             }
             else if (cmnd == "me")
             {
-                writef("I'm a robot, not a miracle worker.", "system", Global.sysColor);
+                writef("I'm a robot, not a miracle worker.", "system", COLOR_SYS);
                 return;
             }
 
             writef(desc + "\n" +
                     "alias: " + alias + "\n" +
-                    "arguments: " + arguments, "system", Global.sysColor);
+                    "arguments: " + arguments, "system", COLOR_SYS);
         }
     }
 }

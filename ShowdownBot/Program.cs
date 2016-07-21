@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Diagnostics;
 using System.IO;
-
+using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot
 {
 
@@ -27,7 +27,7 @@ namespace ShowdownBot
             Application.SetCompatibleTextRenderingDefault(false);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(HandleException);
-            Console.Title = Global.TITLEBAR;
+            Console.Title = SDB_TITLEBAR;
             Application.Run(new Consol());
             
 

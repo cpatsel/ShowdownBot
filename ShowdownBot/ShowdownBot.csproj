@@ -153,6 +153,9 @@
     <Content Include="botInfo.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="data\movelist.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="data\pokebase.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -1,0 +1,61 @@
+﻿#####Status Moves#####
+name:toxic,type:poison,bp:0,status:true
+name:Will-O-Wisp,type:fire,bp:0,status:true
+name:swords dance,type:normal,bp:0,boost:true
+name:dragon dance,type:dragon,bp:0,boost:true
+name:roost,type:flying,bp:0,support:true
+name:leech seed,type:grass,bp:0,support:true
+name:stealth rock,type:rock,bp:0,field:true
+
+####Fire Moves####
+name:fire blast,type:fire,bp:120,accuracy:80,group:special
+name:flare blitz,type:fire,bp:120,group:physical
+name:flamethrower,type:fire,bp:90,group:special
+
+#### Water Moves ####
+name:hydro pump,type:water,bp:110,accuracy:80,group:special
+name:scald,type:water,bp:80,group:special
+name:aqua jet,type:water,bp:40,group:physical,priority:1
+name:waterfall,type:water,bp:80,group:physical
+
+#### Grass Moves ####
+name:giga drain,type:grass,bp:80,group:special
+
+#### Bug Moves ####
+name:bug bite,type:bug,bp:60,group:physical
+name:x-scissor,type:bug,bp:80,group:physical
+name:bug buzz,type:bug,bp:80,group:special
+
+#### Ground Moves ####
+name:earthquake,type:ground,bp:100,group:physical
+name:earth power,type:ground,bp:90,group:special
+
+#### Dark Moves ####
+name:knock off,type:dark,bp:65,group:physical
+
+#### Dragon Moves ####
+name:dragon claw,type:dragon,bp:80,group:physical
+
+#### Steel Moves ####
+name:gyro ball,type:steel,bp:-2,group:physical
+name:flash cannon,type:steel,bp:80,group:special
+name:iron head,type:steel,bp:80,group:physical
+
+#### Electric Moves ####
+name:volt switch,type:electric,bp:70,group:special
+
+#### Ghost Moves ####
+name:shadow ball,type:ghost,bp:80,group:special
+
+#### Fighting Moves ####
+name:focus blast,type:fighting,bp:120,accuracy:70,group:special
+
+#### Poison Moves ####
+name:sludge wave,type:poison,bp:95,group:special
+
+#### Flying Moves ####
+name:brave bird,type:flying,bp:120,group:physical
+
+#### Fairy Moves ####
+name:play rough,type:fairy,bp:90,accuracy:90,group:physical
+name:moonblast,type:fairy,bp:90,group:special

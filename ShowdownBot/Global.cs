@@ -32,6 +32,7 @@ namespace ShowdownBot
         public static string FF_PROFILE = "sdb";
         public static string DBPATH = @"./data/mtdb.sdb";
         public static string POKEBASEPATH = @"./data/pokebase.txt";
+        public static string MOVELISTPATH = @"./data/movelist.txt";
         //Encyclopedia
         public static Dictionary<string, Type> types;
         public static Dictionary<string, Move> moves;

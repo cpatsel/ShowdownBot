@@ -2,12 +2,19 @@
 
 
 
-### Unreleased ###
+### v0.3.0 / Unreleased ###
 ----
 Added
 
 * Continuous battling
 * Stop command
+* Custom movelist
+* Upgraded to C#6
+
+Fixes
+
+* Error when attempting to log in.
+
 
 ### v0.2.2 / 2016-07-16 ###
 ----

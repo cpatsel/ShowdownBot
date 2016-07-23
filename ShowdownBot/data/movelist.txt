@@ -6,6 +6,13 @@ name:dragon dance,type:dragon,bp:0,boost:true
 name:roost,type:flying,bp:0,support:true
 name:leech seed,type:grass,bp:0,support:true
 name:stealth rock,type:rock,bp:0,field:true
+name:protect,type:normal,bp:0,support:true
+name:encore,type:normal,bp:0,support:true
+name:taunt,type:dark,bp:0,support:true
+name:recover,type:normal,bp:0,support:true
+name:Thunder Wave,type:electric,bp:0,status:true
+name:Toxic Spikes,type:poison,bp:0,field:true
+name:Substitute,type:normal,bp:0,support:true
 
 ####Fire Moves####
 name:fire blast,type:fire,bp:120,accuracy:80,group:special
@@ -20,6 +27,7 @@ name:waterfall,type:water,bp:80,group:physical
 
 #### Grass Moves ####
 name:giga drain,type:grass,bp:80,group:special
+name:Seed Bomb,type:grass,bp:80,group:physical
 
 #### Bug Moves ####
 name:bug bite,type:bug,bp:60,group:physical
@@ -52,6 +60,8 @@ name:focus blast,type:fighting,bp:120,accuracy:70,group:special
 
 #### Poison Moves ####
 name:sludge wave,type:poison,bp:95,group:special
+name:Sludge Bomb,type:poison,bp:90,group:special
+
 
 #### Flying Moves ####
 name:brave bird,type:flying,bp:120,group:physical
@@ -59,3 +69,17 @@ name:brave bird,type:flying,bp:120,group:physical
 #### Fairy Moves ####
 name:play rough,type:fairy,bp:90,accuracy:90,group:physical
 name:moonblast,type:fairy,bp:90,group:special
+
+#### Auto Added Moves ####
+name:Thunderbolt,type:electric,bp:65
+name:Trick,type:psychic,bp:0
+name:Leaf Storm,type:grass,bp:65
+
+name:Rock Blast,type:rock,bp:65
+name:Psychic,type:psychic,bp:90
+name:Ice Beam,type:ice,bp:90
+name:Hidden Power Fire,type:fire,bp:65
+name:Quiver Dance,type:bug,bp:65
+name:Hurricane,type:flying,bp:65
+name:Nasty Plot,type:dark,bp:65
+

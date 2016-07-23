@@ -1,6 +1,7 @@
 ﻿using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using static ShowdownBot.GlobalConstants;
@@ -25,6 +26,7 @@ namespace ShowdownBot
        
         //Options
         public static bool showDebug = false;
+        public static bool ADD_U_PKMN = false;
         public static float m1wgt = 0.4f;
         public static float m2wgt = 0.3f;
         public static float m3wgt = 0.2f;
@@ -142,17 +144,28 @@ namespace ShowdownBot
         /// <returns></returns>
         public static Pokemon lookup(string name)
         {
+            string _name = name.ToLower();
              Pokemon p;
             try
             {
-               p = pokedex[name.ToLower()];
+               p = pokedex[_name];
             }
             catch(Exception e)
             {
-                Console.ForegroundColor = COLOR_ERR;
-                Console.WriteLine("ON POKEMON LOOKUP "+name+":\n"+e);
-                Console.ResetColor();
-                return pokedex["error"];
+                cwrite("Unknown pokemon " + _name, "warning", COLOR_WARN);
+                if (ADD_U_PKMN)
+                {
+                    string template = "AUTOADDED:NA,name:" + _name + ",type1:TODO,type2:TODO,ability1:TODO";
+                    using (var sw = new StreamWriter(POKEBASEPATH, true))
+                    {
+                        sw.WriteLine(template);
+                    }
+                    cwrite("Added " + _name, COLOR_OK);
+                    pokedex.Add(_name,new Pokemon(template));
+                    return pokedex[_name];
+                }
+                else
+                    return pokedex["error"];
             }
             return p;
         }
@@ -204,13 +217,15 @@ namespace ShowdownBot
         /// or it reaches MAX_WAITS
         /// </summary>
         /// <param name="by"></param>
+        /// <param name="maxw">Maximum 2-second wait cycles to do until assuming
+        /// the element will not exist. Default = 30 (1 minute)</param>
         /// <returns>true if the element was found
         ///          false if it times out while searching.
         /// </returns>
-        public static bool waitUntilElementExists(By by)
+        public static bool waitUntilElementExists(By by, int maxw = 30)
         {
             int counter = 0;
-            int MAX_WAITS = 30;
+            int MAX_WAITS = maxw;
             while (!elementExists(by))
             {
                 wait();
@@ -227,12 +242,12 @@ namespace ShowdownBot
         }
         public static void cwrite(string t)
         {
-            Console.WriteLine("[" + GetDate() + "]" + t);
+            Console.WriteLine("[" + GetTimestamp() + "]" + t);
             Console.ResetColor();
         }
         public static void cwrite(string t, ConsoleColor c)
         {
-            string date = GetDate();
+            string date = GetTimestamp();
             Console.ForegroundColor = c;
             Console.WriteLine("[" + date + "]" + t);
             Console.ResetColor();
@@ -243,7 +258,7 @@ namespace ShowdownBot
             header = header.Trim('[', ']').ToUpper();
             if ((!Global.showDebug) && (header == "DEBUG"))
             { Console.ResetColor(); return; }
-            string date = GetDate();
+            string date = GetTimestamp();
             Console.Write("[" + date + "]");
             Console.ForegroundColor = c;
             Console.Write("[" + header + "]");
@@ -252,7 +267,7 @@ namespace ShowdownBot
 
 
         }
-        public static string GetDate()
+        public static string GetTimestamp()
         {
             string dt = DateTime.Now.ToString("HH:mm:ss");
             return dt;

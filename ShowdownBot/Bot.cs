@@ -250,6 +250,16 @@ namespace ShowdownBot
                 else
                     cwrite("Unknown value " + val + " for SHOW_DEBUG", "WARNING", COLOR_WARN);
             }
+            else if (key.Contains("UNKNOWN_PKMN"))
+            {
+                bool result;
+                if (bool.TryParse(val, out result))
+                    ADD_U_PKMN = result;
+                else
+                {
+                    cwrite("Unknown value " + val + "for ADD_UNKNOWN_PKMN", "warning", COLOR_WARN);
+                }
+            }
             else if (key.StartsWith("[SLOT"))
             {
                 if (key.Contains('1'))

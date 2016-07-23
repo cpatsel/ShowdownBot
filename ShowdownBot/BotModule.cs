@@ -5,6 +5,8 @@ using System.Text;
 using OpenQA.Selenium;
 using static ShowdownBot.Global;
 using static ShowdownBot.GlobalConstants;
+using System.IO;
+
 namespace ShowdownBot
 {
     /// <summary>
@@ -104,6 +106,8 @@ namespace ShowdownBot
             browser.FindElement(By.CssSelector("button[name='selectFormat'][value='" + format + "']")).Click();
             browser.FindElement(By.Name("makeChallenge")).Click();
             ////TODO: implement a way to select alternate teams/ have more than one team.
+            //Wait until the battle starts.
+            if (!waitUntilElementExists(By.Name("ignorespects"))) return;
             cwrite("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
 
@@ -169,8 +173,13 @@ namespace ShowdownBot
          {
              //todo deal with moves with no pp/disabled
              Move[] moves = new Move[4];
+            int waittime = 5;
              for (int i = 0; i < 4; i++)
              {
+                 if (!waitUntilElementExists(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"),waittime))
+                 {
+                    continue;
+                 }
                  IWebElement b = browser.FindElement(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"));
                  string htmla = (string)((IJavaScriptExecutor)browser).ExecuteScript("return arguments[0].outerHTML;",b); 
                  string[] html = htmla.Split(new string[] { "data-move=\"" }, StringSplitOptions.None);
@@ -188,7 +197,18 @@ namespace ShowdownBot
                  else
                  {
                      cwrite("Unknown move " + name[0], COLOR_WARN);
-                     m = new Move(name[0], Global.types[type.ToLower()]);
+                    if (ADD_U_PKMN)
+                    {
+                        string template = "name:" + name[0] + ",type:" + type.ToLower() + ",bp:65";
+                        using (var sw = new StreamWriter(MOVELISTPATH, true))
+                        {
+                            sw.WriteLine(template);
+                        }
+                        m = new Move(name[0], types[type.ToLower()]);
+                        Global.moves.Add(name[0], m);
+                    }
+                    else
+                        m = new Move(name[0], Global.types[type.ToLower()]);
                  }
                  moves[i] = m;
                  //   moves[i] = lookupMove(name[0], Global.types[type.ToLower()]);

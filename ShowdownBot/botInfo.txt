@@ -5,10 +5,14 @@
 [PASSWORD]=changeMeToo
 [OWNER]=yourusername
 [PROFILE]=sdb
-[SHOW_DEBUG]=true
 
-#Biased Mode moveslot weights.
+#### Biased Mode moveslot weights ####
 [SLOT1_WEIGHT]=0.4
 [SLOT2_WEIGHT]=0.3
 [SLOT3_WEIGHT]=0.2
 [SLOT4_WEIGHT]=0.1
+
+#### Debug Information ####
+[SHOW_DEBUG]=true
+#Adds unknown pokemon to pokebase.
+[ADD_UNKNOWN_PKMN]=true

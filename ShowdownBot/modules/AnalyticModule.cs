@@ -15,6 +15,7 @@ namespace ShowdownBot.modules
             ACTION_ATTACK_FAILURE,
             ACTION_STATUS,
             ACTION_BOOST,
+            ACTION_RECOVER,
             ACTION_SWITCH
         };
         private LastBattleAction lastAction =LastBattleAction.ACTION_ATTACK_SUCCESS;
@@ -181,8 +182,7 @@ namespace ShowdownBot.modules
                 if (moves[i].bp == 0)
                 {
                     if (moves[i].boost && (lastAction == LastBattleAction.ACTION_BOOST))
-                        rankings[i] = 0;
-                    //placeholder
+                        rankings[i] = 0; //simply prevent boosting twice in a row
                     else if (moves[i].boost && risk <= 1)
                         rankings[i] = 2;
 
@@ -211,9 +211,8 @@ namespace ShowdownBot.modules
             if (chosenMove.boost) lastAction = LastBattleAction.ACTION_BOOST;
             else
                 lastAction = LastBattleAction.ACTION_ATTACK_SUCCESS;
-            if (checkMove())
+            if (elementExists(By.CssSelector("button[value='" + choice.ToString() + "'][name='chooseMove']")))
             {
-                //  mainBrowser.Eval("$('button[name=chooseMove][value=" + choice.ToString() + "]').click()");
                 browser.FindElement(By.CssSelector("button[value='" + choice.ToString() + "'][name='chooseMove']")).Click();
                 return chosenMove.name;
             }
@@ -250,6 +249,12 @@ namespace ShowdownBot.modules
                 return true;
             else
                 return false;
+        }
+
+        public override void printInfo()
+        {
+            cwrite("Analytic info:\n" +
+                    "Format: " + format, COLOR_BOT);
         }
 
     }

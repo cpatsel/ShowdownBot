@@ -123,7 +123,7 @@ namespace ShowdownBot
             apct = (float)apct / 100f; //convert percentage to a 0-1.0 value
         }
 
-        /// <summary>
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="t1">attacking move</param>
@@ -158,7 +158,13 @@ namespace ShowdownBot
             return 1;
         }
 
-
+        /// <summary>
+        /// Calculates the total damage a move will do to a particular pokemon,
+        /// with respect to abilities, types, STAB, common items, etc.
+        /// </summary>
+        /// <param name="m">Move used by (this) pokemon.</param>
+        /// <param name="enemy"></param>
+        /// <returns></returns>
         public float damageCalcTotal(Move m, Pokemon enemy)
         {
             float mult = damageCalc(m.type, enemy.type1);

@@ -134,6 +134,9 @@ namespace ShowdownBot
             changeState(State.BATTLE);
         }
 
+
+        
+
         #region Battle Information Functions
         /// <summary>
         /// Checks whether it's possible to switch.
@@ -333,26 +336,59 @@ namespace ShowdownBot
          }
 
          /// <summary>
-         /// Should be used when exiting a battle, prematurely or otherwise.
+         /// Exits a battle and forfeits accordingly.
          /// </summary>
-         /// <param name="b"></param>
          /// <param name="forfeit">Go through steps to forfeit match?</param>
-         /// <returns>Whether it forfeited</returns>
+         /// <returns>Whether it was successful</returns>
          protected bool goMainMenu(bool forfeit)
          {
 
-             if (forfeit)
-             {
-                 //force the browser to click the exit button.
-                 browser.FindElement(By.ClassName("closebutton")).Click();
-                 return true;
-             }
-             else
-                 return false;
+            if (forfeit)
+            {
+                //force the browser to click the exit button.
+                if (elementExists(By.ClassName("closebutton")))
+                    browser.FindElement(By.ClassName("closebutton")).Click();
+                else
+                    return false;
+                wait();
+                if (elementExists(By.XPath("//button[@type='submit']")))
+                {
+                    browser.FindElement(By.XPath("//button[@type='submit']")).Click();
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else
+            {
+                if (elementExists(By.ClassName("closebutton")))
+                {
+                    browser.FindElement(By.ClassName("closebutton")).Click();
+                    return true;
+                }
+                else
+                    return false;
+                
+            }
          }
 
         #endregion
 
+
+        public bool forfeitBattle()
+        {
+            if (!goMainMenu(true))
+            {
+                cwrite("Unable to forfeit.", "!", COLOR_WARN);
+                return false;
+            }
+            else
+            {
+                cwrite("Forfeited.", COLOR_BOT);
+                changeState(State.IDLE);
+                return true;
+            }
+        }
 
         public void changeState(State ns)
         {

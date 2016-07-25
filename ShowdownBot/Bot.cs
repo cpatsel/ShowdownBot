@@ -151,6 +151,7 @@ namespace ShowdownBot
             cwrite("Changing format to "+nf.ToLower());
             mainModule.changeFormat(nf.ToLower());
         }
+        public bool botForfeit() { return mainModule.forfeitBattle(); }
         public void Start(bool auth)
         {
             if (isRunning)
@@ -186,8 +187,10 @@ namespace ShowdownBot
                 return;
             }
             cwrite("Bot is shutting down.");
-           
-            
+
+            if (mainModule.getState() == State.BATTLE)
+                mainModule.forfeitBattle();
+
             isRunning = false;
             closeBrowser();
             

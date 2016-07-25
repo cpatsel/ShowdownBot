@@ -6,6 +6,8 @@ using static ShowdownBot.Global;
 using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot
 {
+    //Todo: Move this to an external (XML?) file?
+
     /// <summary>
     /// Contains the in-console help documentation for commands.
     /// </summary>
@@ -50,9 +52,14 @@ namespace ShowdownBot
                 alias = "f";
                 arguments = "\t [...] - Format name";
             }
+            else if (cmnd == "forfeit")
+            {
+                desc = "Forfeits the current battle.";
+            }
             else if (cmnd == "exit")
             {
                 desc = "exit: Kills the bot and quits the program.";
+                alias = "quit";
             }
             else if (cmnd == "module" || cmnd == "m")
             {

@@ -13,6 +13,7 @@ name:recover,type:normal,bp:0,support:true
 name:Thunder Wave,type:electric,bp:0,status:true
 name:Toxic Spikes,type:poison,bp:0,field:true
 name:Substitute,type:normal,bp:0,support:true
+name:Hurricane,type:flying,bp:110,accuracy:70
 
 ####Fire Moves####
 name:fire blast,type:fire,bp:120,accuracy:80,group:special
@@ -80,6 +81,6 @@ name:Psychic,type:psychic,bp:90
 name:Ice Beam,type:ice,bp:90
 name:Hidden Power Fire,type:fire,bp:65
 name:Quiver Dance,type:bug,bp:65
-name:Hurricane,type:flying,bp:65
+
 name:Nasty Plot,type:dark,bp:65
 

@@ -8,6 +8,7 @@ Added
 
 * Continuous battling
 * Stop command
+* Forfeit command
 * Custom movelist
 * Upgraded to C#6
 

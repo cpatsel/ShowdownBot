@@ -107,7 +107,7 @@ namespace ShowdownBot
             {
                 botUseCommand(() => bot.saveLog());
             }
-            else if (args[0] == "exit")
+            else if (args[0] == "exit" || args[0] == "quit")
             {
                 writef("Shutting down.", "[SYSTEM]", COLOR_SYS);
                 writef("Killing bot.", "[SYSTEM]", COLOR_SYS);
@@ -125,6 +125,10 @@ namespace ShowdownBot
                 {
                     botUseCommand(() => bot.printInfo());
                 }
+            }
+            else if (args[0] == "forfeit")
+            {
+                botUseCommand(() => bot.botForfeit());
             }
             else if (args[0] == "visible" || args[0] == "v")
             {

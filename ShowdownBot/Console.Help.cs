@@ -26,6 +26,11 @@ namespace ShowdownBot
             string desc = cmnd;
             string alias = "None";
             string arguments = "None";
+            if (cmnd == "start")
+            {
+                desc = "start: Starts the bot and opens the website.";
+                arguments = "\n\t [-u] - Username\n\t [-p] Password (must have also set username with -u)";
+            }
             if (cmnd == "learn")
             {
                 desc = "learn: Starts the bot's replay learning and downloading features";

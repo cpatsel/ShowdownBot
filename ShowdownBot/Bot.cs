@@ -154,31 +154,69 @@ namespace ShowdownBot
         public bool botForfeit() { return mainModule.forfeitBattle(); }
         public void Start(bool auth)
         {
+
             if (isRunning)
             {
                 cwrite("Bot is already running!", COLOR_WARN);
                 return;
             }
             isRunning = true;
-            cwrite("Opening site.");
             initialise();
 
             if (auth)
             {
+                cwrite("Starting bot", "system", COLOR_SYS);
                 if (!OpenSite(site))
                 {
-                    cwrite("Failed to initiate bot.", "[ERROR]", COLOR_ERR);
+                    cwrite("Failed to open "+site, "[ERROR]", COLOR_ERR);
+                    isRunning = false;
+                    return;
                 }
+                else
+                    Update();
             }
             else
             {
-
-                OpenSiteNoAuth(site);
+                cwrite("Starting bot without authentication...", "[SYSTEM]", COLOR_SYS);
+                if (!OpenSiteNoAuth(site))
+                {
+                    cwrite("Failed to open " + site, "error", COLOR_ERR);
+                    isRunning = false;
+                    return;
+                }
+                else
+                    Update();
             }
 
 
         }
-        
+        public void Start(string u,string p)
+        {
+            if (isRunning)
+            {
+                cwrite("Bot is already running!");
+                return;
+            }
+            cwrite("Starting bot with credentials " + u + "\tPW:" + p,"system",COLOR_SYS);
+            isRunning = true;
+            initialise();
+            //TODO: do we need to hold onto this information?
+            string tempu = username;
+            string tempp = password;
+            username = u;
+            password = p;
+            
+            if (!OpenSite(site))
+            {
+                cwrite("Failed to open " + site, "error", COLOR_ERR);
+                isRunning = false;
+                return;
+            }
+            else
+            {
+                Update();
+            }
+        }
         public void Kill()
         {
             if (!isRunning)
@@ -291,28 +329,29 @@ namespace ShowdownBot
 
         private bool OpenSite(string site)
         {
+            cwrite("Opening site");
             mainBrowser.Navigate().GoToUrl(site);
             if (!waitUntilElementExists(By.Name(LoginButton))) return false;
             mainBrowser.FindElement(By.Name(LoginButton)).Click();
             wait();
             mainBrowser.FindElement(By.Name(nameField)).SendKeys(username);
             mainBrowser.FindElement(By.Name(nameField)).Submit();
-            if (!waitUntilElementExists(By.Name(passwordField))) return false;
-            mainBrowser.FindElement(By.Name(passwordField)).SendKeys(password);
-            mainBrowser.FindElement(By.Name(passwordField)).Submit();
-            
-            Update();
+            if (password != null)
+            {
+                if (!waitUntilElementExists(By.Name(passwordField))) return false;
+                mainBrowser.FindElement(By.Name(passwordField)).SendKeys(password);
+                mainBrowser.FindElement(By.Name(passwordField)).Submit();
+            }
             return true;
            
         }
         private bool OpenSiteNoAuth(string site)
         {
-            
+            cwrite("Opening site");
             mainBrowser.Navigate().GoToUrl(site);
             cwrite("Opened site, skipping authentication steps.");
             cwrite("Moving onto next task");
             wait(5000);
-            Update(); 
             return true;
         
         }

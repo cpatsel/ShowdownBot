@@ -15,14 +15,22 @@ namespace ShowdownBot
             args = Regex.Split(t, " ");
             if (args[0] == "start")
             {
+                if (args.Length > 1)
+                {
+                    Dictionary<string, string> param = parseCmdArgs(args);
+                    if (isSet(param, "-u") && isSet(param, "-p"))
+                        botUseCommand(() => bot.Start(param["-u"], param["-p"]));
+                    else if (isSet(param, "-u"))
+                        botUseCommand(() => bot.Start(param["-u"], null));
+                    else
+                        help("start");
+                }
+                else
+                    botUseCommand(() => bot.Start(true));
 
-                writef("Starting bot...", "[SYSTEM]", COLOR_SYS);
-                botUseCommand(() => bot.Start(true));
             }
             else if (args[0] == "startf")
-            {
-
-                writef("Starting bot without authentication...", "[SYSTEM]", COLOR_SYS);
+            { 
                 botUseCommand(() => bot.Start(false));
             }
             else if (args[0] == "stop" || args[0] == "idle")

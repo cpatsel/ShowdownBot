@@ -55,7 +55,41 @@ namespace ShowdownBot
             }
             else return true;
         }
+        
+        private Dictionary<string,string> parseCmdArgs(string[] args)
+        {
+            int length = args.Length;
+            Dictionary<string, string> kvp = new Dictionary<string, string>();
+            for (int i = 1; i < length; i++)
+            {
+                if (args[i].Contains("-"))
+                {
+                    try
+                    {
+                        kvp.Add(args[i], args[i + 1]);
+                    }
+                    catch (ArgumentNullException)
+                    {
+                        cwrite("Bad argument"+args[i+1], COLOR_ERR);
+                    }
+                    catch (ArgumentException)
+                    {
+                        //do something else
+                        cwrite("Bad argument" + args[i + 1], COLOR_ERR);
+                    }
+                }
+            }
+            return kvp;
+        }
 
+        private bool isSet(Dictionary<string,string> args,string flag)
+        {
+            if (!flag.StartsWith("-"))
+                flag.Insert(0, "-");
+            if (args.ContainsKey(flag))
+                return true;
+            else return false;
+        }
         private void botUseCommand(Action cmd)
         {
             ts = new ThreadStart(cmd);

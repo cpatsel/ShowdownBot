@@ -1,0 +1,8 @@
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/obj/x86/Debug/.NETFramework,Version=v4.6.AssemblyAttribute.cs
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/obj/x86/Debug/ShowdownBot.Consol.resources
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/obj/x86/Debug/ShowdownBot.Properties.Resources.resources
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/obj/x86/Debug/ShowdownBot.exe
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/obj/x86/Debug/ShowdownBot.pdb
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/Debug/Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/Debug/WebDriver.dll
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/Debug/WebDriver.Support.dll

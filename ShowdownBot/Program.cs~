@@ -6,7 +6,6 @@ using System.Threading;
 using System.Diagnostics;
 using System.IO;
 using static ShowdownBot.GlobalConstants;
-using static ShowdownBot.Global;
 namespace ShowdownBot
 {
 

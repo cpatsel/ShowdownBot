@@ -19,3 +19,22 @@ ERROR:Failed to start up socket within 45000 milliseconds. Attempted to connect 
   at System.Threading.ExecutionContext.Run (System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state, Boolean preserveSyncCtx) <0xb544ce60 + 0x00033> in <filename unknown>:0 
   at System.Threading.ExecutionContext.Run (System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state) <0xb544cdb0 + 0x0005a> in <filename unknown>:0 
   at System.Threading.ThreadHelper.ThreadStart () <0xb544eb80 + 0x00039> in <filename unknown>:0 
+----------
+[2016-07-27 20:50:55]
+ERROR:Element is not currently visible and so may not be interacted with
+  at OpenQA.Selenium.Remote.RemoteWebDriver.UnpackAndThrowOnError (OpenQA.Selenium.Remote.Response errorResponse) <0xb1a15c88 + 0x001a3> in <filename unknown>:0 
+  at OpenQA.Selenium.Remote.RemoteWebDriver.Execute (System.String driverCommandToExecute, System.Collections.Generic.Dictionary`2 parameters) <0xb234ec90 + 0x00133> in <filename unknown>:0 
+  at OpenQA.Selenium.Remote.RemoteWebDriver.InternalExecute (System.String driverCommandToExecute, System.Collections.Generic.Dictionary`2 parameters) <0xb1a16db0 + 0x00021> in <filename unknown>:0 
+  at OpenQA.Selenium.Remote.RemoteWebElement.Execute (System.String commandToExecute, System.Collections.Generic.Dictionary`2 parameters) <0xb1a16d78 + 0x00023> in <filename unknown>:0 
+  at OpenQA.Selenium.Remote.RemoteWebElement.Click () <0xb1a16d00 + 0x00067> in <filename unknown>:0 
+  at ShowdownBot.modules.RandomModule.battleRandomly (System.Int32& turn) <0xb15447b0 + 0x0013e> in <filename unknown>:0 
+  at ShowdownBot.modules.RandomModule.battle () <0xb1544640 + 0x0010f> in <filename unknown>:0 
+  at ShowdownBot.BotModule.Update () <0xb1a18b80 + 0x000a6> in <filename unknown>:0 
+  at ShowdownBot.Bot.Update () <0xb1a18b00 + 0x00052> in <filename unknown>:0 
+  at ShowdownBot.Bot.Start (System.String u, System.String p) <0xb237cb60 + 0x00113> in <filename unknown>:0 
+  at ShowdownBot.Consol+<>c__DisplayClass0_0.<Parse>b__1 () <0xb237cac0 + 0x00087> in <filename unknown>:0 
+  at System.Threading.ThreadHelper.ThreadStart_Context (System.Object state) <0xb544ea00 + 0x00088> in <filename unknown>:0 
+  at System.Threading.ExecutionContext.RunInternal (System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state, Boolean preserveSyncCtx) <0xb544cea0 + 0x00183> in <filename unknown>:0 
+  at System.Threading.ExecutionContext.Run (System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state, Boolean preserveSyncCtx) <0xb544ce60 + 0x00033> in <filename unknown>:0 
+  at System.Threading.ExecutionContext.Run (System.Threading.ExecutionContext executionContext, System.Threading.ContextCallback callback, System.Object state) <0xb544cdb0 + 0x0005a> in <filename unknown>:0 
+  at System.Threading.ThreadHelper.ThreadStart () <0xb544eb80 + 0x00039> in <filename unknown>:0 

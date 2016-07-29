@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,6 +41,8 @@ namespace ShowdownBot
         public static Dictionary<string, Move> moves;
         public static Dictionary<string, Pokemon> pokedex;
         public static IWebDriver gBrowserInstance;
+
+        public static string lastcmd = "";
         public static void setupTypes()
         {
             types = new Dictionary<string, Type>();
@@ -199,6 +202,7 @@ namespace ShowdownBot
             wait(2000);
         }
 
+        
 
         public static bool elementExists(By by)
         {
@@ -273,6 +277,28 @@ namespace ShowdownBot
             return dt;
         }
 
+        public static void logError(Exception ex, bool fatal)
+        {
+            using (StreamWriter sw = new StreamWriter("error.txt", true))
+            {
+
+                sw.WriteLine("----------");
+                sw.WriteLine("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "] - On: " + Environment.OSVersion.ToString());
+                sw.WriteLine("ERROR:" + ex.Message);
+                sw.WriteLine(ex.StackTrace);
+
+            }
+            if (fatal)
+            {
+                cwrite("A fatal error has occured. See error.txt for more info.", COLOR_ERR);
+                Console.ReadLine();
+                Environment.Exit(-1);
+            }
+            else
+                cwrite("An error has occured:\n" + ex.Message, COLOR_WARN);
+            
+
+        }
     }
 }
        

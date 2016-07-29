@@ -39,18 +39,7 @@ namespace ShowdownBot
         private static void HandleException(object sender, UnhandledExceptionEventArgs e)
         {
             Exception ex = (Exception)e.ExceptionObject;
-            using (StreamWriter sw = new StreamWriter("error.txt",true))
-            {
-               
-                sw.WriteLine("----------");
-                sw.WriteLine("["+DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")+"]");
-                sw.WriteLine("ERROR:"+ex.Message);
-                sw.WriteLine(ex.StackTrace);
-                
-            }
-            cwrite("A fatal error has occured. See error.txt for more info.",COLOR_ERR);
-
-            
+            logError(ex, true);   
         }
 
     }

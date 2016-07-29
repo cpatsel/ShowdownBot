@@ -20,11 +20,11 @@ namespace ShowdownBot
     /// <summary>
     /// Contains variables utilized by multiple classes.
     /// </summary>
-   
-  public static  class Global
+
+    public static class Global
     {
         //---------Helper Information
-       
+
         //Options
         public static bool showDebug = false;
         public static bool ADD_U_PKMN = false;
@@ -43,6 +43,7 @@ namespace ShowdownBot
         public static IWebDriver gBrowserInstance;
 
         public static string lastcmd = "";
+
         public static void setupTypes()
         {
             types = new Dictionary<string, Type>();
@@ -148,12 +149,12 @@ namespace ShowdownBot
         public static Pokemon lookup(string name)
         {
             string _name = name.ToLower();
-             Pokemon p;
+            Pokemon p;
             try
             {
-               p = pokedex[_name];
+                p = pokedex[_name];
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 cwrite("Unknown pokemon " + _name, "warning", COLOR_WARN);
                 if (ADD_U_PKMN)
@@ -164,7 +165,7 @@ namespace ShowdownBot
                         sw.WriteLine(template);
                     }
                     cwrite("Added " + _name, COLOR_OK);
-                    pokedex.Add(_name,new Pokemon(template));
+                    pokedex.Add(_name, new Pokemon(template));
                     return pokedex[_name];
                 }
                 else
@@ -202,8 +203,50 @@ namespace ShowdownBot
             wait(2000);
         }
 
+        /// <summary>
+        /// Waits until an element is present and returns that element.
+        /// </summary>
+        /// <param name="by"></param>
+        /// <param name="maxw"></param>
+        /// <returns></returns>
+        public static IWebElement waitFind(By by, int maxw = 60)
+        {
+            WebDriverWait _wait = new WebDriverWait(gBrowserInstance, TimeSpan.FromSeconds(maxw));
+            IWebElement elem;
+            
+                try
+                {
+                    return _wait.Until<IWebElement>(ExpectedConditions.ElementExists(by));
+                }
+                catch (NoSuchElementException e)
+                {
+                    cwrite("Couldn't find element " + by.ToString());
+                    return null;
+                }
+           
+            
+            
+        }
         
-
+        /// <summary>
+        /// Waits until an element is available and then clicks it.
+        /// </summary>
+        /// <param name="by"></param>
+        /// <returns>Whether the element was clicked.</returns>
+        public static bool waitFindClick(By by)
+        {
+            IWebElement we = waitFind(by);
+            if (we != null)
+            {
+                we.Click();
+                return true;
+            }
+            else
+            {
+               return false;
+            }
+            
+        }
         public static bool elementExists(By by)
         {
             try
@@ -221,27 +264,16 @@ namespace ShowdownBot
         /// or it reaches MAX_WAITS
         /// </summary>
         /// <param name="by"></param>
-        /// <param name="maxw">Maximum 2-second wait cycles to do until assuming
-        /// the element will not exist. Default = 30 (1 minute)</param>
+        /// <param name="maxw"></param>
         /// <returns>true if the element was found
         ///          false if it times out while searching.
         /// </returns>
-        public static bool waitUntilElementExists(By by, int maxw = 30)
+        public static bool waitUntilElementExists(By by, int maxw = 60)
         {
-            int counter = 0;
-            int MAX_WAITS = maxw;
-            while (!elementExists(by))
-            {
-                wait();
-                if (counter >= MAX_WAITS)
-                {
-                    cwrite("Couldn't find element: " + by.ToString() + "\nAborting task.", "error", COLOR_ERR);
-                    
-                    return false;
-                }
-                counter++;
-            }
-            return true;
+            if (waitFind(by, maxw) != null)
+                return true;
+            else
+                return false;
 
         }
         public static void cwrite(string t)

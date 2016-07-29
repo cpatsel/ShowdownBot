@@ -331,8 +331,7 @@ namespace ShowdownBot
         {
             cwrite("Opening site");
             mainBrowser.Navigate().GoToUrl(site);
-            if (!waitUntilElementExists(By.Name(LoginButton))) return false;
-            mainBrowser.FindElement(By.Name(LoginButton)).Click();
+            if (!waitFindClick(By.Name(LoginButton))) return false;
             wait();
             mainBrowser.FindElement(By.Name(nameField)).SendKeys(username);
             mainBrowser.FindElement(By.Name(nameField)).Submit();

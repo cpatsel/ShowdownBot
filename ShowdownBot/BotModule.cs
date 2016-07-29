@@ -90,24 +90,22 @@ namespace ShowdownBot
 
             cwrite("Searching for " + player);
             browser.FindElement(By.Name("finduser")).Click();
-            if(!waitUntilElementExists(By.Name("data"))) return;
-            IWebElement e = browser.FindElement(By.Name("data"));
+            IWebElement e = waitFind(By.Name("data"));
+            if (e == null) return;
             e.SendKeys(player);
             e.Submit();
 
             cwrite("Contacting user for OU battle");
-            if (!waitUntilElementExists(By.Name("challenge"))) return;
-            browser.FindElement(By.Name("challenge")).Click();
+            if (!waitFindClick(By.Name("challenge"))) return;
 
-            if (!waitUntilElementExists(By.Name("format"))) return;
-            browser.FindElement(By.Name("format")).Click();
+            if (!waitFindClick(By.Name("format"))) return;
 
-            if (!waitUntilElementExists(By.CssSelector("button[name='selectFormat'][value='" + format + "']"))) return;
-            browser.FindElement(By.CssSelector("button[name='selectFormat'][value='" + format + "']")).Click();
+            if (!waitFindClick(By.CssSelector("button[name='selectFormat'][value='" + format + "']"))) return;
+
             browser.FindElement(By.Name("makeChallenge")).Click();
             ////TODO: implement a way to select alternate teams/ have more than one team.
             //Wait until the battle starts.
-            if (!waitUntilElementExists(By.Name("ignorespects"))) return;
+            if (!waitFindClick(By.Name("ignorespects"))) return;
             cwrite("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
 
@@ -116,14 +114,11 @@ namespace ShowdownBot
         public virtual void ladder()
         {
             cwrite("Searching for new opponent in " + format, "bot", COLOR_BOT);
-            if (!waitUntilElementExists(By.Name("format"))) return;
-            browser.FindElement(By.Name("format")).Click();
+            if (!waitFindClick(By.Name("format"))) return;
 
-            if (!waitUntilElementExists(By.CssSelector("button[name='selectFormat'][value='" + format + "']"))) return;
-            browser.FindElement(By.CssSelector("button[name='selectFormat'][value='" + format + "']")).Click();
+            if (!waitFindClick(By.CssSelector("button[name='selectFormat'][value='" + format + "']"))) return;
 
-            if (!waitUntilElementExists(By.Name("search"))) return;
-            browser.FindElement(By.Name("search")).Click();
+            if (!waitFindClick(By.Name("search"))) return;
             cwrite("Waiting for an opponent...");
 
             while (elementExists(By.Name("cancelSearch")))

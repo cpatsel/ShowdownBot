@@ -9,15 +9,17 @@ namespace ShowdownBot
 {
     partial class Consol
     {
+       
         public void Parse(string t)
         {
             string[] args;
             args = Regex.Split(t, " ");
+            Dictionary<string, string> param = parseCmdArgs(args);
             if (args[0] == "start")
             {
                 if (args.Length > 1)
                 {
-                    Dictionary<string, string> param = parseCmdArgs(args);
+                    
                     if (isSet(param, "-u") && isSet(param, "-p"))
                         botUseCommand(() => bot.Start(param["-u"], param["-p"]));
                     else if (isSet(param, "-u"))
@@ -53,6 +55,8 @@ namespace ShowdownBot
             }
             else if (args[0] == "search" || args[0] == "ladder")
             {
+                if (isSet(param, "-f"))
+                    botUseCommand(() => bot.changeFormat(param["-f"]));
                 botUseCommand(() => bot.changeState(State.SEARCH));
             }
             else if (args[0] == "version")

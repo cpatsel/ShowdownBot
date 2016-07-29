@@ -42,6 +42,7 @@ namespace ShowdownBot
             {
                 desc = "search: The bot will search the ladder for an opponent";
                 alias = "ladder";
+                arguments = "\n\t [-f] - Format";
 
             }
             else if (cmnd == "challenge" || cmnd == "cp")

@@ -15,7 +15,7 @@ namespace ShowdownBot
         public static ConsoleColor COLOR_OK = ConsoleColor.Green;
         public static ConsoleColor COLOR_SYS = ConsoleColor.Cyan;
         public static ConsoleColor COLOR_ERR = ConsoleColor.Red;
-        public static ConsoleColor COLOR_BOT = ConsoleColor.Magenta;
+        public static ConsoleColor COLOR_BOT = ConsoleColor.Blue;
         public static ConsoleColor COLOR_DEFAULT = ConsoleColor.White;
     }
 }

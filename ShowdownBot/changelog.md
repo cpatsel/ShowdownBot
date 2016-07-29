@@ -7,11 +7,13 @@
 Added
 
 * Continuous battling
+* Linux support
 * Stop command
 * Forfeit command
 * Specify login when starting
 * Custom movelist
 * Upgraded to C#6
+* Format argument for match search
 
 Fixes
 

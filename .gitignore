@@ -1,6 +1,7 @@
 bfg.jar
 botInfo.txt
 ShowdownBot/bin/Debug/
+*~
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

@@ -1,0 +1,15 @@
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/obj/x86/Linux-release/.NETFramework,Version=v4.6.AssemblyAttribute.cs
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/obj/x86/Linux-release/ShowdownBot.Consol.resources
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/obj/x86/Linux-release/ShowdownBot.Properties.Resources.resources
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/x86/Linux-release/botInfo.txt
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/x86/Linux-release/data/pokebase.txt
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/x86/Linux-release/sdbicon_cpm_icon.ico
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/x86/Linux-release/roslyn/%(RecursiveDir)%(Filename)%(Extension)
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/x86/Linux-release/changelog.md
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/x86/Linux-release/data/movelist.txt
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/x86/Linux-release/ShowdownBot.exe.config
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/x86/Linux-release/ShowdownBot.exe
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/obj/x86/Linux-release/ShowdownBot.exe
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/x86/Linux-release/Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/x86/Linux-release/WebDriver.dll
+/home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/x86/Linux-release/WebDriver.Support.dll

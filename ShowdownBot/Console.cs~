@@ -69,7 +69,7 @@ namespace ShowdownBot
 			if (hasValidExtraValue(args,i))
                         	kvp.Add(args[i], args[i + 1]);
 			else
-				kvp.Add(args[i],"dummy!!!");
+				kvp.Add(args[i],"");
                     }
                     catch (ArgumentNullException)
                     {

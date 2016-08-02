@@ -92,7 +92,7 @@ namespace ShowdownBot
                     botUseCommand(() => bot.setContinuousBattles(num));
                     botUseCommand(() => bot.challenge(bot.getOwner()));
                 }
-                else if (isSet(param, "-u")) { botUseCommand(() => bot.challenge(param["-u"])); }
+                else if (isSet(param, "-u")) { botUseCommand(() => bot.challenge(param["-u"]); }
                 else if (args.Length == 2) { botUseCommand(() => bot.challenge(args[1])); }
                 else
                     botUseCommand(() => bot.challenge(bot.getOwner()));

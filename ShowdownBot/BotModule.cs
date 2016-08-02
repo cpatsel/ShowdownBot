@@ -39,7 +39,7 @@ namespace ShowdownBot
             c = manager.getConsole();
             maxBattles = 1;
             isContinuous = false;
-            currentBattle = 0;
+            currentBattle = 1;
         }
         public virtual void Update()
         {
@@ -226,7 +226,7 @@ namespace ShowdownBot
              if (temp == "0")
              {
                 //error!
-                 return null;
+                 return lookup("error");
              }
              ////Found the name, now look it up in the dex.
              cwrite("The current pokemon is "+temp);
@@ -256,7 +256,16 @@ namespace ShowdownBot
                  {
                     if (s.GetAttribute("title").Contains("(active)"))
                      {
-                         string[] name = s.GetAttribute("title").Split(' ');
+                        string[] name;
+                        try
+                        {
+                            name = s.GetAttribute("title").Split(' ');
+                        }
+                        catch(StaleElementReferenceException ex)
+                        {
+                            cwrite("Unable to determine active pokemon, maybe it fainted.", "debug", COLOR_WARN);
+                            break;
+                        }
                          //Nicknamed pokemon appear in the html as "Nickname (Pokemon) (active)"
                          //this means that the pokemon's name should be N-2, which should hold
                          //true even for non-named mons.

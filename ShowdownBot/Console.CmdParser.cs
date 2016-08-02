@@ -59,6 +59,12 @@ namespace ShowdownBot
             {
                 if (isSet(param, "-f"))
                     botUseCommand(() => bot.changeFormat(param["-f"]));
+                if (isSet(param, "-c"))
+                {
+                    int num;
+                    if(!int.TryParse(param["-c"], out num)) { help(args[0]); return; }
+                    botUseCommand(() => bot.setContinuousBattles(num));
+                }
                 botUseCommand(() => bot.changeState(State.SEARCH));
             }
             else if (args[0] == "version")
@@ -72,28 +78,22 @@ namespace ShowdownBot
             }
             else if (args[0] == "challenge" || args[0] == "cp")
             {
-                if (args.Length == 2)
-                    botUseCommand(() => bot.challenge(args[1]));
-                else if (args.Length == 4)
+                if (isSet(param, "-c") && isSet(param, "-u"))
                 {
-                    if (args[2] == "-c")
-                    {
-                        try
-                        {
-                            botUseCommand(() => bot.setContinuousBattles(int.Parse(args[3])));
-                            botUseCommand(() => bot.challenge(args[1]));
-                        }
-                        catch
-                        {
-                            writef("Invalid argument " + args[3], "error", COLOR_ERR);
-                        }
-
-                    }
-                    else
-                    {
-                        help("challenge");
-                    }
+                    int num;
+                    if (!int.TryParse(param["-c"],out num)) { help(args[0]); return; }
+                    botUseCommand(() => bot.setContinuousBattles(num));
+                    botUseCommand(() => bot.challenge(param["-u"]));
                 }
+                else if (isSet(param, "-c"))
+                {
+                    int num;
+                    if (!int.TryParse(param["-c"], out num)) { help(args[0]); return; }
+                    botUseCommand(() => bot.setContinuousBattles(num));
+                    botUseCommand(() => bot.challenge(bot.getOwner()));
+                }
+                else if (isSet(param, "-u")) { botUseCommand(() => bot.challenge(param["-u"])); }
+                else if (args.Length == 2) { botUseCommand(() => bot.challenge(args[1])); }
                 else
                     botUseCommand(() => bot.challenge(bot.getOwner()));
             }

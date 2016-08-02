@@ -12,8 +12,6 @@ Added
 * Additional information commands (see "help info")
 * Stop command
 * Forfeit command
-
-* Custom movelist
 * Upgraded to C#6
 * Format argument for match search
 

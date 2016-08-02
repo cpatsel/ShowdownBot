@@ -19,11 +19,9 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\S
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\botInfo.txt
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDriver.dll
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDriver.Support.dll
-C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\data\pokebase.txt
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\sdbicon_cpm_icon.ico
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\changelog.md
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\ShowdownBot.exe.config
-C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\data\movelist.txt
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\roslyn\csc.exe
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\roslyn\csc.exe.config
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\roslyn\csc.rsp
@@ -52,3 +50,8 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\rosly
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\roslyn\VBCSCompiler.exe.config
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\data\moves.js
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\data\pokedex.js
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\Newtonsoft.Json.dll
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\Newtonsoft.Json.pdb
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\Newtonsoft.Json.xml

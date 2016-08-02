@@ -1,7 +1,7 @@
 ## Changelog ##
 
 
-### v0.3.0 / Unreleased ###
+### v0.3.0 / 2016-08-02 ###
 ----
 Added
 

@@ -176,6 +176,9 @@ namespace ShowdownBot
              {
                  if (!waitUntilElementExists(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"),waittime))
                  {
+                    cwrite("Unavailable or bad move " + i.ToString(), "debug", COLOR_BOT);
+                    Move defal = new Move("error", types["error"]);
+                    moves[i] = defal;
                     continue;
                  }
                  IWebElement b = browser.FindElement(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"));
@@ -195,18 +198,7 @@ namespace ShowdownBot
                  else
                  {
                      cwrite("Unknown move " + name[0], COLOR_WARN);
-                    if (ADD_U_PKMN)
-                    {
-                        string template = "name:" + name[0] + ",type:" + type.ToLower() + ",bp:65";
-                        using (var sw = new StreamWriter(MOVELISTPATH, true))
-                        {
-                            sw.WriteLine(template);
-                        }
-                        m = new Move(name[0], types[type.ToLower()]);
-                        Global.moves.Add(name[0], m);
-                    }
-                    else
-                        m = new Move(name[0], Global.types[type.ToLower()]);
+                     m = new Move(name[0], Global.types[type.ToLower()]);
                  }
                  moves[i] = m;
                  //   moves[i] = lookupMove(name[0], Global.types[type.ToLower()]);

@@ -134,6 +134,7 @@
     <Compile Include="modules\BiasedModule.cs" />
     <Compile Include="modules\ComparativeModule.cs" />
     <Compile Include="modules\RandomModule.cs" />
+    <Compile Include="MoveJSONObj.cs" />
     <Compile Include="Movelist.cs" />
     <Compile Include="PokeJSONObj.cs" />
     <Compile Include="Pokemon.cs" />
@@ -185,6 +186,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="data\movelist.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="data\moves.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="data\pokebase.txt">

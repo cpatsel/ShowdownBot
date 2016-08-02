@@ -390,7 +390,8 @@ namespace ShowdownBot
                     JObject po = JsonConvert.DeserializeObject<JObject>(full);
                     var first = po.First;
                     PokeJSONObj obj = JsonConvert.DeserializeObject<PokeJSONObj>(po.First.First.ToString());
-
+                    Pokemon p = new Pokemon(obj);
+                    Global.pokedex.Add(p.name, p);
                 }
             }
             cwrite("Pokedex built!", COLOR_OK);

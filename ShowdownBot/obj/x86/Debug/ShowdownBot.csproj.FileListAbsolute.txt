@@ -102,3 +102,4 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\data\po
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\Newtonsoft.Json.dll
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\Newtonsoft.Json.pdb
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\data\moves.js

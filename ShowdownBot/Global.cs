@@ -35,7 +35,7 @@ namespace ShowdownBot
         public static string FF_PROFILE = "sdb";
         public static string DBPATH = @"./data/mtdb.sdb";
         public static string POKEBASEPATH = @"./data/pokedex.js";
-        public static string MOVELISTPATH = @"./data/movelist.txt";
+        public static string MOVELISTPATH = @"./data/moves.js";
         //Encyclopedia
         public static Dictionary<string, Type> types;
         public static Dictionary<string, Move> moves;
@@ -211,6 +211,10 @@ namespace ShowdownBot
                     cwrite("Couldn't find element " + by.ToString());
                     return null;
                 }
+                catch (WebDriverTimeoutException e)
+                {
+                    return null;
+                }
            
             
             
@@ -312,8 +316,10 @@ namespace ShowdownBot
             {
                 cwrite("A fatal error has occured. See error.txt for more info.", COLOR_ERR);
                 cwrite(ex.Message, "debug", COLOR_ERR);
+#if !DEBUG
                 Console.ReadLine();
                 Environment.Exit(-1);
+#endif
             }
             else
                 cwrite("An error has occured:\n" + ex.Message, COLOR_WARN);

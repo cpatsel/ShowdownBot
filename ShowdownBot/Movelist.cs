@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -35,6 +37,17 @@ namespace ShowdownBot
         public bool field = false; //Hazard move?
         public Move(string n, Type t, float p) { name = n; type = t; bp = p; }
         public Move(string n, Type t) { name = n; type = t; unknown = true; bp = -1; }
+        public Move(MoveJSONObj obj)
+        {
+            name = obj.name;
+            type = Global.types[obj.type.ToLower()];
+            bp = obj.basePower;
+            accuracy = ((float)obj.accuracy / 100f);
+            group = obj.category.ToLower();
+            priority = obj.priority;
+            
+
+        }
 
     }
 
@@ -48,9 +61,10 @@ namespace ShowdownBot
 
         public void initialize()
         {
-            readText();
+            readJson();
         }
-        private void readText()
+
+        private void readJson()
         {
             if (!File.Exists(path))
             {
@@ -61,45 +75,22 @@ namespace ShowdownBot
             }
             using (var reader = new StreamReader(path))
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                string json;
+                json = reader.ReadToEnd();
+                JObject jo = JsonConvert.DeserializeObject<JObject>(json);
+                string allmoves = jo.First.ToString();
+                var current = jo.First;
+                for (int i = 0; i< jo.Count;i++)
                 {
-                    if (!line.StartsWith("#") && line != "")
-                    {
-                        string[] pairs = line.Split(',');
-                        Move m = new Move("",types["error"]);
-                        for (int i = 0; i < pairs.Length; i++)
-                        {
-                            assignValue(pairs[i],ref m);
-                        }
-                        m.unknown = false;
-                        moves.Add(m.name,m);
-                        
-                    }
+                    MoveJSONObj mv = JsonConvert.DeserializeObject<MoveJSONObj>(current.First.ToString());
+                    Move move = new Move(mv);
+                    Global.moves.Add(move.name, move);
+                    current = current.Next;
+          
                 }
             }
         }
-        private void assignValue(string kv,ref Move m)
-        {
-            string key = kv.Split(':')[0];
-            string val = kv.Split(':')[1];
-            TextInfo ti = new CultureInfo("en-us", false).TextInfo;
-            if (key == "name") { m.name = ti.ToTitleCase(val); }
-            else if (key == "type") { m.type = types[val]; }
-            else if (key == "bp") { m.bp = int.Parse(val); }
-            else if (key == "accuracy") { m.accuracy = (float.Parse(val) / 100f); }
-            else if (key == "group") { m.group = val.ToLower(); }
-            else if (key == "status") { m.status = isSet(val); }
-            else if (key == "boost") { m.boost = isSet(val); }
-            else if (key == "support") { m.support = isSet(val); }
-            else if (key == "phase") { m.phase = isSet(val); }
-            else if (key == "field") { m.field = isSet(val); }
-            else if (key == "priority") { m.priority = int.Parse(val); }
-            else
-            {
-                cwrite("Unknown key " + key + " in movelist.txt", "[!]", COLOR_WARN);
-            }
-        }
+        
 
         private bool isSet(string v)
         {

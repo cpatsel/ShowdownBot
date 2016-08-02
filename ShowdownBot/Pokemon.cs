@@ -83,6 +83,8 @@ namespace ShowdownBot
                 type2 = types[obj.types[0].ToLower()];
             stats = obj.baseStats;
             abilities = obj.abilities;
+            deftype = new DefenseType();
+            role = new Role();
             initRoles();
         }
 
@@ -255,6 +257,12 @@ namespace ShowdownBot
 
         public float matchup(Pokemon p)
         {
+            if (Object.ReferenceEquals(p, null))
+            {
+                //in a test case where volt-switch killed an opponent "p" was null
+                //todo: return a more helpful indicator
+                return 1;
+            }
             return heuristic(p.type1, p,false) + heuristic(p.type2, p,false);
         }
 

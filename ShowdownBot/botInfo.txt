@@ -14,5 +14,3 @@
 
 #### Debug Information ####
 [SHOW_DEBUG]=true
-#Adds unknown pokemon to pokebase.
-[ADD_UNKNOWN_PKMN]=false

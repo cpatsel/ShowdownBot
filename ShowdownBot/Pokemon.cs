@@ -34,22 +34,24 @@ namespace ShowdownBot
         STATE_HEALTHY
     };
 
-
+    public class Role
+    {
+        public bool lead { get; set; }
+        public bool physical { get; set; }
+        public bool special { get; set; }
+        public bool stall { get; set; }
+        public bool any { get; set; }
+    }
   
+    public class DefenseType
+    {
+        public bool physical { get; set; }
+        public bool special { get; set; }
+        public bool mixed { get; set; }
+        public bool bulky { get; set; }
+        public bool any { get; set; }
+    }
 
-    /// <summary>
-    /// Information is read from file line by line, with the following parameters
-    /// (changing them if present, defaulting if not):
-    /// name, type1/2, ability 1/2, apct(chance the mon will have ability 1), speed(highest possible speed),item,
-    /// deftype(Phys,Spec,Bulky-both high,mix-both low), 
-    /// Some optional parameters are:
-    ///     firstmove(move likely to be used first)
-    ///     
-    /// Parameters marked with NA are not relevant (or are less significant than others), and are effectively ignored.
-    /// Formatting follows key1:value1,key2:value2
-    /// </summary>
-    /// Role: Ph,Sp,Mix,Lead,Status,Stall,any(unknown/versatile)
-    /// Deftype: Ph,Sp,bulk,any
     public class Pokemon
     {
         string data; //The string containing all data to be read for this pokemon.
@@ -58,71 +60,63 @@ namespace ShowdownBot
 
         public string name = "NONAME";
         public Type type1, type2;
-        public string ability1 = "NA", ability2 = "NA";
-        string deftype = "any";
         string item = "NA";
-        string role = "any";
-        int speed = 0;
         float apct = 100f;
         string firstmove = "NA";
+        BaseStats stats;
+        Abilities abilities;
+        DefenseType deftype;
+        Role role;
         Dictionary<string,Type> types;
 
         
         #endregion
 
-        public Pokemon(string d)
+        public Pokemon(PokeJSONObj obj)
         {
-            data = d;
-            //initialize the two types to a default
             types = Global.types;
-            type1 = type2 = types["error"];
-            initValues();
-            //Register single types as a dual of the same type.
-            if (type1 != types["error"] && type2 == types["error"])
+            name = obj.species.ToLower();
+            type1 = types[obj.types[0].ToLower()];
+            if (obj.types.Count < 2)
                 type2 = type1;
-                
-
+            else
+                type2 = types[obj.types[0].ToLower()];
+            stats = obj.baseStats;
+            abilities = obj.abilities;
+            initRoles();
         }
 
-        private void initValues()
+        
+        private void initRoles()
         {
-            string[] fields = data.Split(',');
-            for (int i = 0; i < fields.Length; i++)
-            {
-                setValue(fields[i]);
-            }
-            
-        }
-        private void setValue(string pair)
-        {
-            string[] temp = pair.Split(':');
-            string key = temp[0];
-            string value = temp[1];
-            
-            key = key.ToLower();
-            value = value.ToLower();
+            int max_for_bulk = 250;
+            if (stats.def > stats.spd)
+                deftype.physical = true;
+            else if (stats.spd > stats.def)
+                deftype.special = true;
+            else if (stats.def == stats.spa)
+                deftype.mixed = true;
+            else
+                deftype.any = true;
 
-            //if it's a dummy value just ignore it
-            if ((value == "todo") || (value == "na"))
-                return;
-            //set the appropriate field
-            switch (key)
-            {
-                case "name": name = value; break;
-                case "type1": type1 = types[value]; break;
-                case "type2": type2 = types[value]; break;
-                case "ability1": ability1 = value; break;
-                case "ability2": ability2 = value; break;
-                case "apct": apct = Int32.Parse(value.TrimEnd('%')); break;
-                case "speed": speed = Int32.Parse(value); break;
-                case "item": item = value; break;
-                case "deftype": deftype = value; break;
-                case "firstmove": firstmove = value; break;
-                   
-            }
-            apct = (float)apct / 100f; //convert percentage to a 0-1.0 value
-        }
+            if (stats.hp + stats.def + stats.spd >= max_for_bulk)
+                deftype.bulky = true;
+            
 
+            if (stats.atk > stats.spa)
+                role.physical = true;
+            else if (stats.spa > stats.atk)
+                role.special = true;
+
+            int max_for_stall = 50; //maximum base  special/attack to be considered 'stall'
+            if (deftype.bulky)
+            {
+                if(role.physical)
+                    role.stall = (stats.atk < max_for_stall) ? true: false;
+                else if (role.special)
+                    role.stall = (stats.spa < max_for_stall) ? true: false;
+            }
+        }
     /// <summary>
     /// 
     /// </summary>
@@ -241,13 +235,19 @@ namespace ShowdownBot
         }
 
 
-
+        public bool hasAbility(string ability)
+        {
+            if (abilities.a1 == ability) return true;
+            else if (abilities.a2 == ability) return true;
+            else if (abilities.H == ability) return true;
+            else return false;
+        }
 
         public bool immunityCheck(Type t, Pokemon p)
         {
-            if (t.value == "ground" && p.ability1 == "levitate")
+            if (t.value == "ground" && p.hasAbility("levitate"))
                 return true;
-            if (t.value == "fire" && p.ability1 == "flashfire")
+            if (t.value == "fire" && p.hasAbility("flashfire")) 
                 return true;
             return false;
         }
@@ -298,15 +298,15 @@ namespace ShowdownBot
             float chance = 0;
             //First check if we are faster.
             if (enemy.item == "cscarf")
-                enemy.speed *= 2;
-            if (speed > enemy.speed)
+                enemy.stats.spe *= 2;
+            if (stats.spe > enemy.stats.spe)
             {
                 chance += 0.1f;
             }
             //Now check if we are a suitable attacker
-            if ( ((role == "ph") && (enemy.deftype == "sp")) ||
-                 ((role == "sp") && (enemy.deftype == "ph")) ||
-                 (enemy.deftype == "any") )
+            if ( ((role.physical) && (enemy.deftype.special)) ||
+                 ((role.special) && (enemy.deftype.physical)) ||
+                 (enemy.deftype.any) )
             {
                 chance += 0.4f;
             }

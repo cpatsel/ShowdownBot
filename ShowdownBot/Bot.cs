@@ -14,6 +14,8 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using OpenQA.Selenium.Remote;
 using OpenQA.Selenium.Firefox;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using static ShowdownBot.GlobalConstants;
 using static ShowdownBot.Global;
 using ShowdownBot.modules;
@@ -374,22 +376,25 @@ namespace ShowdownBot
             cwrite("Building pokedex, this may take a moment...");
             if (!File.Exists(Global.POKEBASEPATH))
             {
-                cwrite("Could not find pokebase.txt.","[ERROR]",COLOR_ERR);
+                cwrite("Could not find pokedex.js","[ERROR]",COLOR_ERR);
                 cwrite("Analytic battle mode will not work correctly.",COLOR_WARN);
                 cwrite("Continuing operation.",COLOR_OK);
                 return;
             }
+            string json;
             using (var reader = new StreamReader(Global.POKEBASEPATH))
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                while ((json = reader.ReadLine()) != null)
                 {
-                    Pokemon p = new Pokemon(line);
-                
-                    Global.pokedex.Add(p.name, p);
+                    string full = "{" + json + "}";
+                    JObject po = JsonConvert.DeserializeObject<JObject>(full);
+                    var first = po.First;
+                    PokeJSONObj obj = JsonConvert.DeserializeObject<PokeJSONObj>(po.First.First.ToString());
+
                 }
             }
             cwrite("Pokedex built!", COLOR_OK);
+
         }
 
         public void learn(int number)

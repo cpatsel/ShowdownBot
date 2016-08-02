@@ -34,7 +34,7 @@ namespace ShowdownBot
         public static float m4wgt = 0.1f;
         public static string FF_PROFILE = "sdb";
         public static string DBPATH = @"./data/mtdb.sdb";
-        public static string POKEBASEPATH = @"./data/pokebase.txt";
+        public static string POKEBASEPATH = @"./data/pokedex.js";
         public static string MOVELISTPATH = @"./data/movelist.txt";
         //Encyclopedia
         public static Dictionary<string, Type> types;
@@ -157,19 +157,7 @@ namespace ShowdownBot
             catch (Exception e)
             {
                 cwrite("Unknown pokemon " + _name, "warning", COLOR_WARN);
-                if (ADD_U_PKMN)
-                {
-                    string template = "AUTOADDED:NA,name:" + _name + ",type1:TODO,type2:TODO,ability1:TODO";
-                    using (var sw = new StreamWriter(POKEBASEPATH, true))
-                    {
-                        sw.WriteLine(template);
-                    }
-                    cwrite("Added " + _name, COLOR_OK);
-                    pokedex.Add(_name, new Pokemon(template));
-                    return pokedex[_name];
-                }
-                else
-                    return pokedex["error"];
+                return pokedex["error"];
             }
             return p;
         }
@@ -323,6 +311,7 @@ namespace ShowdownBot
             if (fatal)
             {
                 cwrite("A fatal error has occured. See error.txt for more info.", COLOR_ERR);
+                cwrite(ex.Message, "debug", COLOR_ERR);
                 Console.ReadLine();
                 Environment.Exit(-1);
             }

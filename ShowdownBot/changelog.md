@@ -1,16 +1,18 @@
 ## Changelog ##
 
 
-
 ### v0.3.0 / Unreleased ###
 ----
 Added
 
 * Continuous battling
+* Complete analytic databases (moves and pokemon)
 * Linux support
+* Specify login when starting
+* Additional information commands (see "help info")
 * Stop command
 * Forfeit command
-* Specify login when starting
+
 * Custom movelist
 * Upgraded to C#6
 * Format argument for match search

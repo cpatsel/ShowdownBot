@@ -39,6 +39,7 @@ namespace ShowdownBot
         public bool lead { get; set; }
         public bool physical { get; set; }
         public bool special { get; set; }
+        public bool mixed { get; set; }
         public bool stall { get; set; }
         public bool any { get; set; }
     }
@@ -80,7 +81,7 @@ namespace ShowdownBot
             if (obj.types.Count < 2)
                 type2 = type1;
             else
-                type2 = types[obj.types[0].ToLower()];
+                type2 = types[obj.types[1].ToLower()];
             stats = obj.baseStats;
             abilities = obj.abilities;
             deftype = new DefenseType();
@@ -92,23 +93,25 @@ namespace ShowdownBot
         private void initRoles()
         {
             int max_for_bulk = 250;
-            if (stats.def > stats.spd)
+            if (Math.Abs(stats.spd - stats.def) < 10)
+                deftype.mixed = true;
+            else if(stats.def > stats.spd)
                 deftype.physical = true;
             else if (stats.spd > stats.def)
                 deftype.special = true;
-            else if (stats.def == stats.spa)
-                deftype.mixed = true;
             else
                 deftype.any = true;
 
             if (stats.hp + stats.def + stats.spd >= max_for_bulk)
                 deftype.bulky = true;
-            
 
-            if (stats.atk > stats.spa)
+            if (Math.Abs(stats.spa - stats.atk) < 10)
+                role.mixed = true;
+            else if (stats.atk > stats.spa)
                 role.physical = true;
             else if (stats.spa > stats.atk)
                 role.special = true;
+            
 
             int max_for_stall = 50; //maximum base  special/attack to be considered 'stall'
             if (deftype.bulky)
@@ -118,6 +121,40 @@ namespace ShowdownBot
                 else if (role.special)
                     role.stall = (stats.spa < max_for_stall) ? true: false;
             }
+        }
+
+        public string getDefType()
+        {
+            string toreturn = "";
+            if (deftype.physical)
+                toreturn = "physical";
+            if (deftype.special)
+                toreturn = "special";
+            if (deftype.mixed)
+                toreturn = "mixed";
+            if (deftype.any)
+                toreturn = "any";
+            if (deftype.bulky)
+                toreturn = "bulky " + toreturn;
+            return toreturn;
+        }
+        public string getRole()
+        {
+            string toreturn = "";
+            if (role.lead)
+                toreturn = "lead";
+            if (role.physical)
+                toreturn = "physical";
+            if (role.special)
+                toreturn = "special";
+            if (role.mixed)
+                toreturn = "mixed";
+            if (role.any)
+                toreturn = "any";
+            if (role.stall)
+                toreturn = toreturn + " stall";
+            
+            return toreturn;
         }
     /// <summary>
     /// 

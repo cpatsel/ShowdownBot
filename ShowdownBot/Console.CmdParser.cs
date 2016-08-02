@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using static ShowdownBot.GlobalConstants;
+using static ShowdownBot.Global;
 namespace ShowdownBot
 {
     partial class Consol
@@ -129,13 +131,30 @@ namespace ShowdownBot
             }
             else if (args[0] == "info")
             {
-                if (!bot.getStatus())
+                if (isSet(param, "-m"))
                 {
-                    write("No bot running.");
+                    string a = param["-m"];
+                    a = a.Replace('_', ' ');
+                    Move m = Global.moveLookup(a);
+                    write(m.name + " (" + m.group + "):" + m.type.value + ", " + m.bp + ", " + (m.accuracy*100) + "%\n" + m.desc);
+                }
+                else if (isSet(param, "-p"))
+                {
+                    string a = param["-p"];
+                    a = a.Replace('_', '-');
+                    Pokemon p = Global.lookup(a);
+                    write(p.name + ": " + p.type1.value + "/" + p.type2.value + "\nTypically " + p.getRole() + " with " + p.getDefType() + " defenses.");
                 }
                 else
                 {
-                    botUseCommand(() => bot.printInfo());
+                    if (!bot.getStatus())
+                    {
+                        write("No bot running.");
+                    }
+                    else
+                    {
+                        botUseCommand(() => bot.printInfo());
+                    }
                 }
             }
             else if (args[0] == "forfeit")
@@ -148,7 +167,16 @@ namespace ShowdownBot
             }
             else if (args[0] == "clear" || args[0] == "cls")
             {
-                Console.Clear();
+                if (isSet(param, "-e"))
+                {
+                    if (File.Exists(ERRLOGPATH))
+                    {
+                        File.Delete(ERRLOGPATH);
+                        writef("Cleared error log.", "system", COLOR_SYS);
+                    }
+                }
+                else
+                    Console.Clear();
             }
             else if (args[0] == "learn" || args[0] == "l")
             {

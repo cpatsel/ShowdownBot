@@ -37,6 +37,7 @@ namespace ShowdownBot
         public bool field = false; //Hazard move?
         public Move(string n, Type t, float p) { name = n; type = t; bp = p; }
         public Move(string n, Type t) { name = n; type = t; unknown = true; bp = -1; }
+        public string desc;
         public Move(MoveJSONObj obj)
         {
             name = obj.name;
@@ -45,7 +46,7 @@ namespace ShowdownBot
             accuracy = ((float)obj.accuracy / 100f);
             group = obj.category.ToLower();
             priority = obj.priority;
-            
+            desc = obj.desc;
 
         }
 

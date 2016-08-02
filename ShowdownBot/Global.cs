@@ -2,6 +2,7 @@
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -36,6 +37,7 @@ namespace ShowdownBot
         public static string DBPATH = @"./data/mtdb.sdb";
         public static string POKEBASEPATH = @"./data/pokedex.js";
         public static string MOVELISTPATH = @"./data/moves.js";
+        public static string ERRLOGPATH = @"./error.txt";
         //Encyclopedia
         public static Dictionary<string, Type> types;
         public static Dictionary<string, Move> moves;
@@ -164,6 +166,8 @@ namespace ShowdownBot
         public static Move moveLookup(string name)
         {
             Move m;
+            TextInfo ti = new CultureInfo("en-us").TextInfo;
+            name = ti.ToTitleCase(name);
             try
             {
                 m = moves[name];

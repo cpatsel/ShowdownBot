@@ -45,6 +45,12 @@ namespace ShowdownBot
                 arguments = "\n\t [-f] - Format";
 
             }
+            else if (cmnd == "clear" || cmnd == "cls")
+            {
+                desc = "clear: clears the screen among other things";
+                alias = "cls";
+                arguments = "\n\t [-e] - Deletes the error log.";
+            }
             else if (cmnd == "challenge" || cmnd == "cp")
             {
                 desc = "challenge: Have the bot challenge a player";
@@ -66,6 +72,12 @@ namespace ShowdownBot
             {
                 desc = "exit: Kills the bot and quits the program.";
                 alias = "quit";
+            }
+            else if (cmnd == "info")
+            {
+                desc = "info: displays various information";
+                arguments = "\n\t [-m] - displays info about a specific move. Replace spaces with _\n" +
+                            "\t [-p] - displays info about a specific pokemon. Replace dashes with _";
             }
             else if (cmnd == "module" || cmnd == "m")
             {

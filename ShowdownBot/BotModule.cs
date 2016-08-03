@@ -257,10 +257,14 @@ namespace ShowdownBot
                     if (s.GetAttribute("title").Contains("(active)"))
                      {
                         string[] name;
+			
                         try
                         {
+			    if(s.GetAttribute("title").contains("Mr. Mime") || s.GetAttribute("title").contains("Mime Jr.")
+				return "mr. mime";
                             name = s.GetAttribute("title").Split(' ');
-                        }
+                            
+			}
                         catch(StaleElementReferenceException ex)
                         {
                             cwrite("Unable to determine active pokemon, maybe it fainted.", "debug", COLOR_WARN);
@@ -269,7 +273,8 @@ namespace ShowdownBot
                          //Nicknamed pokemon appear in the html as "Nickname (Pokemon) (active)"
                          //this means that the pokemon's name should be N-2, which should hold
                          //true even for non-named mons.
-                         string n_name = name[name.Length - 2].Trim('(', ')'); //gets a sanitized name.
+                          
+			 string n_name = name[name.Length - 2].Trim('(', ')'); //gets a sanitized name.
                          return n_name.ToLower();
                      }
                  }

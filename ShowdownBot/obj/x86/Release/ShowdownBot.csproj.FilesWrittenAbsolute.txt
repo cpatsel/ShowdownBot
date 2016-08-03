@@ -15,3 +15,17 @@
 /home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/Release/Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 /home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/Release/WebDriver.dll
 /home/steven/docs/repos/ShowdownBot/ShowdownBot/bin/Release/WebDriver.Support.dll
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/obj/x86/Release/.NETFramework,Version=v4.6.AssemblyAttribute.cs
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/obj/x86/Release/ShowdownBot.Consol.resources
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/obj/x86/Release/ShowdownBot.Properties.Resources.resources
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/bin/Release/botInfo.txt
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/bin/Release/sdbicon_cpm_icon.ico
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/bin/Release/changelog.md
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/bin/Release/data/moves.js
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/bin/Release/data/pokedex.js
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/bin/Release/ShowdownBot.exe.config
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/bin/Release/ShowdownBot.exe
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/obj/x86/Release/ShowdownBot.exe
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/bin/Release/Newtonsoft.Json.dll
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/bin/Release/WebDriver.dll
+/home/steven/docs/repos/new/ShowdownBot/ShowdownBot/bin/Release/WebDriver.Support.dll

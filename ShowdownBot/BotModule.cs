@@ -220,7 +220,8 @@ namespace ShowdownBot
              //I feel like there's an easier way to do this.
 
              cwrite("Getting active Pokemon");
-             var elems = browser.FindElement(By.ClassName(barclass));
+             
+             var elems = waitFind(By.ClassName(barclass));
              IList<IWebElement> ticon = elems.FindElements(By.ClassName("teamicons"));
              string temp = parseNameFromPage(ticon);
              if (temp == "0")
@@ -257,14 +258,11 @@ namespace ShowdownBot
                     if (s.GetAttribute("title").Contains("(active)"))
                      {
                         string[] name;
-			
                         try
                         {
-			    if(s.GetAttribute("title").contains("Mr. Mime") || s.GetAttribute("title").contains("Mime Jr.")
-				return "mr. mime";
                             name = s.GetAttribute("title").Split(' ');
                             
-			}
+			            }
                         catch(StaleElementReferenceException ex)
                         {
                             cwrite("Unable to determine active pokemon, maybe it fainted.", "debug", COLOR_WARN);
@@ -274,7 +272,15 @@ namespace ShowdownBot
                          //this means that the pokemon's name should be N-2, which should hold
                          //true even for non-named mons.
                           
-			 string n_name = name[name.Length - 2].Trim('(', ')'); //gets a sanitized name.
+			             string n_name = name[name.Length - 2].Trim('(', ')'); //gets a sanitized name.
+                        if (name.Length >= 3)
+                        {
+                            string cleanold = name[name.Length - 3].Trim('(', ')');
+                            if (n_name == "Mime" && cleanold == "Mr.")
+                                return "mr. mime";
+                            else if (n_name == "Jr." && cleanold == "Mime")
+                                return "mime jr.";
+                        }
                          return n_name.ToLower();
                      }
                  }

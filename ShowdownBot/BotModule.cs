@@ -172,38 +172,79 @@ namespace ShowdownBot
              //todo deal with moves with no pp/disabled
              Move[] moves = new Move[4];
             int waittime = 5;
-             for (int i = 0; i < 4; i++)
-             {
-                 if (!waitUntilElementExists(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"),waittime))
-                 {
+            for (int i = 0; i < 4; i++)
+            {
+                if (!waitUntilElementExists(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"), waittime))
+                {
                     cwrite("Unavailable or bad move " + i.ToString(), "debug", COLOR_BOT);
                     Move defal = new Move("error", types["error"]);
                     moves[i] = defal;
                     continue;
-                 }
-                 IWebElement b = browser.FindElement(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"));
-                 string htmla = (string)((IJavaScriptExecutor)browser).ExecuteScript("return arguments[0].outerHTML;",b); 
-                 string[] html = htmla.Split(new string[] { "data-move=\"" }, StringSplitOptions.None);
-                 //string[] html = b.GetAttribute("innerhtml").Split(new string[]{"data-move=\""},StringSplitOptions.None);
-                 var nametag = Array.Find(html, s => s.StartsWith("data-move"));
-                 string[] name = html[1].Split('"');
-                 string[] temp = b.GetAttribute("class").Split('-');
-                 string type = temp[1];
+                }
+                IWebElement b = browser.FindElement(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"));
+                string htmla = (string)((IJavaScriptExecutor)browser).ExecuteScript("return arguments[0].outerHTML;", b);
+                string[] html = htmla.Split(new string[] { "data-move=\"" }, StringSplitOptions.None);
+                //string[] html = b.GetAttribute("innerhtml").Split(new string[]{"data-move=\""},StringSplitOptions.None);
+                var nametag = Array.Find(html, s => s.StartsWith("data-move"));
+                string[] name = html[1].Split('"');
+                string[] temp = b.GetAttribute("class").Split('-');
+                string type = temp[1];
 
                 // moves [i] =
-                 
-                 Move m;
-                 if (Global.moves.ContainsKey(name[0]))
-                     m = Global.moves[name[0]];
-                 else
-                 {
-                     cwrite("Unknown move " + name[0], COLOR_WARN);
-                     m = new Move(name[0], Global.types[type.ToLower()]);
-                 }
-                 moves[i] = m;
-                 //   moves[i] = lookupMove(name[0], Global.types[type.ToLower()]);
-                  cwrite("Move " + i.ToString() + " " + name[0], COLOR_BOT);
 
+                Move m;
+                //hidden power and frustration check
+                if (name[0] == "Hidden Power")
+                {
+                    string nname = "Hidden Power " + type;
+                    if (!Global.moves.ContainsKey(nname))
+                    {
+                        m = new Move(nname, types[type.ToLower()], 60);
+                        m.group = "special";
+                        Global.moves.Add(m.name, m);
+                        moves[i] = m;
+                        cwrite("Move " + i.ToString() + " " + m.name, COLOR_BOT);
+
+                    }
+                    else
+                    {
+                        m = Global.moveLookup("Hidden Power " + type);
+                        moves[i] = m;
+                    }
+
+
+                }
+                else if (name[0] == "Return" || name[0] == "Frustration")
+                {
+                    string nname = "Return/Frustration (" + type + ")";
+                    if (!Global.moves.ContainsKey(nname))
+                    {
+                        //just assume it's full power.
+                        m = new Move(nname, types[type.ToLower()], 102);
+                        m.group = "physical";
+                        Global.moves.Add(m.name, m);
+                        moves[i] = m;
+                        cwrite("Move " + i.ToString() + " " + m.name, COLOR_BOT);
+                    }
+                    else
+                    {
+                        m = Global.moveLookup(nname);
+                        moves[i] = m;
+                    }
+
+                }
+                else
+                {
+                    if (Global.moves.ContainsKey(name[0]))
+                        m = Global.moves[name[0]];
+                    else
+                    {
+                        cwrite("Unknown move " + name[0], COLOR_WARN);
+                        m = new Move(name[0], Global.types[type.ToLower()]);
+                    }
+                    moves[i] = m;
+                    cwrite("Move " + i.ToString() + " " + name[0], COLOR_BOT);
+               }
              }
              return moves;
          }

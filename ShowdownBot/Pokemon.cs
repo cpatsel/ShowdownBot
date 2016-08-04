@@ -64,6 +64,7 @@ namespace ShowdownBot
         string item = "NA";
         float apct = 100f;
         string firstmove = "NA";
+        float weight = 50f;
         BaseStats stats;
         Abilities abilities;
         DefenseType deftype;
@@ -84,6 +85,7 @@ namespace ShowdownBot
                 type2 = types[obj.types[1].ToLower()];
             stats = obj.baseStats;
             abilities = obj.abilities;
+            weight = (float)obj.weightkg;
             deftype = new DefenseType();
             role = new Role();
             initRoles();

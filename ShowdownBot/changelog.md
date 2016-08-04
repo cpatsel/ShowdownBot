@@ -1,5 +1,13 @@
 ## Changelog ##
 
+### v0.3.1 / Unreleased ###
+
+Fixes
+
+* Bot will recognize Mr. Mime and Mime Jr.
+* Correctly processes Hidden Power 
+* Correctly processes Return and Frustration
+
 
 ### v0.3.0 / 2016-08-02 ###
 ----

@@ -109,6 +109,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BattlePokemon.cs" />
     <Compile Include="Bot.cs" />
     <Compile Include="BotModule.cs" />
     <Compile Include="Console.CmdParser.cs">
@@ -129,10 +130,10 @@
     <Compile Include="modules\BiasedModule.cs" />
     <Compile Include="modules\ComparativeModule.cs" />
     <Compile Include="modules\RandomModule.cs" />
-    <Compile Include="MoveJSONObj.cs" />
-    <Compile Include="Movelist.cs" />
-    <Compile Include="PokeJSONObj.cs" />
-    <Compile Include="Pokemon.cs" />
+    <Compile Include="dataobj\MoveJSONObj.cs" />
+    <Compile Include="dataobj\Movelist.cs" />
+    <Compile Include="dataobj\PokeJSONObj.cs" />
+    <Compile Include="dataobj\Pokemon.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReplayLearner.cs" />

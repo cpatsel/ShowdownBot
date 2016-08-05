@@ -19,19 +19,39 @@ namespace ShowdownBot.modules
             ACTION_SWITCH
         };
         private LastBattleAction lastAction =LastBattleAction.ACTION_ATTACK_SUCCESS;
-
+        protected List<BattlePokemon> myTeam;
+        protected List<BattlePokemon> enemyTeam;
+        protected BattlePokemon errormon;
         public AnalyticModule(Bot m, IWebDriver b) : base(m,b)
         {
             format = "ou";
-            
+            myTeam = new List<BattlePokemon>();
+            enemyTeam = new List<BattlePokemon>();
+            errormon = new BattlePokemon(Global.lookup("error"));
         }
 
+        /// <summary>
+        /// Conversion method to get the BattlePokemon version of a particular Pokemon in 
+        /// a specific team.
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
+        private BattlePokemon getPokemon(Pokemon p,List<BattlePokemon> team)
+        {
+            for (int i = 0; i < team.Count; i++)
+            {
+                if (team[i].mon.name == p.name)
+                    return team[i];
+            }
+            return errormon;
+        }
         
         public override void battle()
         {
             int turn = 1;
             
             wait(5000); //give battle time to load
+            buildTeams();
             //Select lead
             string lead;
             cwrite("Selecting first pokemon as lead", COLOR_BOT);
@@ -46,14 +66,14 @@ namespace ShowdownBot.modules
             else
                 lead = "error";
 
-            Pokemon active = Global.lookup(lead);
-            Pokemon enemy = null;
+            BattlePokemon active = myTeam[0];//Global.lookup(lead);
+            BattlePokemon enemy = null;
             do
             {
                    
                     wait();
-                    enemy = getActivePokemon();
-                    active = updateYourPokemon();
+                    enemy = getPokemon(getActivePokemon(),enemyTeam);
+                    active = getPokemon(updateYourPokemon(),myTeam);
                     
                     battleAnalytic(ref active, enemy, ref turn);
                 
@@ -61,7 +81,28 @@ namespace ShowdownBot.modules
             } while (activeState == State.BATTLE); 
         }
 
-        private bool battleAnalytic(ref Pokemon active, Pokemon enemy, ref int turn)
+        public virtual bool buildTeams()
+        {
+            cwrite("Building teams.");
+            var elems = waitFind(By.ClassName("leftbar")); //player
+            IList<IWebElement> ticon = elems.FindElements(By.ClassName("teamicons"));
+            List<string> names = parseAllNamesFromPage(ticon);
+            for (int i = 0; i<names.Count;i++)
+            {
+                myTeam.Add(new BattlePokemon(Global.lookup(names[i])));
+            }
+            elems = waitFind(By.ClassName("rightbar")); //opponent
+            ticon = elems.FindElements(By.ClassName("teamicons"));
+            names = parseAllNamesFromPage(ticon);
+            for (int i = 0; i < names.Count; i++)
+            {
+               enemyTeam.Add(new BattlePokemon(Global.lookup(names[i])));
+            }
+            return true;
+
+        }
+
+        private bool battleAnalytic(ref BattlePokemon active, BattlePokemon enemy, ref int turn)
         {
             //Extra check to make sure we pick a lead.
             //Possibly redundant
@@ -101,7 +142,7 @@ namespace ShowdownBot.modules
 
                 cwrite("I'm switching out.", "Turn " + turn.ToString(), COLOR_BOT);
                 wait();
-                Pokemon temp = pickPokeAnalytic(enemy);
+                BattlePokemon temp = pickPokeAnalytic(enemy);
                 if (temp == null)
                 {
                     cwrite("Couldn't pick a pokemon. Going with moves instead.", "[!]", COLOR_WARN);
@@ -134,7 +175,7 @@ namespace ShowdownBot.modules
             return false;
         }
 
-        private Pokemon pickPokeAnalytic(Pokemon enemy)
+        private BattlePokemon pickPokeAnalytic(BattlePokemon enemy)
         {
             //Loop over all pokemon
             int bestChoice = 1000;
@@ -144,7 +185,7 @@ namespace ShowdownBot.modules
             {
                 if (!elementExists(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")))
                     continue;
-                Pokemon p = Global.lookup(browser.FindElement(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")).Text);
+                BattlePokemon p = getPokemon(Global.lookup(browser.FindElement(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")).Text),myTeam);
                 if (bestChoice == 1000)
                     bestChoice = i; //set a default value that can be accessed.
                 float temp = p.matchup(enemy);
@@ -156,7 +197,7 @@ namespace ShowdownBot.modules
                      highestdamage = temp;
                      bestChoice = i;
                  }
-                 cwrite(p.name + " value:" + temp, "[DEBUG]", COLOR_OK);
+                 cwrite(p.mon.name + " value:" + temp, "[DEBUG]", COLOR_OK);
 
 
 
@@ -164,12 +205,12 @@ namespace ShowdownBot.modules
             }
             
             var b = browser.FindElement(By.CssSelector("button[value='" + bestChoice.ToString() + "'][name=chooseSwitch]"));
-            Pokemon nextPoke = Global.lookup(b.Text);
+            BattlePokemon nextPoke = getPokemon(Global.lookup(b.Text),myTeam);
             b.Click();
             return nextPoke;
         }
 
-        private string pickMoveAnalytic(Pokemon you, Pokemon enemy)
+        private string pickMoveAnalytic(BattlePokemon you, BattlePokemon enemy)
         {
             float[] rankings = new float[4]; //ranking of each move
             float bestMove = 0f;
@@ -221,7 +262,7 @@ namespace ShowdownBot.modules
 
         }
 
-        private bool needSwitch(Pokemon you, Pokemon enemy)
+        private bool needSwitch(BattlePokemon you, BattlePokemon enemy)
         {
             if (isLastMon())
                 return false;

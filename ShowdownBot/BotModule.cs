@@ -277,6 +277,7 @@ namespace ShowdownBot
              return p;
          }
 
+
          /// <summary>
          /// Alias for getActivePokemon("leftbar")
          /// </summary>
@@ -284,7 +285,7 @@ namespace ShowdownBot
          protected Pokemon updateYourPokemon()
          {
              Pokemon p = getActivePokemon("leftbar");
-             //do other stuff that may be useful here
+             
              return p;
          }
 
@@ -330,7 +331,51 @@ namespace ShowdownBot
              return "0"; //return indicator that we did not find it.
          }
 
+        protected List<string> parseAllNamesFromPage(IList<IWebElement> ticons)
+        {
+            List<string> names_list = new List<string>();
+            for (int i = 0; i < ticons.Count; i++)
+            {
+                IWebElement e = ticons[i];
+                IList<IWebElement> elems = e.FindElements(By.ClassName("pokemonicon"));
+                foreach (IWebElement s in elems)
+                {
+                        string[] name;
+                        try
+                        {
+                            //todo this fails on formats without picking a lead like randombattle
+                            name = s.GetAttribute("title").Split(' ');
 
+                        }
+                        catch (StaleElementReferenceException ex)
+                        {
+                            cwrite("Unable to determine some pokemon on a team.", "debug", COLOR_WARN);
+                            break;
+                        }
+                        //Nicknamed pokemon appear in the html as "Nickname (Pokemon)"
+                        //this means that the pokemon's name should be N-1, which should hold
+                        //true even for non-named mons.
+
+                        string n_name = name[name.Length - 1].Trim('(', ')'); //gets a sanitized name.
+                        if (name.Length >= 2)
+                        {
+                            string cleanold = name[name.Length - 2].Trim('(', ')');
+                            if (n_name == "Mime" && cleanold == "Mr.")
+                                names_list.Add( "mr. mime");
+                            else if (n_name == "Jr." && cleanold == "Mime")
+                                names_list.Add( "mime jr.");
+                        }
+                        else if (n_name == "")
+                        {
+                             continue;
+                        }
+                        else
+                            names_list.Add(n_name.ToLower());
+                    }
+                }
+            return names_list;
+         }
+        
          /// <summary>
          /// Randomly selects a pokemon.
          /// </summary>

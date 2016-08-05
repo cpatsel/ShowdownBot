@@ -6,7 +6,7 @@ Fixes
 
 * Bot will recognize Mr. Mime and Mime Jr.
 * Correctly processes Hidden Power 
-* Correctly processes Return and Frustration
+* Correctly processes Return and Frustration, Gryo Ball
 
 
 ### v0.3.0 / 2016-08-02 ###

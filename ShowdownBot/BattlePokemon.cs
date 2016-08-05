@@ -191,7 +191,7 @@ namespace ShowdownBot
             {
                 if (m.name == "Gyro Ball")
                 {
-                  //  float np = 25 * (this.stats.spe)
+                    float np = 25 * (enemy.getStat("spe") / this.getStat("spe"));
                 }
             }
 

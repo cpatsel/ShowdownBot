@@ -278,7 +278,7 @@ namespace ShowdownBot
         }
         private int statCalc(int base_stat, int ivVal, int evVal, float nature, int level = 100)
         {
-            float value = (((2 * base_stat + ivVal + (evVal / 4) * level) / 100) + 5) * nature;
+            float value = ((  (((2 * base_stat) + ivVal + (evVal / 4)) * level) / 100) + 5) * nature;
             return (int)value;
         }
         private int hpCalc(int base_stat, int ivVal, int evVal, int level)
@@ -287,7 +287,7 @@ namespace ShowdownBot
                 return 1;
             else
             {
-                float value = (((2 * base_stat + ivVal + (evVal / 4) * level) / 100) + level + 10);
+                float value = ((((2 * base_stat + ivVal + (evVal / 4)) * level) / 100) + level + 10);
                 return (int)value;
             }
         }

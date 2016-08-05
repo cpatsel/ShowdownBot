@@ -15,7 +15,8 @@ namespace ShowdownBot
         STATE_BRN,
         STATE_SLP,
         STATE_FRZ,
-        STATE_HEALTHY
+        STATE_HEALTHY,
+        STATE_FAINT
     };
 
     /// <summary>

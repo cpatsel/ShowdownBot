@@ -28,7 +28,13 @@ namespace ShowdownBot
         public string type { get; set; }
         public string contestType { get; set; }
         public bool isViable { get; set; }
-        
+
+
+        public class Self
+        {
+            int chance { get; set; }
+            public Boosts boosts { get; set; }
+        }
 
     }
     public class Flags
@@ -60,6 +66,7 @@ namespace ShowdownBot
         public int accuracy { get; set; }
         public int evasion { get; set; }
     }
+
 
     public class Secondary
     {

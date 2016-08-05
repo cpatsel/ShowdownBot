@@ -1,6 +1,9 @@
 ## Changelog ##
 
-### v0.3.1 / Unreleased ###
+### v0.4.0 / Unreleased ###
+Added
+
+* Status tracking.
 
 Fixes
 

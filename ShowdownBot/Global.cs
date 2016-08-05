@@ -195,8 +195,22 @@ namespace ShowdownBot
             wait(2000);
         }
 
+        public static IWebElement findWithin(IWebElement toSearch, By by)
+        {
+            try
+            {
+                return toSearch.FindElement(by);
+            }
+            catch
+            {
+                //cwrite("Unable to find element " + by + " in element " + toSearch);
+                return null;
+            }
+        }
+
         /// <summary>
         /// Waits until an element is present and returns that element.
+        /// Returns null if not found.
         /// </summary>
         /// <param name="by"></param>
         /// <param name="maxw"></param>

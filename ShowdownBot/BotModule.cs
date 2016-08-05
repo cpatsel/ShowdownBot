@@ -340,6 +340,8 @@ namespace ShowdownBot
                 IList<IWebElement> elems = e.FindElements(By.ClassName("pokemonicon"));
                 foreach (IWebElement s in elems)
                 {
+                    if (s.GetAttribute("title") != "Not revealed")
+                    {
                         string[] name;
                         try
                         {
@@ -361,17 +363,18 @@ namespace ShowdownBot
                         {
                             string cleanold = name[name.Length - 2].Trim('(', ')');
                             if (n_name == "Mime" && cleanold == "Mr.")
-                                names_list.Add( "mr. mime");
+                                names_list.Add("mr. mime");
                             else if (n_name == "Jr." && cleanold == "Mime")
-                                names_list.Add( "mime jr.");
+                                names_list.Add("mime jr.");
                         }
                         else if (n_name == "")
                         {
-                             continue;
+                            continue;
                         }
                         else
                             names_list.Add(n_name.ToLower());
                     }
+                }
                 }
             return names_list;
          }

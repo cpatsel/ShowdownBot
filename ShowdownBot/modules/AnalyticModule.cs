@@ -19,15 +19,18 @@ namespace ShowdownBot.modules
             ACTION_SWITCH
         };
         private LastBattleAction lastAction =LastBattleAction.ACTION_ATTACK_SUCCESS;
+        protected Move lastMove;
         protected List<BattlePokemon> myTeam;
         protected List<BattlePokemon> enemyTeam;
         protected BattlePokemon errormon;
+        protected BattlePokemon currentActive;
         public AnalyticModule(Bot m, IWebDriver b) : base(m,b)
         {
             format = "ou";
             myTeam = new List<BattlePokemon>();
             enemyTeam = new List<BattlePokemon>();
             errormon = new BattlePokemon(Global.lookup("error"));
+            currentActive = errormon;
         }
 
         /// <summary>
@@ -55,7 +58,6 @@ namespace ShowdownBot.modules
             //Select lead
             string lead;
             cwrite("Selecting first pokemon as lead", COLOR_BOT);
-            System.Threading.Thread.Sleep(5000); //let page load
 
             //TODO: actually pick this analytically.
             if (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
@@ -74,7 +76,8 @@ namespace ShowdownBot.modules
                     wait();
                     enemy = getPokemon(getActivePokemon(),enemyTeam);
                     active = getPokemon(updateYourPokemon(),myTeam);
-                    
+                    updateActiveStatuses(ref active,ref enemy);
+                    currentActive = active;
                     battleAnalytic(ref active, enemy, ref turn);
                 
 
@@ -102,6 +105,31 @@ namespace ShowdownBot.modules
 
         }
 
+        private void updateTeamStatuses()
+        {
+
+        }
+
+        private void updateActiveStatuses (ref BattlePokemon you, ref BattlePokemon opponent)
+        {
+            var yourStats = waitFind(By.CssSelector("div[class='statbar rstatbar']"));
+            if (yourStats == null) return;
+            if (findWithin(yourStats, By.ClassName("par")) != null) you.status = Status.STATE_PAR;
+            else if (findWithin(yourStats, By.ClassName("psn")) != null) you.status = Status.STATE_TOX;
+            else if (findWithin(yourStats, By.ClassName("brn")) != null) you.status = Status.STATE_BRN;
+            else if (findWithin(yourStats, By.ClassName("slp")) != null) you.status = Status.STATE_SLP;
+            else if (findWithin(yourStats, By.ClassName("frz")) != null) you.status = Status.STATE_FRZ;
+            else you.status = Status.STATE_HEALTHY;
+
+            var oppStats = waitFind(By.CssSelector("div[class='statbar lstatbar']"));
+            if (oppStats == null) return;
+            if (findWithin(oppStats, By.ClassName("par")) != null) opponent.status = Status.STATE_PAR;
+            else if (findWithin(oppStats, By.ClassName("tox")) != null) opponent.status = Status.STATE_TOX;
+            else if (findWithin(oppStats, By.ClassName("brn")) != null) opponent.status = Status.STATE_BRN;
+            else if (findWithin(oppStats, By.ClassName("slp")) != null) opponent.status = Status.STATE_SLP;
+            else if (findWithin(oppStats, By.ClassName("frz")) != null) opponent.status = Status.STATE_FRZ;
+            else opponent.status = Status.STATE_HEALTHY;
+        }
         private bool battleAnalytic(ref BattlePokemon active, BattlePokemon enemy, ref int turn)
         {
             //Extra check to make sure we pick a lead.
@@ -296,6 +324,12 @@ namespace ShowdownBot.modules
         {
             cwrite("Analytic info:\n" +
                     "Format: " + format, COLOR_BOT);
+            if (activeState == State.BATTLE)
+            {
+                cwrite("Battle: " + browser.Url +
+                    "\nCurrent Pokemon: " + currentActive.mon.name +
+                    "\n\tStatus: " + currentActive.status,COLOR_BOT);
+            }
         }
 
     }

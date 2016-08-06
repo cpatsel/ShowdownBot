@@ -171,7 +171,7 @@ namespace ShowdownBot
          {
              //todo deal with moves with no pp/disabled
              Move[] moves = new Move[4];
-            int waittime = 5;
+            int waittime = 1;
             for (int i = 0; i < 4; i++)
             {
                 if (!waitUntilElementExists(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"), waittime))
@@ -214,14 +214,20 @@ namespace ShowdownBot
 
 
                 }
-                else if (name[0] == "Return" || name[0] == "Frustration")
+                else if (type == "Normal")
                 {
-                    string nname = "Return/Frustration (" + type + ")";
+                    string nname = name[0]+" (" + type + ")";
                     if (!Global.moves.ContainsKey(nname))
                     {
-                        //just assume it's full power.
-                        m = new Move(nname, types[type.ToLower()], 102);
-                        m.group = "physical";
+                        //This handles both return/frustration and all normal type moves affected by -ate abilities.
+                        //I think it also handles Normalize as well.
+                        m = new Move(nname, types[type.ToLower()]);
+                        Move analog = Global.moveLookup(name[0]);
+                        m.group = analog.group;
+                        /* Check for -ate abilities by comparing the original type to the one we have.
+                         * Add the 30% boost to the base power so no need to calc it later. */
+                        if(m.type != analog.type)
+                            m.bp = analog.bp + (analog.bp * 0.3f);
                         Global.moves.Add(m.name, m);
                         moves[i] = m;
                         cwrite("Move " + i.ToString() + " " + m.name, COLOR_BOT);
@@ -262,7 +268,8 @@ namespace ShowdownBot
 
              cwrite("Getting active Pokemon");
              
-             var elems = waitFind(By.ClassName(barclass));
+             var elems = waitFind(By.ClassName(barclass),10);
+             if (elems == null) return Global.lookup("error");
              IList<IWebElement> ticon = elems.FindElements(By.ClassName("teamicons"));
              string temp = parseNameFromPage(ticon);
              if (temp == "0")

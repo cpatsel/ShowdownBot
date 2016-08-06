@@ -146,7 +146,13 @@ namespace ShowdownBot
             return 1;
         }
 
-
+        public int getHealth() { return currentHealth; }
+        public void setHealth(int percent)
+        {
+            float realpct = (float)(percent / 100f);
+            int health = (int)(maxHealth * realpct);
+            currentHealth = health;
+        }
         /// <summary>
         /// Calculates the total damage a move will do to a particular pokemon,
         /// with respect to abilities, types, STAB, common items, etc.
@@ -188,6 +194,7 @@ namespace ShowdownBot
         {
             if (m.bp > -1)
                 return m.bp;
+               
             else if (m.bp == -2)
             {
                 if (m.name == "Gyro Ball")

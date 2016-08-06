@@ -215,7 +215,7 @@ namespace ShowdownBot
         /// <param name="by"></param>
         /// <param name="maxw"></param>
         /// <returns></returns>
-        public static IWebElement waitFind(By by, int maxw = 60)
+        public static IWebElement waitFind(By by, int maxw = 15)
         {
             WebDriverWait _wait = new WebDriverWait(gBrowserInstance, TimeSpan.FromSeconds(maxw));
             IWebElement elem;
@@ -248,8 +248,24 @@ namespace ShowdownBot
             IWebElement we = waitFind(by);
             if (we != null)
             {
-                we.Click();
-                return true;
+                try
+                {
+                    we.Click();
+                    return true;
+                }
+                catch (StaleElementReferenceException)
+                {
+                    //wait and try again.
+                    wait();
+                    we = waitFind(by);
+                    if (we != null)
+                    {
+                        we.Click();
+                        return true;
+                    }
+                    else
+                        return false;
+                }
             }
             else
             {

@@ -110,9 +110,21 @@ namespace ShowdownBot.modules
 
         }
 
+        private void updateHealth(IWebElement statbar, ref BattlePokemon p)
+        {
+            var elem = findWithin(statbar, By.ClassName("hptext"));
+            if (elem != null)
+            {
+                int pct = 100;
+                string txt = elem.Text.Trim('%');
+                int.TryParse(txt, out pct);
+                p.setHealth(pct);
+            }
+        }
+
         private void updateActiveStatuses (ref BattlePokemon you, ref BattlePokemon opponent)
         {
-            var yourStats = waitFind(By.CssSelector("div[class='statbar rstatbar']"));
+            var yourStats = waitFind(By.CssSelector("div[class='statbar rstatbar']"),1);
             if (yourStats == null) return;
             if (findWithin(yourStats, By.ClassName("par")) != null) you.status = Status.STATE_PAR;
             else if (findWithin(yourStats, By.ClassName("psn")) != null) you.status = Status.STATE_TOX;
@@ -120,15 +132,18 @@ namespace ShowdownBot.modules
             else if (findWithin(yourStats, By.ClassName("slp")) != null) you.status = Status.STATE_SLP;
             else if (findWithin(yourStats, By.ClassName("frz")) != null) you.status = Status.STATE_FRZ;
             else you.status = Status.STATE_HEALTHY;
+            updateHealth(yourStats, ref you);
+
 
             var oppStats = waitFind(By.CssSelector("div[class='statbar lstatbar']"));
             if (oppStats == null) return;
             if (findWithin(oppStats, By.ClassName("par")) != null) opponent.status = Status.STATE_PAR;
-            else if (findWithin(oppStats, By.ClassName("tox")) != null) opponent.status = Status.STATE_TOX;
+            else if (findWithin(oppStats, By.ClassName("psn")) != null) opponent.status = Status.STATE_TOX;
             else if (findWithin(oppStats, By.ClassName("brn")) != null) opponent.status = Status.STATE_BRN;
             else if (findWithin(oppStats, By.ClassName("slp")) != null) opponent.status = Status.STATE_SLP;
             else if (findWithin(oppStats, By.ClassName("frz")) != null) opponent.status = Status.STATE_FRZ;
             else opponent.status = Status.STATE_HEALTHY;
+            updateHealth(oppStats, ref opponent);
         }
         private bool battleAnalytic(ref BattlePokemon active, BattlePokemon enemy, ref int turn)
         {
@@ -328,6 +343,7 @@ namespace ShowdownBot.modules
             {
                 cwrite("Battle: " + browser.Url +
                     "\nCurrent Pokemon: " + currentActive.mon.name +
+                    "\n\tHP: " + currentActive.getHealth() + "/" + currentActive.maxHealth+
                     "\n\tStatus: " + currentActive.status,COLOR_BOT);
             }
         }

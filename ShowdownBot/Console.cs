@@ -10,6 +10,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using static ShowdownBot.Global;
 using static ShowdownBot.GlobalConstants;
+using System.Threading.Tasks;
+
 namespace ShowdownBot
 {
     public partial class Consol : Form
@@ -104,7 +106,8 @@ namespace ShowdownBot
         }
         private void botUseCommand(Action cmd)
         {
-            ts = new ThreadStart(cmd);
+            Task.Factory.StartNew(cmd);
+           /* ts = new ThreadStart(cmd);
             threadBot = new Thread(ts);
             threadBot.SetApartmentState(ApartmentState.STA);
             try
@@ -114,7 +117,7 @@ namespace ShowdownBot
             catch (Exception e)
             {
                 writef(e.ToString(), COLOR_ERR);
-            }
+            }*/
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)

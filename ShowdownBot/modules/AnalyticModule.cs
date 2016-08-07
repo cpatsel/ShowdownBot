@@ -68,7 +68,7 @@ namespace ShowdownBot.modules
             else
                 lead = "error";
 
-            BattlePokemon active = myTeam[0];//Global.lookup(lead);
+            BattlePokemon active = null;//Global.lookup(lead);
             BattlePokemon enemy = null;
             do
             {

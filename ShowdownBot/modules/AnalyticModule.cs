@@ -16,6 +16,7 @@ namespace ShowdownBot.modules
             ACTION_STATUS,
             ACTION_BOOST,
             ACTION_RECOVER,
+            ACTION_SLEEPTALK,
             ACTION_SWITCH
         };
         private LastBattleAction lastAction =LastBattleAction.ACTION_ATTACK_SUCCESS;
@@ -24,6 +25,8 @@ namespace ShowdownBot.modules
         protected List<BattlePokemon> enemyTeam;
         protected BattlePokemon errormon;
         protected BattlePokemon currentActive;
+        protected int turnsSpentSleepTalking;
+
         public AnalyticModule(Bot m, IWebDriver b) : base(m,b)
         {
             format = "ou";
@@ -31,6 +34,7 @@ namespace ShowdownBot.modules
             enemyTeam = new List<BattlePokemon>();
             errormon = new BattlePokemon(Global.lookup("error"));
             currentActive = errormon;
+            turnsSpentSleepTalking = 0;
         }
 
         /// <summary>
@@ -218,6 +222,7 @@ namespace ShowdownBot.modules
             return false;
         }
 
+        //TODO: add moves to each BattlePokemon as they're encountered so that its not dependent on the web elements.
         private BattlePokemon pickPokeAnalytic(BattlePokemon enemy)
         {
             //Loop over all pokemon
@@ -257,18 +262,21 @@ namespace ShowdownBot.modules
         {
             float[] rankings = new float[4]; //ranking of each move
             float bestMove = 0f;
+            float RANK_MAX = 255;
             int choice = 1;
             float risk = you.matchup(enemy);
             Move[] moves = getMoves();
             for (int i = 0; i < 4; i++)
             {
-                //For now, only determine the best attacking move.
-                if (moves[i].bp == 0)
+               
+                if (moves[i].bp == 0 || moves[i].bp == -1)
                 {
-                    if (moves[i].boost && (lastAction == LastBattleAction.ACTION_BOOST))
-                        rankings[i] = 0; //simply prevent boosting twice in a row
-                    else if (moves[i].boost && risk <= 1)
-                        rankings[i] = 2;
+                    if (moves[i].heal && getRecoverChance(you,enemy) > new Random().NextDouble())
+                        rankings[i] = 150 + (100 - you.getHPPercentage());
+                    //Sleep talk if asleep, but never more than twice in a row.
+                    else if (moves[i].name.Contains("Sleep Talk") && you.status == Status.STATE_SLP && turnsSpentSleepTalking < 2)
+                        rankings[i] = RANK_MAX;
+
 
 
                 }
@@ -292,9 +300,13 @@ namespace ShowdownBot.modules
 
             //figure out what move we've chosen
             Move chosenMove = moves[choice - 1];
-            if (chosenMove.boost) lastAction = LastBattleAction.ACTION_BOOST;
+            setLastBattleAction(chosenMove);
+
+            if (chosenMove.name.Contains("Sleep Talk"))
+                turnsSpentSleepTalking++;
             else
-                lastAction = LastBattleAction.ACTION_ATTACK_SUCCESS;
+                turnsSpentSleepTalking = 0;
+
             if (elementExists(By.CssSelector("button[value='" + choice.ToString() + "'][name='chooseMove']")))
             {
                 browser.FindElement(By.CssSelector("button[value='" + choice.ToString() + "'][name='chooseMove']")).Click();
@@ -304,6 +316,36 @@ namespace ShowdownBot.modules
                 return "no move";
 
         }
+
+
+        private void setLastBattleAction(Move m)
+        {
+            if (m.boost) lastAction = LastBattleAction.ACTION_BOOST;
+            else if (m.name.Contains("Sleep Talk"))
+            {
+                lastAction = LastBattleAction.ACTION_SLEEPTALK;
+            }
+            else
+                lastAction = LastBattleAction.ACTION_ATTACK_SUCCESS;
+
+        }
+
+        /// <summary>
+        /// Likelihood that the pokemon should recover this turn.
+        /// </summary>
+        private float getRecoverChance(BattlePokemon you,BattlePokemon e)
+        {
+            int hpThreshold = 40; //Percent of health at which to conisder recovering.
+            float chance = 0.0f;
+
+            if (you.getHPPercentage() <= hpThreshold) chance += 0.3f;
+            if (you.checkKOChance(e) < 0.3f) chance += 0.2f; //heal if we can't OHKO opponent.
+            if (you.status != Status.STATE_HEALTHY && lastAction != LastBattleAction.ACTION_SLEEPTALK) chance += 0.2f;
+            if (lastAction == LastBattleAction.ACTION_RECOVER) chance -= 0.2f;
+
+            return chance;
+        }
+
 
         private bool needSwitch(BattlePokemon you, BattlePokemon enemy)
         {

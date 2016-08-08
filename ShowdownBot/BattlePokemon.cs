@@ -279,7 +279,11 @@ namespace ShowdownBot
         }
 
 
-        
+        public int getHPPercentage()
+        {
+            float f = ((float)currentHealth / (float)maxHealth);
+            return (int)(f * 100f);
+        }
 
         /// <summary>
         /// 
@@ -306,7 +310,14 @@ namespace ShowdownBot
                 chance += 0.4f;
             }
 
-            //Todo: consider typing
+            if (enemy.getHPPercentage() < 50)
+                chance += 0.2f;
+            else
+                chance -= 0.1f;
+
+            if (checkTypes(enemy) >= 2.5f)
+                chance += 0.2f;
+
             //Todo: add other parameters here. Decrement chance for unsuitable matchings, etc.
             //Todo also: adjust chance scale. do some calcs to find out what produces more favorable results.
             return chance;

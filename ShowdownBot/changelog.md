@@ -5,6 +5,7 @@ Added
 
 * Status tracking.
 * HP tracking.
+* Bot will consider hp when checking to switch.
 
 Fixes
 

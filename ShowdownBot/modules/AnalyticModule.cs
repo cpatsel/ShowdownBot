@@ -274,6 +274,7 @@ namespace ShowdownBot.modules
                     if (moves[i].heal && getRecoverChance(you,enemy) > new Random().NextDouble())
                         rankings[i] = 150 + (100 - you.getHPPercentage());
                     //Sleep talk if asleep, but never more than twice in a row.
+                    //Must use name.contains due to the way normal moves are added ( with (type) appended).
                     else if (moves[i].name.Contains("Sleep Talk") && you.status == Status.STATE_SLP && turnsSpentSleepTalking < 2)
                         rankings[i] = RANK_MAX;
 
@@ -355,8 +356,8 @@ namespace ShowdownBot.modules
             if (elementExists(By.Name("undoChoice")))
                 return false;
             //if the pokemon is at low health, don't bother
-            //WatiN.Core.Element e = mainBrowser.Element(Find.ByClass("critical"));
-            //if (e.Exists)
+            if (you.getHPPercentage() <= 25)
+                return false;
             float tolerance = 2.5f;
             if (you.matchup(enemy) > tolerance)
                 return true;

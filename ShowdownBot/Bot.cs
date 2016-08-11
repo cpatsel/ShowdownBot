@@ -199,21 +199,28 @@ namespace ShowdownBot
 
 
         }
-        public void Start(string u,string p)
+        public void Start(string u, string p)
         {
             if (isRunning)
             {
                 cwrite("Bot is already running!");
                 return;
             }
-            cwrite("Starting bot with credentials " + u + "\tPW:" + p,"system",COLOR_SYS);
-            isRunning = true;
-            initialise();
-            //TODO: do we need to hold onto this information?
-            string tempu = username;
-            string tempp = password;
+
+            string oldu = username;
+            string oldp = password;
             username = u;
             password = p;
+            if (u.Length >= 19)
+            {
+                username = username.Substring(0, 18);
+                cwrite("Username too long, truncating.", COLOR_WARN);
+            }
+                
+            cwrite("Starting bot with credentials:\n" + username + "\nPW:" + password,"system",COLOR_SYS);
+            isRunning = true;
+            initialise();
+            
             
             if (!OpenSite(site))
             {
@@ -262,7 +269,7 @@ namespace ShowdownBot
                 cwrite("You can try starting without authenticating (startf)", COLOR_WARN);
                 return;
             }
-            System.Threading.Thread.Sleep(1000);
+            wait(1000);
             using (var reader = new StreamReader("botInfo.txt"))
             {
                 string line;
@@ -283,9 +290,25 @@ namespace ShowdownBot
         private void setInitVars(string key, string val)
         {
             if (key == "[OWNER]")
+            {
                 owner = val;
+                if (owner.Length >= 19)
+                {
+                    owner = owner.Substring(0, 18);
+                    cwrite("Owner username too long, truncating.", COLOR_WARN);
+                }
+            }
+                
             else if (key == "[USERNAME]")
+            {
                 username = val;
+                if (username.Length >= 19)
+                {
+                    username = username.Substring(0, 18);
+                    cwrite("Username too long, truncating.", COLOR_WARN);
+                }
+            }
+               
             else if (key == "[PASSWORD]")
                 password = val;
             else if (key == "[PROFILE]")

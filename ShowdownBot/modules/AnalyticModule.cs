@@ -263,7 +263,7 @@ namespace ShowdownBot.modules
             float[] rankings = new float[4]; //ranking of each move
             float bestMove = 0f;
             float RANK_MAX = 255;
-            float DEFAULT_RANK = 150; //Arbitrarily chosen
+            float DEFAULT_RANK = 50; //Arbitrarily chosen
             int choice = 1;
             float risk = you.matchup(enemy);
             Move[] moves = getMoves();

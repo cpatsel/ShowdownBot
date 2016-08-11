@@ -13,6 +13,7 @@ Fixes
 * Correctly processes Hidden Power 
 * Correctly processes Return and Frustration, Gryo Ball
 * -ate ability handling.
+* Usernames that are too long are truncated.
 
 ### v0.3.0 / 2016-08-02 ###
 ----

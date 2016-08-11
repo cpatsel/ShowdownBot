@@ -29,12 +29,15 @@ namespace ShowdownBot
     //TODO: add more specific roles, like fast physical or tank,etc and give them specific spreads in setRealStats
     public class Role
     {
+        //Mutually Exclusive:
         public bool lead { get; set; }
         public bool physical { get; set; }
         public bool special { get; set; }
         public bool mixed { get; set; }
         public bool stall { get; set; }
         public bool any { get; set; }
+        //Can be set in addition to above:
+        public bool setup { get; set; } //Whether this mon ne
     }
   
     public class DefenseType

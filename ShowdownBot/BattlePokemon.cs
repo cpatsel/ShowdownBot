@@ -286,11 +286,11 @@ namespace ShowdownBot
         }
 
         /// <summary>
-        /// 
+        /// Returns a number between 0,1 that determines
+        /// the likelihood of this mon KOing the enemy
         /// </summary>
         /// <param name="enemy"></param>
-        /// <returns>A number between 0,1 that determines
-        /// the liklihood of this mon KOing the enemy</returns>
+        /// <returns></returns>
         public float checkKOChance(BattlePokemon enemy)
         {
             float chance = 0;

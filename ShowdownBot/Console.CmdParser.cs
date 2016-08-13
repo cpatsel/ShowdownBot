@@ -144,7 +144,7 @@ namespace ShowdownBot
                     a = a.Replace('_', '-');
                     Pokemon p = Global.lookup(a);
                     write(p.name + ": " + p.type1.value + "/" + p.type2.value + "\nTypically " + p.getRoleToString() + " with " + p.getDefTypeToString() + " defenses.");
-                    writef("\n" + p.statSpread.ToString(), "debug", COLOR_OK);
+                    writef("Debug Info:\n" + p.statSpread.ToString(), "debug", COLOR_OK);
                 }
                 else
                 {

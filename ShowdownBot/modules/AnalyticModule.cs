@@ -381,7 +381,12 @@ namespace ShowdownBot.modules
             //if the pokemon is at low health, don't bother
             if (you.getHPPercentage() <= 25)
                 return false;
-            float tolerance = 2.5f;
+            float tolerance = 2.5f; //Default tolerance based on type matchups.
+            if (you.currentBoosts.total() > 0)
+                tolerance += 1.5f; //enemy must be much more dangerous to consider switching with boosts.
+            else if (you.currentBoosts.total() < 0)
+                tolerance -= 1f; //more likely to switch if drops are present.
+            
             if (you.matchup(enemy) > tolerance)
                 return true;
             else return false;

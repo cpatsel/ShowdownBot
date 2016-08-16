@@ -66,7 +66,7 @@ namespace ShowdownBot
         public int spe { get; set; }
         public int accuracy { get; set; }
         public int evasion { get; set; }
-
+        //TODO: this is a bad gauge of boosts since one boost and one drop will register as 0--no boosts.
         public int total()
         {
             return atk + spa + def + spd + spe + accuracy + evasion;

@@ -73,3 +73,4 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\Newtons
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\Newtonsoft.Json.pdb
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\Newtonsoft.Json.xml
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\data\moves.js
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\data\roleOverride.js

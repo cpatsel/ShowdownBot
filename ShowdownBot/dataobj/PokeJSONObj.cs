@@ -25,7 +25,7 @@ namespace ShowdownBot
         public List<string> evos { get; set; }
         public List<string> eggGroups { get; set; }
 
-       
+
 
         public class GenderRatio
         {
@@ -33,7 +33,14 @@ namespace ShowdownBot
             public double F { get; set; }
         }
 
-       
+
+    }
+
+    public class RoleOverride
+    {
+        public string name { get; set; }
+        public Role role { get; set; }
+        public DefenseType deftype { get; set; }
     }
     public class Abilities
     {

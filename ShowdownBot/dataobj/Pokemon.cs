@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ShowdownBot.dataobj;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 namespace ShowdownBot
 {
    
@@ -36,6 +40,7 @@ namespace ShowdownBot
         public bool mixed { get; set; }
         public bool stall { get; set; }
         public bool any { get; set; }
+        public bool tank { get; set; }
         //Can be set in addition to above:
         public bool setup { get; set; } //Whether this mon ne
     }
@@ -90,6 +95,7 @@ namespace ShowdownBot
             role = new Role();
             realStats = new Dictionary<string, int>();
             initRoles();
+            modifyRole();
             setRealStats();
         }
 
@@ -127,6 +133,32 @@ namespace ShowdownBot
             }
         }
 
+
+        public void modifyRole()
+        {
+            string path = Global.ROLEPATH;
+            using (var reader = new StreamReader(path))
+            {
+                string json;
+                json = reader.ReadToEnd();
+                JObject jo = JsonConvert.DeserializeObject<JObject>(json);
+                string allroles = jo.First.ToString();
+                var current = jo.First;
+                for (int i = 0; i < jo.Count; i++)
+                {
+                    RoleOverride ro = JsonConvert.DeserializeObject<RoleOverride>(current.First.ToString());
+                    if (ro.name == this.name)
+                    {
+                        if (!Object.ReferenceEquals(ro.role, null))
+                            this.role = ro.role;
+                        if (!Object.ReferenceEquals(ro.deftype, null))
+                            this.deftype = ro.deftype;
+                    }
+                    current = current.Next;
+
+                }
+            }
+        }
 
         public int getRealStat(string stat)
         {
@@ -176,6 +208,8 @@ namespace ShowdownBot
                 toreturn = "mixed";
             if (role.any)
                 toreturn = "any";
+            if (role.tank)
+                toreturn = "tank";
             if (role.stall)
                 toreturn = toreturn + " stall";
             
@@ -232,7 +266,7 @@ namespace ShowdownBot
             {
                 setStatsFromSpread(new StatSpreadSpecial());
             }
-            else if (this.role.stall)
+            else if (this.role.tank)
             {
                 if (deftype.physical)
                 {

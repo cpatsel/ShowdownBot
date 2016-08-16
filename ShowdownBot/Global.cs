@@ -38,6 +38,8 @@ namespace ShowdownBot
         public static string POKEBASEPATH = @"./data/pokedex.js";
         public static string MOVELISTPATH = @"./data/moves.js";
         public static string ERRLOGPATH = @"./error.txt";
+        public static string ROLEPATH = @"./data/roleOverride.js";
+
         //Encyclopedia
         public static Dictionary<string, Type> types;
         public static Dictionary<string, Move> moves;

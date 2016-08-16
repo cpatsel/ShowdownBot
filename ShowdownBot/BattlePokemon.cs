@@ -112,15 +112,15 @@ namespace ShowdownBot
         }
 
         /// <summary>
-        /// 
+        /// Returns damage multiplier (0x,.5x,1x,etc) of atk on def.
         /// </summary>
         /// <param name="t1">attacking move</param>
         /// <param name="t2">defending type</param>
         /// <returns>The damage multiplier</returns>
-        public float damageCalc(Type type1, Type type2)
+        public float damageCalc(Type atk, Type def)
         {
-            Type t1 = types[type1.value];
-            Type t2 = types[type2.value];
+            Type t1 = types[atk.value];
+            Type t2 = types[def.value];
             if (t1.nl != null)
             {
                 if (t2.value == t1.nl[0].value)  //No single type has more than one immunity
@@ -206,8 +206,15 @@ namespace ShowdownBot
             return 20; //assume default
         }
 
+        /// <summary>
+        /// Gets the heuristic value of pokemon p vs. this pokemon.
+        /// Returns a value between 0-8
+        /// </summary>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public float matchup(BattlePokemon p)
         {
+            //All of this sucks and it needs to be rewritten to be more clear and useful.
             if (Object.ReferenceEquals(p, null))
             {
                 //in a test case where volt-switch killed an opponent "p" was null
@@ -286,11 +293,11 @@ namespace ShowdownBot
         }
 
         /// <summary>
-        /// 
+        /// Returns a number between 0,1 that determines
+        /// the likelihood of this mon KOing the enemy
         /// </summary>
         /// <param name="enemy"></param>
-        /// <returns>A number between 0,1 that determines
-        /// the liklihood of this mon KOing the enemy</returns>
+        /// <returns></returns>
         public float checkKOChance(BattlePokemon enemy)
         {
             float chance = 0;

@@ -22,6 +22,7 @@ namespace ShowdownBot
         public int pp { get; set; }
         public int priority { get; set; }
         public Flags flags { get; set; }
+        public Boosts boosts { get; set; }
         public List<int> drain { get; set; }
         public Secondary secondary { get; set; }
         public string target { get; set; }
@@ -65,6 +66,11 @@ namespace ShowdownBot
         public int spe { get; set; }
         public int accuracy { get; set; }
         public int evasion { get; set; }
+        //TODO: this is a bad gauge of boosts since one boost and one drop will register as 0--no boosts.
+        public int total()
+        {
+            return atk + spa + def + spd + spe + accuracy + evasion;
+        }
     }
 
 

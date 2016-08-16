@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ShowdownBot.dataobj;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ShowdownBot
 {
@@ -29,12 +33,16 @@ namespace ShowdownBot
     //TODO: add more specific roles, like fast physical or tank,etc and give them specific spreads in setRealStats
     public class Role
     {
+        //Mutually Exclusive:
         public bool lead { get; set; }
         public bool physical { get; set; }
         public bool special { get; set; }
         public bool mixed { get; set; }
         public bool stall { get; set; }
         public bool any { get; set; }
+        public bool tank { get; set; }
+        //Can be set in addition to above:
+        public bool setup { get; set; } //Whether this mon ne
     }
   
     public class DefenseType
@@ -45,6 +53,8 @@ namespace ShowdownBot
         public bool bulky { get; set; }
         public bool any { get; set; }
     }
+
+    
 
     public class Pokemon
     {
@@ -63,9 +73,10 @@ namespace ShowdownBot
         Abilities abilities;
         DefenseType deftype;
         Role role;
+        public StatSpread statSpread;
+        public StatSpread alternativeStatSpread = null;
         Dictionary<string,Type> types;
-
-        
+       
         #endregion
 
         public Pokemon(PokeJSONObj obj)
@@ -84,6 +95,7 @@ namespace ShowdownBot
             role = new Role();
             realStats = new Dictionary<string, int>();
             initRoles();
+            modifyRole();
             setRealStats();
         }
 
@@ -121,6 +133,34 @@ namespace ShowdownBot
             }
         }
 
+
+        public void modifyRole()
+        {
+            string path = Global.ROLEPATH;
+            using (var reader = new StreamReader(path))
+            {
+                string json;
+                json = reader.ReadToEnd();
+                JObject jo = JsonConvert.DeserializeObject<JObject>(json);
+                string allroles = jo.First.ToString();
+                var current = jo.First;
+                for (int i = 0; i < jo.Count; i++)
+                {
+                    RoleOverride ro = JsonConvert.DeserializeObject<RoleOverride>(current.First.ToString());
+                    if (ro.name == this.name)
+                    {
+                        if (!Object.ReferenceEquals(ro.role, null))
+                            this.role = ro.role;
+                        if (!Object.ReferenceEquals(ro.deftype, null))
+                            this.deftype = ro.deftype;
+                        if (!Object.ReferenceEquals(ro.statspread, null))
+                            this.alternativeStatSpread = ro.statspread;
+                    }
+                    current = current.Next;
+
+                }
+            }
+        }
 
         public int getRealStat(string stat)
         {
@@ -170,6 +210,8 @@ namespace ShowdownBot
                 toreturn = "mixed";
             if (role.any)
                 toreturn = "any";
+            if (role.tank)
+                toreturn = "tank";
             if (role.stall)
                 toreturn = toreturn + " stall";
             
@@ -194,87 +236,64 @@ namespace ShowdownBot
             else return false;
         }
 
-       
-
-
-
-
-
-
-       /* public float attacks(Move move, Pokemon enemy)
+     
+        private void setStatsFromSpread(StatSpread s)
         {
-            //Simple method of determining damage.
-            //TODO: factor in stab and other params.
-            float dmg = damageCalc(move.type, enemy.type1);
-            if (enemy.type1.value != enemy.type2.value ||
-                enemy.type2.value != null)
-                dmg = damageCalc(move.type, enemy.type2) * dmg;
-            return dmg;
-        }*/
-
-        private void setRealStats()
-        {
+            StatSpread spread;
+            if (hasAltStatSpread())
+                spread = alternativeStatSpread;
+            else
+                spread = s;
 
             int atkval, defval, spaval, spdval, speval;
             int hpval;
+            atkval = statCalc(this.stats.atk, spread.atkIV,spread.atkEV, spread.atkNatureMod); 
+            defval = statCalc(this.stats.spa, spread.defIV, spread.defEV, spread.defNatureMod); 
+            spaval = statCalc(this.stats.def, spread.spaIV, spread.spaEV, spread.spaNatureMod);
+            spdval = statCalc(this.stats.spd, spread.spdIV, spread.spdEV, spread.spdNatureMod);
+            speval = statCalc(this.stats.spe, spread.speIV, spread.speEV, spread.speNatureMod);
+            hpval = hpCalc(this.stats.hp, spread.hpIV, spread.hpEV, 100);
 
-            //assume sweeper
-            if (this.role.physical)
-            {
-                atkval = statCalc(this.stats.atk, 31, 252, 1.1f); //max attack
-                spaval = statCalc(this.stats.spa, 31, 0, 0.9f); //lower special
-                defval = statCalc(this.stats.def, 31, 0, 1.0f);//neutral def
-                spdval = statCalc(this.stats.spd, 31, 8, 1.0f); //8evs spdf
-                speval = statCalc(this.stats.spe, 31, 252, 1.0f); //raise speed
-                hpval = hpCalc(this.stats.hp, 31, 0, 100);
-            }
-            else if (this.role.special)
-            {
-                atkval = statCalc(this.stats.atk, 0, 0, 0.9f); //minimise attack
-                spaval = statCalc(this.stats.spa, 31, 252, 1.1f); //raise special
-                defval = statCalc(this.stats.def, 31, 0, 1.0f);
-                spdval = statCalc(this.stats.spd, 31, 8, 1.0f);
-                speval = statCalc(this.stats.spe, 31, 252, 1.0f); //raise speed
-                hpval = hpCalc(this.stats.hp, 31, 0, 100);
-            }
-            else if (this.role.stall)
-            {
-                atkval = statCalc(this.stats.atk, 0, 0, 0.9f); //minimise attack
-                spaval = statCalc(this.stats.spa, 31, 0, 1.0f); //neutral special
-
-                if (deftype.physical)
-                {
-                    defval = statCalc(this.stats.def, 31, 252, 1.1f); //+def 252
-                    spdval = statCalc(this.stats.spd, 31, 0, 1.0f);
-                }
-                else if (deftype.special)
-                {
-                    defval = statCalc(this.stats.def, 31, 0, 1.0f);
-                    spdval = statCalc(this.stats.spd, 31, 252, 1.1f); //+spdf 252
-                }
-                else
-                {
-                    defval = statCalc(this.stats.def, 31, 126, 1.0f); //split evs, +spdf
-                    spdval = statCalc(this.stats.spd, 31, 126, 1.1f);
-                }
-                speval = statCalc(this.stats.spe, 31, 0, 1.0f);
-                hpval = hpCalc(this.stats.hp, 31, 0, 100);
-            }
-            else
-            {
-                atkval = statCalc(this.stats.atk, 31, 0, 1.0f); //neutral attack
-                spaval = statCalc(this.stats.spa, 31, 0, 1.0f); //neutral special
-                defval = statCalc(this.stats.def, 31, 0, 1.0f);
-                spdval = statCalc(this.stats.spd, 31, 0, 1.0f);
-                speval = statCalc(this.stats.spe, 31, 0, 1.0f);
-                hpval = hpCalc(this.stats.hp, 31, 0, 100);
-            }
             realStats.Add("atk", atkval);
             realStats.Add("def", defval);
             realStats.Add("spa", spaval);
             realStats.Add("spd", spdval);
             realStats.Add("spe", speval);
             realStats.Add("hp", hpval);
+
+            statSpread = spread;
+
+        }
+        private void setRealStats()
+        {
+            if (this.role.physical)
+            {
+                setStatsFromSpread(new StatSpreadPhysical());
+            }
+            else if (this.role.special)
+            {
+                setStatsFromSpread(new StatSpreadSpecial());
+            }
+            else if (this.role.tank)
+            {
+                if (deftype.physical)
+                {
+                    setStatsFromSpread(new StatSpread_PhysicallyDefensive());
+                }
+                else if (deftype.special)
+                {
+                    setStatsFromSpread(new StatSpread_SpeciallyDefensive());
+                }
+                else
+                {
+                    setStatsFromSpread(new StatSpread());  
+                }
+            }
+            else
+            {
+                setStatsFromSpread(new StatSpread());
+            }
+            
         }
         private int statCalc(int base_stat, int ivVal, int evVal, float nature, int level = 100)
         {
@@ -292,7 +311,14 @@ namespace ShowdownBot
             }
         }
 
-
+        /// <summary>
+        /// Whether there is an alternative stat spread, indicating that this pokemon has been modified.
+        /// </summary>
+        /// <returns></returns>
+        public bool hasAltStatSpread()
+        {
+            return !Object.ReferenceEquals(this.alternativeStatSpread, null);
+        }
         //end of class
     }
 }

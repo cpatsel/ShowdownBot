@@ -30,12 +30,13 @@ namespace ShowdownBot
         public string group = "none"; //special or physical
         public int priority = 0;
         public bool unknown = false; //Given to moves which are not explicitly defined within this file.
-        public bool boost = false; //Is a boosting move? ie. Swords Dance
+        public bool isBoost = false; //Is a boosting move? ie. Swords Dance
         public bool status = false; //Is a status move? ie. Toxic
         public bool support = false; //Is a supporting move? ie. Baton Pass
         public bool phase = false; //Is a phasing move? ie. Whirlwind
         public bool heal = false;
         public bool field = false; //Hazard move?
+        public Boosts boosts;
         public Move(string n, Type t, float p) { name = n; type = t; bp = p; }
         public Move(string n, Type t) { name = n; type = t; unknown = true; bp = -1; }
         public string desc;
@@ -47,8 +48,17 @@ namespace ShowdownBot
             accuracy = ((float)obj.accuracy / 100f);
             group = obj.category.ToLower();
             priority = obj.priority;
+            boosts = obj.boosts;
             desc = obj.desc;
+            if (hasBoosts()) isBoost = true;
             if (Convert.ToBoolean(obj.flags.heal)) heal = true; 
+        }
+        public bool hasBoosts()
+        {
+            if (!Object.ReferenceEquals(boosts, null))
+                return (boosts.total() > 0) ? true : false; //TODO: follow a similar method for finding moves that drop stats.
+            else
+                return false;
         }
 
     }

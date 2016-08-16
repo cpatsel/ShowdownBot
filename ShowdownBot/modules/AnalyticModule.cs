@@ -263,6 +263,7 @@ namespace ShowdownBot.modules
             float[] rankings = new float[4]; //ranking of each move
             float bestMove = 0f;
             float RANK_MAX = 255;
+            float DEFAULT_RANK = 50; //Arbitrarily chosen
             int choice = 1;
             float risk = you.matchup(enemy);
             Move[] moves = getMoves();
@@ -272,10 +273,16 @@ namespace ShowdownBot.modules
                 if (moves[i].bp == 0 || moves[i].bp == -1)
                 {
                     if (moves[i].heal && getRecoverChance(you,enemy) > new Random().NextDouble())
-                        rankings[i] = 150 + (100 - you.getHPPercentage());
+                        rankings[i] = DEFAULT_RANK + (100 - you.getHPPercentage()); //Calculate ranking in a way that emphasizes lower health.
                     //Sleep talk if asleep, but never more than twice in a row.
+                    //Must use name.contains due to the way normal moves are added ( with (type) appended).
                     else if (moves[i].name.Contains("Sleep Talk") && you.status == Status.STATE_SLP && turnsSpentSleepTalking < 2)
                         rankings[i] = RANK_MAX;
+
+                    else if (moves[i].isBoost)
+                    {
+                        rankings[i] = DEFAULT_RANK + (getBoostChance(you, enemy) * 100f);
+                    }
 
 
 
@@ -318,9 +325,26 @@ namespace ShowdownBot.modules
         }
 
 
+
+        private float getBoostChance(BattlePokemon you, BattlePokemon e)
+        {
+            float chance = 0.0f;
+            int minHP = 30;
+            float enemyTolerance = 0.5f;
+            if (you.getHPPercentage() <= minHP) chance -= 0.2f; //too weak, should focus efforts elsewhere
+
+            if (e.checkKOChance(you) < enemyTolerance) chance += 0.2f; //enemy does not threaten us
+            else if (e.checkKOChance(you) - 0.2f < enemyTolerance) chance += 0.2f; //if boosting will make us survive, do it.
+            else chance -= 0.2f; //otherwise too risky
+
+            if (you.mon.getRole().setup) chance += 0.4f; //if the mon is a setup sweeper, etc, 
+            if (lastAction == LastBattleAction.ACTION_BOOST) chance -= 0.1f; //Be careful not to boost forever.
+            return chance;
+        }
+
         private void setLastBattleAction(Move m)
         {
-            if (m.boost) lastAction = LastBattleAction.ACTION_BOOST;
+            if (m.isBoost) lastAction = LastBattleAction.ACTION_BOOST;
             else if (m.name.Contains("Sleep Talk"))
             {
                 lastAction = LastBattleAction.ACTION_SLEEPTALK;
@@ -355,9 +379,14 @@ namespace ShowdownBot.modules
             if (elementExists(By.Name("undoChoice")))
                 return false;
             //if the pokemon is at low health, don't bother
-            //WatiN.Core.Element e = mainBrowser.Element(Find.ByClass("critical"));
-            //if (e.Exists)
-            float tolerance = 2.5f;
+            if (you.getHPPercentage() <= 25)
+                return false;
+            float tolerance = 2.5f; //Default tolerance based on type matchups.
+            if (you.currentBoosts.total() > 0)
+                tolerance += 1.5f; //enemy must be much more dangerous to consider switching with boosts.
+            else if (you.currentBoosts.total() < 0)
+                tolerance -= 1f; //more likely to switch if drops are present.
+            
             if (you.matchup(enemy) > tolerance)
                 return true;
             else return false;

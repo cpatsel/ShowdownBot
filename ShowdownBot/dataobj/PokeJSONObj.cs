@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShowdownBot.dataobj;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +26,7 @@ namespace ShowdownBot
         public List<string> evos { get; set; }
         public List<string> eggGroups { get; set; }
 
-       
+
 
         public class GenderRatio
         {
@@ -33,8 +34,19 @@ namespace ShowdownBot
             public double F { get; set; }
         }
 
-       
+
     }
+
+
+    //TODO: statspread will alter the bot's perception of opponent pokemon as well, maybe keep a backup of default stats.
+    public class RoleOverride
+    {
+        public string name { get; set; }
+        public Role role { get; set; }
+        public DefenseType deftype { get; set; }
+        public StatSpread statspread { get; set; }
+    }
+
     public class Abilities
     {
         public string a1 { get; set; }

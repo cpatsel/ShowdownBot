@@ -158,7 +158,7 @@ namespace ShowdownBot
             {
                 p = pokedex[_name];
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 cwrite("Unknown pokemon " + _name, "warning", COLOR_WARN);
                 return pokedex["error"];
@@ -220,18 +220,16 @@ namespace ShowdownBot
         public static IWebElement waitFind(By by, int maxw = 15)
         {
             WebDriverWait _wait = new WebDriverWait(gBrowserInstance, TimeSpan.FromSeconds(maxw));
-            IWebElement elem;
-            
                 try
                 {
                     return _wait.Until<IWebElement>(ExpectedConditions.ElementExists(by));
                 }
-                catch (NoSuchElementException e)
+                catch (NoSuchElementException )
                 {
                     cwrite("Couldn't find element " + by.ToString());
                     return null;
                 }
-                catch (WebDriverTimeoutException e)
+                catch (WebDriverTimeoutException )
                 {
                     return null;
                 }
@@ -282,7 +280,7 @@ namespace ShowdownBot
                 gBrowserInstance.FindElement(by);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

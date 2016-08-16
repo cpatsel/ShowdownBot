@@ -425,7 +425,7 @@ namespace ShowdownBot
         {
             cwrite("Initiating learning mode.", "bot", COLOR_BOT);
             isRunning = true;
-            bool isLearning = true;
+            //bool isLearning = true; //uncommented for now.
             if (number > 0)
                 initialise();
             ReplayLearner rl = new ReplayLearner(mainBrowser,c);
@@ -440,7 +440,7 @@ namespace ShowdownBot
                 rl.learn();
             }
   
-            isLearning = false;
+            //isLearning = false;
             cwrite("Stopping learning processes.", "bot", COLOR_BOT);
         }
 

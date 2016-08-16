@@ -1,5 +1,22 @@
 ## Changelog ##
 
+### v0.4.0 / 2016-08-16 ###
+Added
+
+* Status tracking.
+* HP tracking.
+* Custom roles and stat spreads for pokemon.
+* Boost tracking.
+* Bot will consider hp and boosts when checking to switch.
+* Consolidated Linux and Windows version.
+
+Fixes
+
+* Bot will recognize Mr. Mime and Mime Jr.
+* Correctly processes Hidden Power 
+* Correctly processes Return and Frustration, Gryo Ball
+* -ate ability handling.
+* Usernames that are too long are truncated.
 
 ### v0.3.0 / 2016-08-02 ###
 ----

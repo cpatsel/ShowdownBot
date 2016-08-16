@@ -35,6 +35,7 @@ namespace ShowdownBot.modules
             errormon = new BattlePokemon(Global.lookup("error"));
             currentActive = errormon;
             turnsSpentSleepTalking = 0;
+            lastMove = moveLookup("error");
         }
 
         /// <summary>
@@ -351,7 +352,7 @@ namespace ShowdownBot.modules
             }
             else
                 lastAction = LastBattleAction.ACTION_ATTACK_SUCCESS;
-
+            lastMove = m;
         }
 
         /// <summary>

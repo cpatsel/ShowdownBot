@@ -312,7 +312,7 @@ namespace ShowdownBot
                             name = s.GetAttribute("title").Split(' ');
                             
 			            }
-                        catch(StaleElementReferenceException ex)
+                        catch(StaleElementReferenceException)
                         {
                             cwrite("Unable to determine active pokemon, maybe it fainted.", "debug", COLOR_WARN);
                             break;
@@ -356,7 +356,7 @@ namespace ShowdownBot
                             name = s.GetAttribute("title").Split(' ');
 
                         }
-                        catch (StaleElementReferenceException ex)
+                        catch (StaleElementReferenceException)
                         {
                             cwrite("Unable to determine some pokemon on a team.", "debug", COLOR_WARN);
                             break;

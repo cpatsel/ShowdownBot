@@ -4371,7 +4371,7 @@
 	"gyroball": {
 		num: 360,
 		accuracy: 100,
-		basePower: 0,
+		basePower: -2,
 		category: "Physical",
 		desc: "Power is equal to (25 * target's current Speed / user's current Speed), rounded down, + 1, but not more than 150.",
 		shortDesc: "More power the slower the user than the target.",

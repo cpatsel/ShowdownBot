@@ -10,6 +10,7 @@ For a list of recent changes and features, see [the changelog](ShowdownBot/chang
 
 ### Linux
  * [See the install/compile guide.](https://github.com/Deviach/ShowdownBot/wiki/Linux-Compilation-and-Install)
+
 ### Mac
  * [Install mono](http://www.mono-project.com/docs/getting-started/install/mac/).
  * Download or compile the source and run with mono. See the linux section for more info (it should be a similar process).

@@ -74,6 +74,7 @@ namespace ShowdownBot
         DefenseType deftype;
         Role role;
         public StatSpread statSpread;
+        public StatSpread alternativeStatSpread = null;
         Dictionary<string,Type> types;
        
         #endregion
@@ -152,6 +153,8 @@ namespace ShowdownBot
                             this.role = ro.role;
                         if (!Object.ReferenceEquals(ro.deftype, null))
                             this.deftype = ro.deftype;
+                        if (!Object.ReferenceEquals(ro.statspread, null))
+                            this.alternativeStatSpread = ro.statspread;
                     }
                     current = current.Next;
 
@@ -234,8 +237,14 @@ namespace ShowdownBot
         }
 
      
-        private void setStatsFromSpread(StatSpread spread)
+        private void setStatsFromSpread(StatSpread s)
         {
+            StatSpread spread;
+            if (hasAltStatSpread())
+                spread = alternativeStatSpread;
+            else
+                spread = s;
+
             int atkval, defval, spaval, spdval, speval;
             int hpval;
             atkval = statCalc(this.stats.atk, spread.atkIV,spread.atkEV, spread.atkNatureMod); 
@@ -302,7 +311,14 @@ namespace ShowdownBot
             }
         }
 
-
+        /// <summary>
+        /// Whether there is an alternative stat spread, indicating that this pokemon has been modified.
+        /// </summary>
+        /// <returns></returns>
+        public bool hasAltStatSpread()
+        {
+            return !Object.ReferenceEquals(this.alternativeStatSpread, null);
+        }
         //end of class
     }
 }

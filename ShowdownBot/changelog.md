@@ -1,11 +1,14 @@
 ## Changelog ##
 
-### v0.4.0 / Unreleased ###
+### v0.4.0 / 2016-08-16 ###
 Added
 
 * Status tracking.
 * HP tracking.
-* Bot will consider hp when checking to switch.
+* Custom roles and stat spreads for pokemon.
+* Boost tracking.
+* Bot will consider hp and boosts when checking to switch.
+* Consolidated Linux and Windows version.
 
 Fixes
 

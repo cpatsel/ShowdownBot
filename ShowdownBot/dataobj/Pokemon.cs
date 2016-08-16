@@ -75,8 +75,7 @@ namespace ShowdownBot
         Role role;
         public StatSpread statSpread;
         Dictionary<string,Type> types;
-
-        
+       
         #endregion
 
         public Pokemon(PokeJSONObj obj)

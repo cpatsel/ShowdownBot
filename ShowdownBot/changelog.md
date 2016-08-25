@@ -1,5 +1,11 @@
 ## Changelog ##
 
+
+### v0.4.1 / Unreleased ###
+Fixes
+
+* Bug where megas weren't updated properly.
+* Various crashes when looking for web elements.
 ### v0.4.0 / 2016-08-16 ###
 Added
 

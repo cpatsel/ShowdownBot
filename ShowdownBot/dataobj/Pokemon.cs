@@ -61,7 +61,13 @@ namespace ShowdownBot
         public bool any { get; set; }
     }
 
-    
+    public class Item
+    {
+        public bool choicescarf { get; set; }
+        public bool choiceband { get; set; }
+        public bool leftovers { get; set; }
+        public bool lifeorb { get; set; }
+    }
 
     public class Pokemon
     {      

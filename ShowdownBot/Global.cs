@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot
@@ -333,6 +334,24 @@ namespace ShowdownBot
         {
             string dt = DateTime.Now.ToString("HH:mm:ss");
             return dt;
+        }
+
+
+        public static void var_dump(object obj)
+        {
+            System.Type t = obj.GetType();
+            FieldInfo[] props = t.GetFields();
+            for (int i = 0; i < props.Length; i++)
+            {
+                try
+                {
+                    cwrite(props[i].Name +" | "+ props[i].GetValue(obj),"debug",COLOR_OK);
+                }
+                catch (Exception)
+                {
+                    //Console.WriteLine(e);  
+                }
+            }
         }
 
         public static void logError(Exception ex, bool fatal)

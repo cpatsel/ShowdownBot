@@ -330,6 +330,17 @@ namespace ShowdownBot
             return chance;
 
         }
-
+        
+        /// <summary>
+        /// Changes the internal pokemon.
+        /// Used primarily to mega evolve.
+        /// </summary>
+        public void changeMon(string name)
+        {
+            Pokemon newmega = Global.lookup(name);
+                mon = newmega;
+                type1 = mon.type1;
+                type2 = mon.type2;
+        }
     }
 }

@@ -35,7 +35,7 @@ namespace ShowdownBot.modules
             errormon = new BattlePokemon(Global.lookup("error"));
             currentActive = errormon;
             turnsSpentSleepTalking = 0;
-            lastMove = moveLookup("error");
+           // lastMove = moveLookup("error");
         }
 
         /// <summary>
@@ -50,6 +50,13 @@ namespace ShowdownBot.modules
             {
                 if (team[i].mon.name == p.name)
                     return team[i];
+                else if (p.name.Contains("-mega"))
+                {
+                    team[i].changeMon(p.name);
+                    return team[i];
+                }
+
+
             }
             return errormon;
         }
@@ -118,10 +125,11 @@ namespace ShowdownBot.modules
         private void updateHealth(IWebElement statbar, ref BattlePokemon p)
         {
             var elem = findWithin(statbar, By.ClassName("hptext"));
+            string txt = elem.Text;
             if (elem != null)
             {
                 int pct = 100;
-                string txt = elem.Text.Trim('%');
+                txt = txt.Trim('%');
                 int.TryParse(txt, out pct);
                 p.setHealth(pct);
             }
@@ -273,7 +281,7 @@ namespace ShowdownBot.modules
                
                 if (moves[i].bp == 0 || moves[i].bp == -1)
                 {
-                    if (moves[i].heal && getRecoverChance(you,enemy) > new Random().NextDouble())
+                    if (moves[i].heal && getRecoverChance(you,enemy) > 0.2f)
                         rankings[i] = DEFAULT_RANK + (100 - you.getHPPercentage()); //Calculate ranking in a way that emphasizes lower health.
                     //Sleep talk if asleep, but never more than twice in a row.
                     //Must use name.contains due to the way normal moves are added ( with (type) appended).

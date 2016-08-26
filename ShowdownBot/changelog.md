@@ -1,6 +1,15 @@
 ## Changelog ##
 
 
+### v0.5.0 / Unreleased
+Planned:
+ * Refresh option
+ * Item support
+ * Heuristic tweaks
+ * Fix #16
+ * Fix #19
+
+
 ### v0.4.1 / 2016-08-26 ###
 Fixes
 

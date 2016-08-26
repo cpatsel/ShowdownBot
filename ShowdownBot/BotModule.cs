@@ -364,9 +364,13 @@ namespace ShowdownBot
                         //Nicknamed pokemon appear in the html as "Nickname (Pokemon)"
                         //this means that the pokemon's name should be N-x, which should hold
                         //true even for non-named mons.
-                        int x;
-                        if (name.Contains("(active)"))
+                        int x; //Index distance from name.Length which contains the Pokemon's actual name.
+                        //Active pokemon never have (hp%) or (hp%|status), therefore "x" should be the same for all.
+                        if (name.Contains("(active)") || name.Contains("(fainted)") || name[name.Length-1].IndexOf('%') != -1
+                            || name[name.Length-1].IndexOf('|') != -1)
+                        {
                             x = 2;
+                        }
                         else
                             x = 1;
                         string n_name = name[name.Length - x].Trim('(', ')'); //gets a sanitized name.

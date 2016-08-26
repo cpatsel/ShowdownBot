@@ -134,6 +134,9 @@ namespace ShowdownBot.modules
 
         }
 
+        /// <summary>
+        /// Populates myTeam from the switch menu, rather than from the team icons.
+        /// </summary>
         private void buildOwnTeam()
         {
             var switchmenu = waitFind(By.ClassName("switchmenu"));

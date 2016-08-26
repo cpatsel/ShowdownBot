@@ -25,8 +25,15 @@ namespace ShowdownBot
         {
             return (rh.value != lh.value);
         }
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
 
-        
     }
     
 
@@ -54,19 +61,23 @@ namespace ShowdownBot
         public bool any { get; set; }
     }
 
-    
+    public class Item
+    {
+        public bool choicescarf { get; set; }
+        public bool choiceband { get; set; }
+        public bool leftovers { get; set; }
+        public bool lifeorb { get; set; }
+    }
 
     public class Pokemon
-    {
-        string data; //The string containing all data to be read for this pokemon.
-
+    {      
         #region Values
 
         public string name = "NONAME";
         public Type type1, type2;
-        string item = "NA";
-        float apct = 100f;
-        string firstmove = "NA";
+        //string item = "NA";
+        //float apct = 100f;
+        //string firstmove = "NA";
         float weight = 50f;
         BaseStats stats;
         Dictionary<string, int> realStats;

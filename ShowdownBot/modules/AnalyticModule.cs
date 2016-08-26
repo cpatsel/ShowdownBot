@@ -35,6 +35,7 @@ namespace ShowdownBot.modules
             errormon = new BattlePokemon(Global.lookup("error"));
             currentActive = errormon;
             turnsSpentSleepTalking = 0;
+           // lastMove = moveLookup("error");
         }
 
         /// <summary>
@@ -49,6 +50,13 @@ namespace ShowdownBot.modules
             {
                 if (team[i].mon.name == p.name)
                     return team[i];
+                else if (p.name.Contains("-mega"))
+                {
+                    team[i].changeMon(p.name);
+                    return team[i];
+                }
+
+
             }
             return errormon;
         }
@@ -58,7 +66,11 @@ namespace ShowdownBot.modules
             int turn = 1;
             
             wait(5000); //give battle time to load
+            if (format == "randombattle")
+                buildOwnTeam();
             buildTeams();
+
+            
             //Select lead
             string lead;
             cwrite("Selecting first pokemon as lead", COLOR_BOT);
@@ -67,7 +79,7 @@ namespace ShowdownBot.modules
             if (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
             {
                 lead = browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Text;
-                browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Click();
+                waitFindClick(By.CssSelector("button[name='chooseTeamPreview'][value='0']"));
             }
             else
                 lead = "error";
@@ -78,6 +90,8 @@ namespace ShowdownBot.modules
             {
                    
                     wait();
+                    if(format == "randombattle")
+                        buildTeams(); //if randombattle, check to see if any new pokemon have been revealed.
                     enemy = getPokemon(getActivePokemon(),enemyTeam);
                     active = getPokemon(updateYourPokemon(),myTeam);
                     updateActiveStatuses(ref active,ref enemy);
@@ -85,30 +99,57 @@ namespace ShowdownBot.modules
                     battleAnalytic(ref active, enemy, ref turn);
                 
 
-            } while (activeState == State.BATTLE); 
+            } while (activeState == State.BATTLE);
+            myTeam.Clear();
+            enemyTeam.Clear(); 
         }
 
+
+        /// <summary>
+        /// Iterates over the revealed pokemon and adds them to the team if they have not already been.
+        /// </summary>
+        /// <returns></returns>
         public virtual bool buildTeams()
         {
-            cwrite("Building teams.");
+            cwrite("Updating teams.");
             var elems = waitFind(By.ClassName("leftbar")); //player
             IList<IWebElement> ticon = elems.FindElements(By.ClassName("teamicons"));
+            //IList<IWebElement> ticon = findElementsFromWithin(elems, By.ClassName("teamicons"));
             List<string> names = parseAllNamesFromPage(ticon);
             for (int i = 0; i<names.Count;i++)
             {
-                myTeam.Add(new BattlePokemon(Global.lookup(names[i])));
+                if (!myTeam.Any(bpkmn => bpkmn.mon.name == names[i])) 
+                    myTeam.Add(new BattlePokemon(Global.lookup(names[i])));
             }
             elems = waitFind(By.ClassName("rightbar")); //opponent
+            //ticon = findElementsFromWithin(elems,By.ClassName("teamicons"));
             ticon = elems.FindElements(By.ClassName("teamicons"));
             names = parseAllNamesFromPage(ticon);
             for (int i = 0; i < names.Count; i++)
             {
-               enemyTeam.Add(new BattlePokemon(Global.lookup(names[i])));
+                if (!enemyTeam.Any(bpkmn => bpkmn.mon.name == names[i]))
+                    enemyTeam.Add(new BattlePokemon(Global.lookup(names[i])));
             }
             return true;
 
         }
 
+        /// <summary>
+        /// Populates myTeam from the switch menu, rather than from the team icons.
+        /// </summary>
+        private void buildOwnTeam()
+        {
+            var switchmenu = waitFind(By.ClassName("switchmenu"));
+            var elems = switchmenu.FindElements(By.ClassName("chooseSwitch"));
+            if (switchmenu != null)
+            {
+                string[] text = switchmenu.Text.Split('\r');
+                foreach (string s in text)
+                {
+                    myTeam.Add(new BattlePokemon(Global.lookup(s.TrimStart('\n'))));
+                }
+            }
+        }
         private void updateTeamStatuses()
         {
 
@@ -117,10 +158,11 @@ namespace ShowdownBot.modules
         private void updateHealth(IWebElement statbar, ref BattlePokemon p)
         {
             var elem = findWithin(statbar, By.ClassName("hptext"));
+            string txt = elem.Text;
             if (elem != null)
             {
                 int pct = 100;
-                string txt = elem.Text.Trim('%');
+                txt = txt.Trim('%');
                 int.TryParse(txt, out pct);
                 p.setHealth(pct);
             }
@@ -272,7 +314,7 @@ namespace ShowdownBot.modules
                
                 if (moves[i].bp == 0 || moves[i].bp == -1)
                 {
-                    if (moves[i].heal && getRecoverChance(you,enemy) > new Random().NextDouble())
+                    if (moves[i].heal && getRecoverChance(you,enemy) > 0.2f)
                         rankings[i] = DEFAULT_RANK + (100 - you.getHPPercentage()); //Calculate ranking in a way that emphasizes lower health.
                     //Sleep talk if asleep, but never more than twice in a row.
                     //Must use name.contains due to the way normal moves are added ( with (type) appended).
@@ -351,7 +393,7 @@ namespace ShowdownBot.modules
             }
             else
                 lastAction = LastBattleAction.ACTION_ATTACK_SUCCESS;
-
+            lastMove = m;
         }
 
         /// <summary>

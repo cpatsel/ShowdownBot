@@ -312,7 +312,7 @@ namespace ShowdownBot
                             name = s.GetAttribute("title").Split(' ');
                             
 			            }
-                        catch(StaleElementReferenceException ex)
+                        catch(StaleElementReferenceException)
                         {
                             cwrite("Unable to determine active pokemon, maybe it fainted.", "debug", COLOR_WARN);
                             break;
@@ -356,16 +356,24 @@ namespace ShowdownBot
                             name = s.GetAttribute("title").Split(' ');
 
                         }
-                        catch (StaleElementReferenceException ex)
+                        catch (StaleElementReferenceException)
                         {
                             cwrite("Unable to determine some pokemon on a team.", "debug", COLOR_WARN);
                             break;
                         }
                         //Nicknamed pokemon appear in the html as "Nickname (Pokemon)"
-                        //this means that the pokemon's name should be N-1, which should hold
+                        //this means that the pokemon's name should be N-x, which should hold
                         //true even for non-named mons.
-
-                        string n_name = name[name.Length - 1].Trim('(', ')'); //gets a sanitized name.
+                        int x; //Index distance from name.Length which contains the Pokemon's actual name.
+                        //Active pokemon never have (hp%) or (hp%|status), therefore "x" should be the same for all.
+                        if (name.Contains("(active)") || name.Contains("(fainted)") || name[name.Length-1].IndexOf('%') != -1
+                            || name[name.Length-1].IndexOf('|') != -1)
+                        {
+                            x = 2;
+                        }
+                        else
+                            x = 1;
+                        string n_name = name[name.Length - x].Trim('(', ')'); //gets a sanitized name.
                         if (name.Length >= 2)
                         {
                             string cleanold = name[name.Length - 2].Trim('(', ')');
@@ -373,6 +381,8 @@ namespace ShowdownBot
                                 names_list.Add("mr. mime");
                             else if (n_name == "Jr." && cleanold == "Mime")
                                 names_list.Add("mime jr.");
+                            else
+                                names_list.Add(n_name.ToLower());
                         }
                         else if (n_name == "")
                         {

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot
@@ -158,7 +159,7 @@ namespace ShowdownBot
             {
                 p = pokedex[_name];
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 cwrite("Unknown pokemon " + _name, "warning", COLOR_WARN);
                 return pokedex["error"];
@@ -217,29 +218,65 @@ namespace ShowdownBot
         /// <param name="by"></param>
         /// <param name="maxw"></param>
         /// <returns></returns>
-        public static IWebElement waitFind(By by, int maxw = 15)
+        public static IWebElement waitFind(By by, int maxw = MAX_WAIT_TIME_S)
         {
             WebDriverWait _wait = new WebDriverWait(gBrowserInstance, TimeSpan.FromSeconds(maxw));
-            IWebElement elem;
-            
                 try
                 {
                     return _wait.Until<IWebElement>(ExpectedConditions.ElementExists(by));
                 }
-                catch (NoSuchElementException e)
+                catch (NoSuchElementException )
                 {
                     cwrite("Couldn't find element " + by.ToString());
                     return null;
                 }
-                catch (WebDriverTimeoutException e)
+                catch (WebDriverTimeoutException )
                 {
                     return null;
                 }
-           
-            
+                catch (Exception)
+                {
+                    return null;
+                }
             
         }
-        
+        /// <summary>
+        /// Exception handling method for webbrowser.findElements
+        /// Returns null on exceptions.
+        /// </summary>
+        /// <param name="by"></param>
+        /// <returns></returns>
+        public static IList<IWebElement> findElements(By by)
+        {
+            try
+            {
+               return gBrowserInstance.FindElements(by);
+            }
+            catch (Exception e)
+            {
+                cwrite("Something went horribly wrong finding some elements: " + e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Exception handling method for finding elements within another web element.
+        /// Returns null on exceptions.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="by"></param>
+        /// <returns></returns>
+        public static IList<IWebElement> findElementsFromWithin(IWebElement from, By by)
+        {
+            try
+            {
+                return from.FindElements(by);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
         /// <summary>
         /// Waits until an element is available and then clicks it.
         /// </summary>
@@ -282,7 +319,7 @@ namespace ShowdownBot
                 gBrowserInstance.FindElement(by);
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -335,6 +372,25 @@ namespace ShowdownBot
         {
             string dt = DateTime.Now.ToString("HH:mm:ss");
             return dt;
+        }
+
+
+        public static void var_dump(object obj)
+        {
+            System.Type t = obj.GetType();
+            FieldInfo[] props = t.GetFields();
+            for (int i = 0; i < props.Length; i++)
+            {
+                try
+                {
+                    cwrite(props[i].Name +" | "+ props[i].GetValue(obj),"debug",COLOR_OK);
+                    var_dump((object)props[i]);
+                }
+                catch (Exception)
+                {
+                   
+                }
+            }
         }
 
         public static void logError(Exception ex, bool fatal)

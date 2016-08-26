@@ -120,7 +120,6 @@ namespace ShowdownBot.modules
         {
             int choice = 1;
             Random rand = new Random();
-            float cumulative = 0.0f;
             float percent = (float)rand.NextDouble()*(weightTotal);
             cwrite("Choosing move that meets " + percent.ToString(), "debug", COLOR_OK);
             List<float> weights = new List<float>{ M1WGT, M2WGT, M3WGT, M4WGT };

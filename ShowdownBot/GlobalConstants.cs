@@ -8,13 +8,15 @@ namespace ShowdownBot
 {
     public static class GlobalConstants
     {
-        public const string SDB_VERSION = "0.4.0";
+        public const string SDB_VERSION = "0.4.1";
         public const string SDB_TITLEBAR = "Showdown Bot v" + SDB_VERSION;
         //Colors
         public static ConsoleColor COLOR_WARN = ConsoleColor.Yellow;
         public static ConsoleColor COLOR_OK = ConsoleColor.Green;
         public static ConsoleColor COLOR_SYS = ConsoleColor.Cyan;
         public static ConsoleColor COLOR_ERR = ConsoleColor.Red;
+
+        public const int MAX_WAIT_TIME_S = 15;
         
 #if LINUX
         public static ConsoleColor COLOR_BOT = ConsoleColor.Blue;

@@ -5,6 +5,8 @@
 Fixes
 
 * Bug where megas weren't updated properly.
+* Bug where randombattle would never update team.
+* Bug where bot would not know its own team in randombattle
 * Various crashes when looking for web elements.
 ### v0.4.0 / 2016-08-16 ###
 Added

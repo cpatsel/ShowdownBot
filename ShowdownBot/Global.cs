@@ -234,6 +234,10 @@ namespace ShowdownBot
                 {
                     return null;
                 }
+                catch (Exception)
+                {
+                    return null;
+                }
             
         }
         /// <summary>
@@ -268,7 +272,7 @@ namespace ShowdownBot
             {
                 return from.FindElements(by);
             }
-            catch
+            catch (Exception e)
             {
                 return null;
             }

@@ -1,7 +1,7 @@
 ## Changelog ##
 
 
-### v0.4.1 / Unreleased ###
+### v0.4.1 / 2016-08-26 ###
 Fixes
 
 * Bug where megas weren't updated properly.

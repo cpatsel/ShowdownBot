@@ -268,7 +268,7 @@ namespace ShowdownBot
             {
                 return from.FindElements(by);
             }
-            catch
+            catch (Exception e)
             {
                 return null;
             }

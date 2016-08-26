@@ -362,10 +362,14 @@ namespace ShowdownBot
                             break;
                         }
                         //Nicknamed pokemon appear in the html as "Nickname (Pokemon)"
-                        //this means that the pokemon's name should be N-1, which should hold
+                        //this means that the pokemon's name should be N-x, which should hold
                         //true even for non-named mons.
-
-                        string n_name = name[name.Length - 1].Trim('(', ')'); //gets a sanitized name.
+                        int x;
+                        if (name.Contains("(active)"))
+                            x = 2;
+                        else
+                            x = 1;
+                        string n_name = name[name.Length - x].Trim('(', ')'); //gets a sanitized name.
                         if (name.Length >= 2)
                         {
                             string cleanold = name[name.Length - 2].Trim('(', ')');
@@ -373,6 +377,8 @@ namespace ShowdownBot
                                 names_list.Add("mr. mime");
                             else if (n_name == "Jr." && cleanold == "Mime")
                                 names_list.Add("mime jr.");
+                            else
+                                names_list.Add(n_name.ToLower());
                         }
                         else if (n_name == "")
                         {

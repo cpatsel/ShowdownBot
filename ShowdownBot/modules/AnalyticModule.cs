@@ -66,7 +66,11 @@ namespace ShowdownBot.modules
             int turn = 1;
             
             wait(5000); //give battle time to load
+            if (format == "randombattle")
+                buildOwnTeam();
             buildTeams();
+
+            
             //Select lead
             string lead;
             cwrite("Selecting first pokemon as lead", COLOR_BOT);
@@ -86,6 +90,8 @@ namespace ShowdownBot.modules
             {
                    
                     wait();
+                    if(format == "randombattle")
+                        buildTeams(); //if randombattle, check to see if any new pokemon have been revealed.
                     enemy = getPokemon(getActivePokemon(),enemyTeam);
                     active = getPokemon(updateYourPokemon(),myTeam);
                     updateActiveStatuses(ref active,ref enemy);
@@ -96,28 +102,49 @@ namespace ShowdownBot.modules
             } while (activeState == State.BATTLE); 
         }
 
+
+        /// <summary>
+        /// Iterates over the revealed pokemon and adds them to the team if they have not already been.
+        /// </summary>
+        /// <returns></returns>
         public virtual bool buildTeams()
         {
-            cwrite("Building teams.");
+            cwrite("Updating teams.");
             var elems = waitFind(By.ClassName("leftbar")); //player
-            //IList<IWebElement> ticon = elems.FindElements(By.ClassName("teamicons"));
-            IList<IWebElement> ticon = findElementsFromWithin(elems, By.ClassName("teamicons"));
+            IList<IWebElement> ticon = elems.FindElements(By.ClassName("teamicons"));
+            //IList<IWebElement> ticon = findElementsFromWithin(elems, By.ClassName("teamicons"));
             List<string> names = parseAllNamesFromPage(ticon);
             for (int i = 0; i<names.Count;i++)
             {
-                myTeam.Add(new BattlePokemon(Global.lookup(names[i])));
+                if (!myTeam.Any(bpkmn => bpkmn.mon.name == names[i])) 
+                    myTeam.Add(new BattlePokemon(Global.lookup(names[i])));
             }
             elems = waitFind(By.ClassName("rightbar")); //opponent
-            ticon = findElementsFromWithin(elems,By.ClassName("teamicons"));
+            //ticon = findElementsFromWithin(elems,By.ClassName("teamicons"));
+            ticon = elems.FindElements(By.ClassName("teamicons"));
             names = parseAllNamesFromPage(ticon);
             for (int i = 0; i < names.Count; i++)
             {
-               enemyTeam.Add(new BattlePokemon(Global.lookup(names[i])));
+                if (!enemyTeam.Any(bpkmn => bpkmn.mon.name == names[i]))
+                    enemyTeam.Add(new BattlePokemon(Global.lookup(names[i])));
             }
             return true;
 
         }
 
+        private void buildOwnTeam()
+        {
+            var switchmenu = waitFind(By.ClassName("switchmenu"));
+            var elems = switchmenu.FindElements(By.ClassName("chooseSwitch"));
+            if (switchmenu != null)
+            {
+                string[] text = switchmenu.Text.Split('\r');
+                foreach (string s in text)
+                {
+                    myTeam.Add(new BattlePokemon(Global.lookup(s.TrimStart('\n'))));
+                }
+            }
+        }
         private void updateTeamStatuses()
         {
 

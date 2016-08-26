@@ -218,7 +218,7 @@ namespace ShowdownBot
         /// <param name="by"></param>
         /// <param name="maxw"></param>
         /// <returns></returns>
-        public static IWebElement waitFind(By by, int maxw = 15)
+        public static IWebElement waitFind(By by, int maxw = MAX_WAIT_TIME_S)
         {
             WebDriverWait _wait = new WebDriverWait(gBrowserInstance, TimeSpan.FromSeconds(maxw));
                 try
@@ -234,11 +234,45 @@ namespace ShowdownBot
                 {
                     return null;
                 }
-           
-            
             
         }
-        
+        /// <summary>
+        /// Exception handling method for webbrowser.findElements
+        /// Returns null on exceptions.
+        /// </summary>
+        /// <param name="by"></param>
+        /// <returns></returns>
+        public static IList<IWebElement> findElements(By by)
+        {
+            try
+            {
+               return gBrowserInstance.FindElements(by);
+            }
+            catch (Exception e)
+            {
+                cwrite("Something went horribly wrong finding some elements: " + e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Exception handling method for finding elements within another web element.
+        /// Returns null on exceptions.
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="by"></param>
+        /// <returns></returns>
+        public static IList<IWebElement> findElementsFromWithin(IWebElement from, By by)
+        {
+            try
+            {
+                return from.FindElements(by);
+            }
+            catch
+            {
+                return null;
+            }
+        }
         /// <summary>
         /// Waits until an element is available and then clicks it.
         /// </summary>
@@ -346,10 +380,11 @@ namespace ShowdownBot
                 try
                 {
                     cwrite(props[i].Name +" | "+ props[i].GetValue(obj),"debug",COLOR_OK);
+                    var_dump((object)props[i]);
                 }
                 catch (Exception)
                 {
-                    //Console.WriteLine(e);  
+                   
                 }
             }
         }

@@ -100,14 +100,15 @@ namespace ShowdownBot.modules
         {
             cwrite("Building teams.");
             var elems = waitFind(By.ClassName("leftbar")); //player
-            IList<IWebElement> ticon = elems.FindElements(By.ClassName("teamicons"));
+            //IList<IWebElement> ticon = elems.FindElements(By.ClassName("teamicons"));
+            IList<IWebElement> ticon = findElementsFromWithin(elems, By.ClassName("teamicons"));
             List<string> names = parseAllNamesFromPage(ticon);
             for (int i = 0; i<names.Count;i++)
             {
                 myTeam.Add(new BattlePokemon(Global.lookup(names[i])));
             }
             elems = waitFind(By.ClassName("rightbar")); //opponent
-            ticon = elems.FindElements(By.ClassName("teamicons"));
+            ticon = findElementsFromWithin(elems,By.ClassName("teamicons"));
             names = parseAllNamesFromPage(ticon);
             for (int i = 0; i < names.Count; i++)
             {

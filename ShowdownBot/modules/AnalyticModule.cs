@@ -119,7 +119,8 @@ namespace ShowdownBot.modules
             for (int i = 0; i<names.Count;i++)
             {
                 if (!myTeam.Any(bpkmn => bpkmn.mon.name == names[i])) 
-                    myTeam.Add(new BattlePokemon(Global.lookup(names[i])));
+                    myTeam.Add(new BattlePokemon(Global.lookup(PERSONAL_PRE+names[i])));
+                ////attempt to look up our own custom pokemon
             }
             elems = waitFind(By.ClassName("rightbar")); //opponent
             //ticon = findElementsFromWithin(elems,By.ClassName("teamicons"));

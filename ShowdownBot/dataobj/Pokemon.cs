@@ -92,6 +92,43 @@ namespace ShowdownBot
 
         public Pokemon(PokeJSONObj obj)
         {
+            basicInit(obj);           
+            initRoles();
+            RoleOverride ro = getRoleOverride();
+            /*If the pokemon has a "personal" override, create a new pokemon data object to hold the information
+            /* regarding our personal pokemon to keep it seperate from the generic "expected" pokemon 
+             * Otherwise, modify the role as roleoverride is intended.
+            */
+            if (!Object.ReferenceEquals(ro, null))
+            {
+                if (!Object.ReferenceEquals(ro.personal, null))
+                {
+                    if (ro.personal)
+                    {
+                        Pokemon personal = new Pokemon(obj, ro);
+                        if (!Global.pokedex.ContainsKey(personal.name))
+                            Global.pokedex.Add(personal.name, personal); //Only allow 1 personal version of each pkmn.
+                    }
+                    else
+                        modifyRole();
+                }
+            }
+            
+            setRealStats();
+        }
+
+        public Pokemon (PokeJSONObj baseMon, RoleOverride newStats)
+        {
+            basicInit(baseMon);
+            initRoles();
+            modifyRole();
+            setRealStats();
+            name = GlobalConstants.PERSONAL_PRE + name;
+        }
+        
+
+        private void basicInit(PokeJSONObj obj)
+        {
             types = Global.types;
             name = obj.species.ToLower();
             type1 = types[obj.types[0].ToLower()];
@@ -105,12 +142,7 @@ namespace ShowdownBot
             deftype = new DefenseType();
             role = new Role();
             realStats = new Dictionary<string, int>();
-            initRoles();
-            modifyRole();
-            setRealStats();
         }
-
-        
         private void initRoles()
         {
             int max_for_bulk = 250;
@@ -144,8 +176,7 @@ namespace ShowdownBot
             }
         }
 
-
-        public void modifyRole()
+        private RoleOverride getRoleOverride()
         {
             string path = Global.ROLEPATH;
             using (var reader = new StreamReader(path))
@@ -160,18 +191,28 @@ namespace ShowdownBot
                     RoleOverride ro = JsonConvert.DeserializeObject<RoleOverride>(current.First.ToString());
                     if (ro.name == this.name)
                     {
+                        return ro;
+                    }
+                    current = current.Next;
+
+                }
+            }
+            return null;
+        }
+
+        public void modifyRole()
+        {
+            RoleOverride ro = getRoleOverride();
+            if (ro != null) { 
                         if (!Object.ReferenceEquals(ro.role, null))
                             this.role = ro.role;
                         if (!Object.ReferenceEquals(ro.deftype, null))
                             this.deftype = ro.deftype;
                         if (!Object.ReferenceEquals(ro.statspread, null))
                             this.alternativeStatSpread = ro.statspread;
-                    }
-                    current = current.Next;
-
                 }
-            }
         }
+        
 
         public int getRealStat(string stat)
         {

@@ -142,7 +142,7 @@ namespace ShowdownBot
                 else if (isSet(param, "-p"))
                 {
                     string a = param["-p"];
-                    a = a.Replace('_', '-');
+                    a = a.Replace('=', '-');
                     Pokemon p = Global.lookup(a);
                     write(p.name + ": " + p.type1.value + "/" + p.type2.value + "\nTypically " + p.getRoleToString() + " with " + p.getDefTypeToString() + " defenses.");
                     writef("Debug Info:\n" + p.statSpread.ToString(), "debug", COLOR_OK);

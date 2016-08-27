@@ -161,6 +161,19 @@ namespace ShowdownBot
             }
             catch (Exception)
             {
+                //Tried to look up a personal version, however there was none found.
+                if (_name.Contains(PERSONAL_PRE))
+                {
+                    try
+                    {
+                        p = pokedex[_name.TrimStart(PERSONAL_PRE.ToCharArray())];
+                        return p;
+                    }
+                    catch
+                    {
+
+                    }
+                }
                 cwrite("Unknown pokemon " + _name, "warning", COLOR_WARN);
                 return pokedex["error"];
             }
@@ -197,7 +210,7 @@ namespace ShowdownBot
             //basic wait of 2 seconds
             wait(2000);
         }
-
+        
         public static IWebElement findWithin(IWebElement toSearch, By by)
         {
             try

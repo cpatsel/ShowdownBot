@@ -12,9 +12,8 @@ Fixes:
 * Can no longer use commands that require to bot to be running when it is not running.
 
 Planned:
- * Heuristic tweaks
- * Fix #16
  * Fix #19
+ * Lead picking.
 
 
 ### v0.4.1 / 2016-08-26 ###

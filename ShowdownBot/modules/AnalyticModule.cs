@@ -70,19 +70,9 @@ namespace ShowdownBot.modules
                 buildOwnTeam();
             buildTeams();
 
-            
-            //Select lead
-            string lead;
-            cwrite("Selecting first pokemon as lead", COLOR_BOT);
 
-            //TODO: actually pick this analytically.
-            if (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
-            {
-                lead = browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Text;
-                waitFindClick(By.CssSelector("button[name='chooseTeamPreview'][value='0']"));
-            }
-            else
-                lead = "error";
+            //Select lead
+            pickLead();
 
             BattlePokemon active = null;//Global.lookup(lead);
             BattlePokemon enemy = null;
@@ -103,6 +93,59 @@ namespace ShowdownBot.modules
             myTeam.Clear();
             enemyTeam.Clear(); 
         }
+
+
+        /// <summary>
+        /// Picks the last lead-role pokemon on the team, or if none are present,
+        /// Compares scores of each mon against the other team's mons.
+        /// Regardless, this method must be called after BuildTeams.
+        /// </summary>
+        /// <returns></returns>
+        public override string pickLead()
+        {
+            string lead;
+            int index = -1;
+            if (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
+            {
+                for (int i = 0; i< myTeam.Count; i++)
+                {
+                    if (myTeam[i].mon.getRole().lead)
+                        index = i;
+
+                }
+                
+                if (index == -1)
+                {
+                    float[] scores = new float[myTeam.Count];
+                    scores.Initialize();
+                    for(int i = 0; i < enemyTeam.Count; i++)
+                    {
+                        for (int j = 0; j < myTeam.Count; j++)
+                        {
+                            scores[j] += myTeam[j].checkTypes(enemyTeam[i]);
+                        }
+                    }
+                    //Find the highest score
+                    float maxscore = 0;
+                    for (int i = 0; i < scores.Length; i++)
+                    {
+                        if (scores[i] > maxscore)
+                        {
+                            maxscore = scores[i];
+                            index = i;
+                        }
+                    }
+                }
+                
+                lead = waitFind(By.CssSelector("button[name='chooseTeamPreview'][value='" + index + "']")).Text;
+                waitFindClick(By.CssSelector("button[name='chooseTeamPreview'][value='" + index + "']"));
+            }
+            else
+                lead = "error";
+
+            return lead;
+        }
+
 
 
         /// <summary>
@@ -137,6 +180,8 @@ namespace ShowdownBot.modules
 
         /// <summary>
         /// Populates myTeam from the switch menu, rather than from the team icons.
+        /// This does not cover the currently active pokemon, so it should be used in
+        /// conjunction with the regular buildTeam.
         /// </summary>
         private void buildOwnTeam()
         {

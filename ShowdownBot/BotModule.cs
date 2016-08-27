@@ -134,8 +134,25 @@ namespace ShowdownBot
             changeState(State.BATTLE);
         }
 
+        /// <summary>
+        /// Picks a lead if necessary. Defaults to picking the first pokemon on the team.
+        /// Returns the name of the pokemon picked, and "error" if unable.
+        /// </summary>
+        /// <returns></returns>
+        public virtual string pickLead()
+        {
+            string lead;
+            cwrite("Selecting first pokemon as lead", COLOR_BOT);
+            if (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
+            {
+                lead = waitFind(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Text;
+                waitFindClick(By.CssSelector("button[name='chooseTeamPreview'][value='0']"));
+            }
+            else
+                lead = "error";
 
-        
+            return lead;
+        }
 
         #region Battle Information Functions
         /// <summary>

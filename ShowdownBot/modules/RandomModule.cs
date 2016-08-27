@@ -19,16 +19,7 @@ namespace ShowdownBot.modules
         public override void battle()
         {
             int turn = 1;
-            if (format != "randombattle")
-            {
-                while (!elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
-                {
-                    //todo terminate this if after a while.
-                    wait();
-                }
-                int val = new Random().Next(0, 5);
-                browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='" + val + "']")).Click();
-            }
+            pickLead();
             
             do
             {
@@ -44,6 +35,23 @@ namespace ShowdownBot.modules
             }
             
 
+        }
+
+        public override string pickLead()
+        {
+           string lead;
+            
+            if (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
+            {
+                cwrite("Selecting random pokemon for lead.", COLOR_BOT);
+                int val = new Random().Next(0, 5);
+                lead = waitFind(By.CssSelector("button[name='chooseTeamPreview'][value='"+val+"']")).Text;
+                waitFindClick(By.CssSelector("button[name='chooseTeamPreview'][value='"+val+"']"));
+            }
+            else
+                lead = "error";
+
+            return lead;
         }
 
         private bool battleRandomly(ref int turn)

@@ -104,20 +104,30 @@ namespace ShowdownBot
                 return true;
             else return false;
         }
-        private void botUseCommand(Action cmd)
+        private void botUseCommand(Action cmd, bool startup = false)
         {
-            Task.Factory.StartNew(cmd);
-           /* ts = new ThreadStart(cmd);
-            threadBot = new Thread(ts);
-            threadBot.SetApartmentState(ApartmentState.STA);
-            try
+            //Only allow the start, startf commands to be run when no bot is live.
+            if (!startup)
             {
-                threadBot.Start();
+                if (bot.getStatus())
+                    Task.Factory.StartNew(cmd);
+                else
+                    cwrite("No bot is running!", COLOR_WARN);
             }
-            catch (Exception e)
-            {
-                writef(e.ToString(), COLOR_ERR);
-            }*/
+            else
+                Task.Factory.StartNew(cmd);
+
+            /* ts = new ThreadStart(cmd);
+             threadBot = new Thread(ts);
+             threadBot.SetApartmentState(ApartmentState.STA);
+             try
+             {
+                 threadBot.Start();
+             }
+             catch (Exception e)
+             {
+                 writef(e.ToString(), COLOR_ERR);
+             }*/
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)

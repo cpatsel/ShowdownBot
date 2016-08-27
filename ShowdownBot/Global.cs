@@ -16,6 +16,7 @@ namespace ShowdownBot
         BATTLE,
         SEARCH,
         CHALLENGE,
+        FORFEIT,
         BUSY
 
     };

@@ -22,7 +22,8 @@ namespace ShowdownBot
         protected bool isContinuous;
         protected int maxBattles;
         protected int currentBattle;
-        protected State lastBattleState;
+        protected State lastBattleState; //used for continuously battling
+        protected State lastState; //used in error handling.
         public BotModule(Bot m, IWebDriver b)
         {
 
@@ -66,6 +67,10 @@ namespace ShowdownBot
             {
                 lastBattleState = State.SEARCH;
                 ladder();
+            }
+            else if (activeState == State.FORFEIT)
+            {
+                forfeitBattle();
             }
             else if (activeState == State.BATTLE)
             {
@@ -505,6 +510,7 @@ namespace ShowdownBot
 
         public void changeState(State ns)
         {
+            lastState = activeState;
             activeState = ns;
         }
         public State getState()

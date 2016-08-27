@@ -169,6 +169,11 @@ namespace ShowdownBot.modules
             }
         }
 
+        /// <summary>
+        /// Updates various information about the two active pokemon including status and health percentage.
+        /// </summary>
+        /// <param name="you"></param>
+        /// <param name="opponent"></param>
         private void updateActiveStatuses (ref BattlePokemon you, ref BattlePokemon opponent)
         {
             var yourStats = waitFind(By.CssSelector("div[class='statbar rstatbar']"),1);

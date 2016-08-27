@@ -23,19 +23,19 @@ namespace ShowdownBot
                 {
                     
                     if (isSet(param, "-u") && isSet(param, "-p"))
-                        botUseCommand(() => bot.Start(param["-u"], param["-p"]));
+                        botUseCommand(() => bot.Start(param["-u"], param["-p"]),true);
                     else if (isSet(param, "-u"))
-                        botUseCommand(() => bot.Start(param["-u"], null));
+                        botUseCommand(() => bot.Start(param["-u"], null),true);
                     else
                         help("start");
                 }
                 else
-                    botUseCommand(() => bot.Start(true));
+                    botUseCommand(() => bot.Start(true),true);
 
             }
             else if (args[0] == "startf")
             { 
-                botUseCommand(() => bot.Start(false));
+                botUseCommand(() => bot.Start(false),true);
             }
             else if (args[0] == "stop" || args[0] == "idle")
             {

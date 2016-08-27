@@ -154,6 +154,7 @@ namespace ShowdownBot
             int health = (int)(maxHealth * realpct);
             currentHealth = health;
         }
+
         /// <summary>
         /// Calculates the total damage a move will do to a particular pokemon,
         /// with respect to abilities, types, STAB, common items, etc.

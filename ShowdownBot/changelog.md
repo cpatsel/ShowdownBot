@@ -1,10 +1,18 @@
 ## Changelog ##
 
 
-### v0.5.0 / Unreleased
+### v0.5.0 / Unreleased ###
+Added:
+
+* Item Support
+
+
+Fixes:
+* Reworked how forfeiting is handled.
+* Can no longer use commands that require to bot to be running when it is not running.
+
 Planned:
  * Refresh option
- * Item support
  * Heuristic tweaks
  * Fix #16
  * Fix #19

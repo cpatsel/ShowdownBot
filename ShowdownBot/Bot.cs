@@ -83,6 +83,11 @@ namespace ShowdownBot
 
         public State getState() { return mainModule.getState(); }
         public AiMode getMode() { return modeCurrent; }
+
+        /// <summary>
+        /// Returns whether the bot is running or not
+        /// </summary>
+        /// <returns></returns>
         public bool getStatus() { return isRunning; }
         public Consol getConsole(){ return c;}
         public string getOwner() { return owner;}
@@ -160,7 +165,19 @@ namespace ShowdownBot
             cwrite("Changing format to "+nf.ToLower());
             mainModule.changeFormat(nf.ToLower());
         }
-        public bool botForfeit() { return mainModule.forfeitBattle(); }
+        public bool botForfeit()
+        {
+            if (mainModule.getState() == State.BATTLE)
+            {
+                mainModule.changeState(State.FORFEIT);
+                return true;
+            }
+            else
+            {
+                cwrite("No battle to forfeit!",COLOR_WARN);
+                return false;
+            }
+        }
         public void Start(bool auth)
         {
 

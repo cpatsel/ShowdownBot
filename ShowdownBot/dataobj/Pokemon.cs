@@ -35,39 +35,7 @@ namespace ShowdownBot
         }
 
     }
-    
-
-    //TODO: add more specific roles, like fast physical or tank,etc and give them specific spreads in setRealStats
-    public class Role
-    {
-        //Mutually Exclusive:
-        public bool lead { get; set; }
-        public bool physical { get; set; }
-        public bool special { get; set; }
-        public bool mixed { get; set; }
-        public bool stall { get; set; }
-        public bool any { get; set; }
-        public bool tank { get; set; }
-        //Can be set in addition to above:
-        public bool setup { get; set; } //Whether this mon ne
-    }
-  
-    public class DefenseType
-    {
-        public bool physical { get; set; }
-        public bool special { get; set; }
-        public bool mixed { get; set; }
-        public bool bulky { get; set; }
-        public bool any { get; set; }
-    }
-
-    public class Item
-    {
-        public bool choicescarf { get; set; }
-        public bool choiceband { get; set; }
-        public bool leftovers { get; set; }
-        public bool lifeorb { get; set; }
-    }
+   
 
     public class Pokemon
     {      
@@ -75,7 +43,7 @@ namespace ShowdownBot
 
         public string name = "NONAME";
         public Type type1, type2;
-        //string item = "NA";
+        public string item = "none";
         //float apct = 100f;
         //string firstmove = "NA";
         float weight = 50f;
@@ -209,7 +177,9 @@ namespace ShowdownBot
                         if (!Object.ReferenceEquals(ro.deftype, null))
                             this.deftype = ro.deftype;
                         if (!Object.ReferenceEquals(ro.statspread, null))
-                            this.alternativeStatSpread = ro.statspread;
+                            this.statSpread = ro.statspread;
+                        if (!Object.ReferenceEquals(ro.item, null))
+                            this.item = ro.item;
                 }
         }
         

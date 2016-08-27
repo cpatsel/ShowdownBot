@@ -41,6 +41,7 @@ namespace ShowdownBot
             currentBoosts = new Boosts();
             type1 = mon.type1;
             type2 = mon.type2;
+            item = mon.item;
             initBoosts();
 
            
@@ -176,15 +177,31 @@ namespace ShowdownBot
             }
             //do ability calculations
 
-            float additional = 1;
-            if (this.item == "choiceband" || this.item == "choicespecs")
-                additional = 1.5f;
-            else if (this.item == "lifeorb")
-                additional = 1.3f;
+            float additional = itemDamageMod(m, enemy);
+            
 
             return (dmg * mult * stab * ability * additional * immunity);
         }
 
+        /// <summary>
+        /// Returns the damage modifier for the held item.
+        /// </summary>
+        /// <returns></returns>
+        private float itemDamageMod(Move m, BattlePokemon enemy)
+        {
+            if (item == "none")
+                return 1;
+            if (item == "choiceband" && m.group == "physical")
+                return 1.5f;
+            if (item == "choicespecs" && m.group == "special")
+                return 1.5f;
+            if (item == "lifeorb")
+                return 1.3f;
+            if (item == "expertbelt" && this.isSuperEffective(m, enemy))
+                return 1.2f;
+
+            return 1;
+        }
         /// <summary>
         /// Used to handle moves whose BP is unknown or varies.
         /// </summary>
@@ -285,7 +302,20 @@ namespace ShowdownBot
             return false;
         }
 
-
+        /// <summary>
+        /// Simply returns whether the move is super-effective or better (4x)
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="enemy"></param>
+        /// <returns></returns>
+        public bool isSuperEffective(Move m, BattlePokemon enemy)
+        {
+            float a = damageCalc(m.type, enemy.type1);
+            float b = 1;
+            if (enemy.type1 != enemy.type2)
+                b = damageCalc(m.type, enemy.type2);
+            return (a * b > 2f) ? true : false;
+        }
         public int getHPPercentage()
         {
             float f = ((float)currentHealth / (float)maxHealth);

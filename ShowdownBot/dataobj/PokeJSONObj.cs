@@ -38,7 +38,7 @@ namespace ShowdownBot
     }
 
 
-    //TODO: statspread will alter the bot's perception of opponent pokemon as well, maybe keep a backup of default stats.
+    
     public class RoleOverride
     {
         public string name { get; set; }
@@ -46,6 +46,7 @@ namespace ShowdownBot
         public DefenseType deftype { get; set; }
         public StatSpread statspread { get; set; }
         public bool personal { get; set; }
+        public string item { get; set; }
     }
 
     public class Abilities
@@ -64,6 +65,30 @@ namespace ShowdownBot
         public int spa { get; set; }
         public int spd { get; set; }
         public int spe { get; set; }
+    }
+
+    //TODO: add more specific roles, like fast physical or tank,etc and give them specific spreads in setRealStats
+    public class Role
+    {
+        //Mutually Exclusive:
+        public bool lead { get; set; }
+        public bool physical { get; set; }
+        public bool special { get; set; }
+        public bool mixed { get; set; }
+        public bool stall { get; set; }
+        public bool any { get; set; }
+        public bool tank { get; set; }
+        //Can be set in addition to above:
+        public bool setup { get; set; } //Whether this mon ne
+    }
+
+    public class DefenseType
+    {
+        public bool physical { get; set; }
+        public bool special { get; set; }
+        public bool mixed { get; set; }
+        public bool bulky { get; set; }
+        public bool any { get; set; }
     }
 
 }

@@ -410,7 +410,7 @@ namespace ShowdownBot
             return reply.Status == IPStatus.Success;
            }
 
-
+        public void Refresh() { mainBrowser.Navigate().Refresh(); }
         private void BuildPokedex()
         {
             cwrite("Building pokedex, this may take a moment...");

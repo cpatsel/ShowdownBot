@@ -5,14 +5,13 @@
 Added:
 
 * Item Support
-
+* Refresh command
 
 Fixes:
 * Reworked how forfeiting is handled.
 * Can no longer use commands that require to bot to be running when it is not running.
 
 Planned:
- * Refresh option
  * Heuristic tweaks
  * Fix #16
  * Fix #19

@@ -67,6 +67,10 @@ namespace ShowdownBot
                 }
                 botUseCommand(() => bot.changeState(State.SEARCH));
             }
+            else if (args[0] == "refresh" || args[0] == "rf")
+            {
+                botUseCommand(() => bot.Refresh());
+            }
             else if (args[0] == "version")
             {
                 writef("ShowdownBot v" + SDB_VERSION, "system", COLOR_SYS);

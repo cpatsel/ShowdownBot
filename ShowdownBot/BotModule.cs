@@ -336,7 +336,17 @@ namespace ShowdownBot
                 }
                  foreach (IWebElement s in elems)
                  {
-                    if (s.GetAttribute("title").Contains("(active)"))
+                    bool isActive = false;
+                    try
+                    {
+                        isActive = s.GetAttribute("title").Contains("(active)")
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        cwrite("Unable to determine active pokemon, maybe it fainted.", "debug", COLOR_WARN);
+                        break;
+                    }
+                    if (isActive)
                      {
                         string[] name;
                         try

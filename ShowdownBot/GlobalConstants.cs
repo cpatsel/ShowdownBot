@@ -19,7 +19,7 @@ namespace ShowdownBot
         public static ConsoleColor COLOR_ERR = ConsoleColor.Red;
 
         public const int MAX_WAIT_TIME_S = 15;
-
+        public const string VERSIONFILE_URL = "https://raw.githubusercontent.com/Deviach/ShowdownBot/master/VERSION";
         /// <summary>
         /// Time in seconds to wait for a player challenge response.
         /// </summary>

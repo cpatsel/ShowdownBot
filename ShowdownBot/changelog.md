@@ -4,22 +4,21 @@
 ### v0.5.0 / Unreleased ###
 Added:
 
+* Personalized Pokemon through the personal role override tag.
 * Item Support
+* Status move support
+* Lead picking (automatic or with the lead role override)
+* Update feature (kind-of)
 * Refresh command
+
 
 Fixes:
 * Reworked how forfeiting is handled.
 * Can no longer use commands that require to bot to be running when it is not running.
 * Bot will wait longer (2 minutes) when waiting for a player challenge.
+* Actually really recognizes -ate moves now.
 * Bug where bot would attempt to switch its last Pokemon
 * Bug where the bot could not identify alternate form pokemon.
-
-
-
-Planned:
- * Fix #19
- * Lead picking.
-
 
 ### v0.4.1 / 2016-08-26 ###
 Fixes

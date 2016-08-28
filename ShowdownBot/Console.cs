@@ -11,6 +11,7 @@ using System.Threading;
 using static ShowdownBot.Global;
 using static ShowdownBot.GlobalConstants;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace ShowdownBot
 {
@@ -143,6 +144,44 @@ namespace ShowdownBot
                 string line = Console.ReadLine();
                 Parse(line);
             }
+        }
+
+        public bool checkForNewVersion()
+        {
+            WebClient wc = new WebClient();
+            string versiontext;
+            try
+            {
+                versiontext = wc.DownloadString(VERSIONFILE_URL).TrimEnd('\n');
+            }
+            catch
+            {
+                cwrite("Unable to connect to github.", "error", COLOR_ERR);
+                return false;
+            }
+            string[] components = versiontext.Split('.');
+            string[] mycomponents = SDB_VERSION.TrimEnd("-unreleased".ToCharArray()).Split('.');
+            bool behind = false;
+            if (Int32.Parse(components[0]) > Int32.Parse(mycomponents[0]))
+            {
+                behind = true;
+            }
+            else if (Int32.Parse(components[1]) > Int32.Parse(mycomponents[1]))
+            {
+                behind = true;
+            }
+            else if ((Int32.Parse(components[2]) > Int32.Parse(mycomponents[2]))
+                && (Int32.Parse(components[1]) == Int32.Parse(mycomponents[1])))
+            {
+                behind = true;
+            }
+            if (behind)
+            {
+                cwrite("There's a new version v" + versiontext + " available!", COLOR_WARN);
+            }
+            else
+                cwrite("You have the latest version!", COLOR_OK);
+            return true;
         }
     }
 }

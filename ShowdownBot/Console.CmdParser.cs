@@ -71,6 +71,10 @@ namespace ShowdownBot
             {
                 botUseCommand(() => bot.Refresh());
             }
+            else if (args[0] == "update")
+            {
+                checkForNewVersion();
+            }
             else if (args[0] == "version")
             {
                 writef("ShowdownBot v" + SDB_VERSION, "system", COLOR_SYS);

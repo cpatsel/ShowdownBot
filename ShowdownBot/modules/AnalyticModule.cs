@@ -50,7 +50,11 @@ namespace ShowdownBot.modules
             {
                 if (team[i].mon.name == p.name)
                     return team[i];
-                else if (p.name.Contains("-mega"))
+                else if (team[i].mon.name.Contains(p.name))
+                {
+                    return team[i]; //This handles cases like Tornadus-Therian, who would be in p.name as just "Tornadus"
+                }
+                else if (p.name.Contains("-mega") && p.name.Contains(team[i].mon.name))
                 {
                     team[i].changeMon(p.name);
                     return team[i];
@@ -204,9 +208,9 @@ namespace ShowdownBot.modules
         private void updateHealth(IWebElement statbar, ref BattlePokemon p)
         {
             var elem = findWithin(statbar, By.ClassName("hptext"));
-            string txt = elem.Text;
             if (elem != null)
             {
+                string txt = elem.Text;
                 int pct = 100;
                 txt = txt.Trim('%');
                 int.TryParse(txt, out pct);
@@ -326,7 +330,7 @@ namespace ShowdownBot.modules
             {
                 if (!elementExists(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")))
                     continue;
-                BattlePokemon p = getPokemon(Global.lookup(browser.FindElement(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")).Text),myTeam);
+                BattlePokemon p = getPokemon(Global.lookup(PERSONAL_PRE+waitFind(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']"),1).Text),myTeam);
                 if (bestChoice == 1000)
                     bestChoice = i; //set a default value that can be accessed.
                 float temp = p.matchup(enemy);
@@ -345,10 +349,14 @@ namespace ShowdownBot.modules
 
             }
             
-            var b = browser.FindElement(By.CssSelector("button[value='" + bestChoice.ToString() + "'][name=chooseSwitch]"));
-            BattlePokemon nextPoke = getPokemon(Global.lookup(b.Text),myTeam);
-            b.Click();
-            return nextPoke;
+            var b = waitFind(By.CssSelector("button[value='" + bestChoice.ToString() + "'][name=chooseSwitch]"));
+            if (b != null)
+            {
+                BattlePokemon nextPoke = getPokemon(Global.lookup(b.Text), myTeam);
+                b.Click();
+                return nextPoke;
+            }
+            return null;
         }
 
         private string pickMoveAnalytic(BattlePokemon you, BattlePokemon enemy)
@@ -490,7 +498,7 @@ namespace ShowdownBot.modules
             for (int i = 1; i <= 5; i++)
             {
                 
-                if (elementExists(By.CssSelector("button[value='"+i.ToString()+"']")))
+                if (elementExists(By.CssSelector("button[name='chooseSwitch'][value='"+i.ToString()+"']")))
                     totalMons++;
             }
             if (totalMons == 0)

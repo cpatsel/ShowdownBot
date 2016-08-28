@@ -296,9 +296,9 @@ namespace ShowdownBot
         /// </summary>
         /// <param name="by"></param>
         /// <returns>Whether the element was clicked.</returns>
-        public static bool waitFindClick(By by)
+        public static bool waitFindClick(By by, int maxw = MAX_WAIT_TIME_S)
         {
-            IWebElement we = waitFind(by);
+            IWebElement we = waitFind(by,maxw);
             if (we != null)
             {
                 try

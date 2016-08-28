@@ -110,7 +110,7 @@ namespace ShowdownBot
             browser.FindElement(By.Name("makeChallenge")).Click();
             ////TODO: implement a way to select alternate teams/ have more than one team.
             //Wait until the battle starts.
-            if (!waitFindClick(By.Name("ignorespects"))) return;
+            if (!waitFindClick(By.Name("ignorespects"),MAX_WAIT_FOR_PLAYER_RESPONSE)) return;
             cwrite("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
 
@@ -126,10 +126,11 @@ namespace ShowdownBot
             if (!waitFindClick(By.Name("search"))) return;
             cwrite("Waiting for an opponent...");
 
-            while (elementExists(By.Name("cancelSearch")))
+            while (elementExists(By.Name("cancelSearch")) && activeState == State.SEARCH)
             {
                 wait();
             }
+            if (activeState != State.SEARCH) return; //allow canceling of wait with "stop" command.
             cwrite("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
         }
@@ -322,8 +323,17 @@ namespace ShowdownBot
          {
              for(int i = 0; i<ticons.Count;i++)
              {
+                
                  IWebElement e = ticons[i];
-                 IList<IWebElement> elems = e.FindElements(By.ClassName("pokemonicon"));
+                 IList<IWebElement> elems;
+                try
+                {
+                    elems = e.FindElements(By.ClassName("pokemonicon"));
+                }
+                catch(StaleElementReferenceException)
+                {
+                    continue;
+                }
                  foreach (IWebElement s in elems)
                  {
                     if (s.GetAttribute("title").Contains("(active)"))
@@ -366,7 +376,15 @@ namespace ShowdownBot
             for (int i = 0; i < ticons.Count; i++)
             {
                 IWebElement e = ticons[i];
-                IList<IWebElement> elems = e.FindElements(By.ClassName("pokemonicon"));
+                IList<IWebElement> elems;
+                try
+                {
+                   elems  = e.FindElements(By.ClassName("pokemonicon"));
+                }
+                catch (StaleElementReferenceException)
+                {
+                    continue;
+                }
                 foreach (IWebElement s in elems)
                 {
                     if (s.GetAttribute("title") != "Not revealed")

@@ -10,6 +10,11 @@ Added:
 Fixes:
 * Reworked how forfeiting is handled.
 * Can no longer use commands that require to bot to be running when it is not running.
+* Bot will wait longer (2 minutes) when waiting for a player challenge.
+* Bug where bot would attempt to switch its last Pokemon
+* Bug where the bot could not identify alternate form pokemon.
+
+
 
 Planned:
  * Fix #19

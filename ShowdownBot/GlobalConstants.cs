@@ -19,6 +19,11 @@ namespace ShowdownBot
         public static ConsoleColor COLOR_ERR = ConsoleColor.Red;
 
         public const int MAX_WAIT_TIME_S = 15;
+
+        /// <summary>
+        /// Time in seconds to wait for a player challenge response.
+        /// </summary>
+        public const int MAX_WAIT_FOR_PLAYER_RESPONSE = 120; 
         
 #if LINUX
         public static ConsoleColor COLOR_BOT = ConsoleColor.Blue;

@@ -19,6 +19,7 @@ namespace ShowdownBot
         public string shortDesc { get; set; }
         public string id { get; set; }
         public string name { get; set; }
+        public string status { get; set; } = "none";
         public int pp { get; set; }
         public int priority { get; set; }
         public Flags flags { get; set; }
@@ -72,8 +73,6 @@ namespace ShowdownBot
             return atk + spa + def + spd + spe + accuracy + evasion;
         }
     }
-
-
     public class Secondary
     {
         public int chance { get; set; }

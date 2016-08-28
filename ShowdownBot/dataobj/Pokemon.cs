@@ -241,21 +241,14 @@ namespace ShowdownBot
         }
 
 
-        
-
-        
-
-
-        
-        
-
-
         public bool hasAbility(string ability)
         {
-            if (abilities.a1 == ability) return true;
-            else if (abilities.a2 == ability) return true;
-            else if (abilities.H == ability) return true;
-            else return false;
+            if (abilities.a1.ToLower() == ability.ToLower()) return true;
+            if (!Object.ReferenceEquals(abilities.a2,null))
+                if(abilities.a2.ToLower() == ability.ToLower()) return true;
+            if (!Object.ReferenceEquals(abilities.H, null))
+                if (abilities.H.ToLower() == ability.ToLower()) return true;
+            return false;
         }
 
      

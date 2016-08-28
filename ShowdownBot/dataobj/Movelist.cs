@@ -37,6 +37,7 @@ namespace ShowdownBot
         public bool heal = false;
         public bool field = false; //Hazard move?
         public Boosts boosts;
+        public string statuseffect = "none";
         public Move(string n, Type t, float p) { name = n; type = t; bp = p; }
         public Move(string n, Type t) { name = n; type = t; unknown = true; bp = -1; }
         public string desc;
@@ -50,8 +51,11 @@ namespace ShowdownBot
             priority = obj.priority;
             boosts = obj.boosts;
             desc = obj.desc;
+            statuseffect = obj.status;
+            if (statuseffect != "none") status = true;
             if (hasBoosts()) isBoost = true;
             if (Convert.ToBoolean(obj.flags.heal)) heal = true; 
+            
         }
         public bool hasBoosts()
         {

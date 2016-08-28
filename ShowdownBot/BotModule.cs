@@ -237,12 +237,12 @@ namespace ShowdownBot
 
 
                 }
-                else if (type == "Normal")
+                else if (Global.moveLookup(name[0]).type.value == "normal")
                 {
                     string nname = name[0]+" (" + type + ")";
                     if (!Global.moves.ContainsKey(nname))
                     {
-                        //This handles both return/frustration and all normal type moves affected by -ate abilities.
+                        //This handles all normal type moves affected by -ate abilities.
                         //I think it also handles Normalize as well.
                         m = new Move(nname, types[type.ToLower()]);
                         Move analog = Global.moveLookup(name[0]);

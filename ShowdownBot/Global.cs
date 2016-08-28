@@ -184,7 +184,8 @@ namespace ShowdownBot
         {
             Move m;
             TextInfo ti = new CultureInfo("en-us").TextInfo;
-            name = ti.ToTitleCase(name);
+            if (name != "U-turn")
+                name = ti.ToTitleCase(name);
             try
             {
                 m = moves[name];

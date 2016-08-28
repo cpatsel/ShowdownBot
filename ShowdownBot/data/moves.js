@@ -8544,7 +8544,7 @@
 		shortDesc: "Max 102 power at maximum Happiness.",
 		id: "return",
 		isViable: true,
-		name: "Return",
+		name: "Return 102",
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},

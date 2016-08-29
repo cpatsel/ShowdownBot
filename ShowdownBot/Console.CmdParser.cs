@@ -86,6 +86,11 @@ namespace ShowdownBot
             }
             else if (args[0] == "challenge" || args[0] == "cp")
             {
+                if (isSet(param,"-f"))
+                {
+                    botUseCommand(() => bot.changeFormat(param["-f"]));
+                }
+
                 if (isSet(param, "-c") && isSet(param, "-u"))
                 {
                     int num;

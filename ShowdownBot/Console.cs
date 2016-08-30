@@ -19,6 +19,7 @@ namespace ShowdownBot
     public partial class Consol : Form
     {
         Bot bot;
+        bool ready = false;
         Thread threadBot;
         ThreadStart ts;
         XDocument helpdoc;
@@ -142,6 +143,7 @@ namespace ShowdownBot
 
         private void Consol_Load(object sender, EventArgs e)
         {
+            
             while (true)
             {
                 string line = Console.ReadLine();

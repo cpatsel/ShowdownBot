@@ -130,10 +130,6 @@ namespace ShowdownBot
                 }
 
             }
-            else if (args[0] == "dump" || args[0] == "dumplog")
-            {
-                botUseCommand(() => bot.saveLog());
-            }
             else if (args[0] == "exit" || args[0] == "quit")
             {
                 writef("Shutting down.", "[SYSTEM]", COLOR_SYS);
@@ -176,10 +172,6 @@ namespace ShowdownBot
             else if (args[0] == "forfeit")
             {
                 botUseCommand(() => bot.botForfeit());
-            }
-            else if (args[0] == "visible" || args[0] == "v")
-            {
-                //change visibility
             }
             else if (args[0] == "clear" || args[0] == "cls")
             {

@@ -13,6 +13,9 @@ Added:
 * Specify format when using challengeplayer.
 * Refresh command
 
+Removed:
+
+* Dump log functionality
 
 Fixes:
 * Reworked how forfeiting is handled.

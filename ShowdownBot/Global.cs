@@ -30,7 +30,7 @@ namespace ShowdownBot
 
         //Options
         public static bool showDebug = false;
-        public static bool ADD_U_PKMN = false;
+        public static bool botIsReady = false;
         public static float m1wgt = 0.4f;
         public static float m2wgt = 0.3f;
         public static float m3wgt = 0.2f;
@@ -42,7 +42,7 @@ namespace ShowdownBot
         public static string ERRLOGPATH = @"./error.txt";
         public static string ROLEPATH = @"./data/roleOverride.js";
         public static string HELPPATH = @"./data/help.xml";
-
+        
         //Encyclopedia
         public static Dictionary<string, Type> types;
         public static Dictionary<string, Move> moves;

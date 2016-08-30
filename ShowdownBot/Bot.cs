@@ -43,6 +43,7 @@ namespace ShowdownBot
         IWebDriver mainBrowser;
         Movelist movelist;
         bool isRunning;
+       
 
         BotModule mainModule;
         BotModule analyticModule;
@@ -76,6 +77,7 @@ namespace ShowdownBot
             Global.moves = new Dictionary<string,Move>();
             movelist = new Movelist();
             movelist.initialize();
+            cwrite("Ready for input!", COLOR_OK);
 
             
            
@@ -92,7 +94,6 @@ namespace ShowdownBot
         public Consol getConsole(){ return c;}
         public string getOwner() { return owner;}
         public string getChallengee() { return challengee;}
-
         public void printInfo()
         {
             cwrite("\nCurrent module: " + getMode().ToString() + "\n" +
@@ -315,7 +316,7 @@ namespace ShowdownBot
                     cwrite("Owner username too long, truncating.", COLOR_WARN);
                 }
             }
-                
+
             else if (key == "[USERNAME]")
             {
                 username = val;
@@ -325,7 +326,7 @@ namespace ShowdownBot
                     cwrite("Username too long, truncating.", COLOR_WARN);
                 }
             }
-               
+
             else if (key == "[PASSWORD]")
                 password = val;
             else if (key == "[PROFILE]")
@@ -339,16 +340,6 @@ namespace ShowdownBot
                     Global.showDebug = true;
                 else
                     cwrite("Unknown value " + val + " for SHOW_DEBUG", "WARNING", COLOR_WARN);
-            }
-            else if (key.Contains("UNKNOWN_PKMN"))
-            {
-                bool result;
-                if (bool.TryParse(val, out result))
-                    ADD_U_PKMN = result;
-                else
-                {
-                    cwrite("Unknown value " + val + "for ADD_UNKNOWN_PKMN", "warning", COLOR_WARN);
-                }
             }
             else if (key.StartsWith("[SLOT"))
             {
@@ -434,7 +425,7 @@ namespace ShowdownBot
                     Global.pokedex.Add(p.name, p);
                 }
             }
-            cwrite("Pokedex built!", COLOR_OK);
+            //cwrite("Pokedex built!", COLOR_OK);
 
         }
 
@@ -471,36 +462,7 @@ namespace ShowdownBot
             compareModule.simulate(Global.lookup(you), Global.lookup(enemy));
         }
 
-        /// <summary>
-        /// Doesn't do much of anything with firefox unfortunately.
-        /// </summary>
-        public void saveLog()
-        {
-            if (!isRunning)
-            {
-                cwrite("No browser is running!", "error", COLOR_ERR);
-                return;
-            }
-            
-            if (!Directory.Exists(@"./logs"))
-            {
-                Directory.CreateDirectory(@"./logs");
-            }
-            string date = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-            string fn = @"./logs/" + date + ".txt";
-            IList<LogEntry> list = mainBrowser.Manage().Logs.GetLog(LogType.Browser);
-            using (StreamWriter sw = new StreamWriter(fn))
-            {
-               
-                for (int i = 0; i < list.Count; i++)
-                {
-                    sw.WriteLine(list[i].Message);
-                }
-                sw.Close();
-            }
-            cwrite("log_" + date + ".txt created.");
-
-        }
+        
        
     }//End of Class
 

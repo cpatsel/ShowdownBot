@@ -41,6 +41,7 @@ namespace ShowdownBot
         public static string MOVELISTPATH = @"./data/moves.js";
         public static string ERRLOGPATH = @"./error.txt";
         public static string ROLEPATH = @"./data/roleOverride.js";
+        public static string HELPPATH = @"./data/help.xml";
 
         //Encyclopedia
         public static Dictionary<string, Type> types;

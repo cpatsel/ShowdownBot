@@ -3873,7 +3873,7 @@
 		shortDesc: "Max 102 power at minimum Happiness.",
 		id: "frustration",
 		isViable: true,
-		name: "Frustration",
+		name: "Frustration 102",
 		pp: 20,
 		priority: 0,
 		flags: {contact: 1, protect: 1, mirror: 1},

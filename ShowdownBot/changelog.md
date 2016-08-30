@@ -9,6 +9,7 @@ Added:
 * Status move support
 * Lead picking (automatic or with the lead role override)
 * Update feature (kind-of)
+* Better help documentation.
 * Specify format when using challengeplayer.
 * Refresh command
 

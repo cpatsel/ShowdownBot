@@ -339,7 +339,7 @@ namespace ShowdownBot
                     bool isActive = false;
                     try
                     {
-                        isActive = s.GetAttribute("title").Contains("(active)")
+                        isActive = s.GetAttribute("title").Contains("(active)");
                     }
                     catch (StaleElementReferenceException)
                     {

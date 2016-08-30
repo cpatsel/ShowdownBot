@@ -84,7 +84,7 @@ namespace ShowdownBot
                 if (paramCheck(2, args, args[0]))
                     botUseCommand(() => bot.changeFormat(args[1]));
             }
-            else if (args[0] == "challenge" || args[0] == "cp")
+            else if (args[0] == "challengeplayer" || args[0] == "challenge" || args[0] == "cp")
             {
                 if (isSet(param,"-f"))
                 {

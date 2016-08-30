@@ -12,6 +12,7 @@ using static ShowdownBot.Global;
 using static ShowdownBot.GlobalConstants;
 using System.Threading.Tasks;
 using System.Net;
+using System.Xml.Linq;
 
 namespace ShowdownBot
 {
@@ -20,7 +21,7 @@ namespace ShowdownBot
         Bot bot;
         Thread threadBot;
         ThreadStart ts;
-        
+        XDocument helpdoc;
         public Consol()
         {
             ts = new ThreadStart(() => bot = new Bot(this));
@@ -29,7 +30,9 @@ namespace ShowdownBot
             threadBot.Start();
             InitializeComponent();
             richTextBox1.WordWrap = false;
+            helpdoc = XDocument.Load(HELPPATH);
             write("Console initialized.");
+            
         }
 
         /// <summary>

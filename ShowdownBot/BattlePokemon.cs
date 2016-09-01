@@ -166,26 +166,45 @@ namespace ShowdownBot
         /// <returns></returns>
         public int rankMove(Move m, BattlePokemon enemy)
         {
-            int mh = moveHeuristic(m,enemy);
+            int rank = hitsToKill(m,enemy);
             //simple method: if a move is inaccurate, increase the number of hits it takes to KO
             if (m.accuracy != 1)
-                ++mh;
-            return mh;
+                ++rank;
+
+            //To rank in ascending order (ie 1 is a poor rank) subtract the rank from the max.
+            rank = GlobalConstants.MAX_MOVE_RANK - rank;
+            return rank;
         }
 
-        public int moveHeuristic(Move m, BattlePokemon enemy)
+        /// <summary>
+        /// Returns how many times this pokemon will
+        /// have to use move m to KO enemy.
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="enemy"></param>
+        /// <returns></returns>
+        public int hitsToKill(Move m, BattlePokemon enemy)
         {
             int totalDamage = damageFormula(m, enemy);
             //Compare the damage we will deal to the health of the enemy.
             int times = 1; //number of times it takes to use this move to KO the opponent.
             int health = enemy.getHealth();
-            for (;health > 0; times++)
+            for (;(health > 0) || (times > GlobalConstants.MAX_HKO); times++)
             {
                 health -= totalDamage;
             }
             return times;
         }
 
+        /// <summary>
+        /// The damage formula used by the games / PS!
+        /// This returns an fairly accurate representation of
+        /// how much damage this pokemon will do to enemy with move m.
+        /// Ignores critical chance and variance.
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="enemy"></param>
+        /// <returns></returns>
         private int damageFormula(Move m, BattlePokemon enemy)
         {
             float first = (2f * this.level + 10f) / 250f;

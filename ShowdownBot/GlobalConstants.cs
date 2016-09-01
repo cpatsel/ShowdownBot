@@ -23,8 +23,17 @@ namespace ShowdownBot
         /// <summary>
         /// Time in seconds to wait for a player challenge response.
         /// </summary>
-        public const int MAX_WAIT_FOR_PLAYER_RESPONSE = 120; 
-        
+        public const int MAX_WAIT_FOR_PLAYER_RESPONSE = 120;
+
+        /// <summary>
+        /// The upper bound on hits-to-KO a move can have.
+        /// </summary>
+        public const int MAX_HKO = 10;
+
+        /// <summary>
+        /// The highest rank for a move.
+        /// </summary>
+        public const int MAX_MOVE_RANK = 15;
 #if LINUX
         public static ConsoleColor COLOR_BOT = ConsoleColor.Blue;
 #else

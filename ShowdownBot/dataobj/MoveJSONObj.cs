@@ -77,5 +77,6 @@ namespace ShowdownBot
     {
         public int chance { get; set; }
         public Boosts boosts { get; set; }
+        public string status { get; set; }
     }
 }

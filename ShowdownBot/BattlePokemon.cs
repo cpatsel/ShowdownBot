@@ -32,6 +32,7 @@ namespace ShowdownBot
         public Status status;
         public Boosts currentBoosts;
         public string item;
+        public int level;
         public BattlePokemon(Pokemon p)
         {
             this.mon = p;
@@ -42,6 +43,7 @@ namespace ShowdownBot
             type1 = mon.type1;
             type2 = mon.type2;
             item = mon.item;
+            level = 100; //TODO: actually find this, for now just assume its max.
             initBoosts();
 
            
@@ -155,6 +157,70 @@ namespace ShowdownBot
             currentHealth = health;
         }
 
+        /// <summary>
+        /// Ranks a given move.
+        /// Returns a rank >= 1
+        /// </summary>
+        /// <param name="m"></param>
+        /// <param name="enemy"></param>
+        /// <returns></returns>
+        public int rankMove(Move m, BattlePokemon enemy)
+        {
+            int mh = moveHeuristic(m,enemy);
+            //simple method: if a move is inaccurate, increase the number of hits it takes to KO
+            if (m.accuracy != 1)
+                ++mh;
+            return mh;
+        }
+
+        public int moveHeuristic(Move m, BattlePokemon enemy)
+        {
+            int totalDamage = damageFormula(m, enemy);
+            //Compare the damage we will deal to the health of the enemy.
+            int times = 1; //number of times it takes to use this move to KO the opponent.
+            int health = enemy.getHealth();
+            for (;health > 0; times++)
+            {
+                health -= totalDamage;
+            }
+            return times;
+        }
+
+        private int damageFormula(Move m, BattlePokemon enemy)
+        {
+            float first = (2f * this.level + 10f) / 250f;
+            float second = 0;
+            if (m.group == "physical")
+            {
+                second = (float)this.getStat("atk") / (float)enemy.getStat("def");
+            }
+            else
+            {
+                second = (float)this.getStat("spa") / (float)enemy.getStat("spd");
+            }
+            float third = getRealBP(m, enemy);
+            float totaldmg = first * second * third + 2;
+
+            //Calculate modifier.
+            //We will assume no critical hit and disregard the random variance.
+            float itemmod = 1;
+            float stab = 1;
+            float immunity = 1;
+
+            float type = damageCalc(m.type, enemy.type1);
+            if(enemy.type1 != enemy.type2)
+                type = type * damageCalc(m.type, enemy.type2);
+
+            if (m.type == this.type1 || m.type == this.type2)
+            {
+                stab = 1.5f;
+            }
+            itemmod = itemDamageMod(m, enemy);
+            if (immunityCheck(m.type, enemy))
+                immunity = 0;
+            float multiplier = type * stab * itemmod * immunity;
+            return (int)Math.Floor(totaldmg * multiplier);
+        }
         /// <summary>
         /// Calculates the total damage a move will do to a particular pokemon,
         /// with respect to abilities, types, STAB, common items, etc.

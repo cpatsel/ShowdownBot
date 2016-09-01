@@ -166,6 +166,19 @@ namespace ShowdownBot
             cwrite("Changing format to "+nf.ToLower());
             mainModule.changeFormat(nf.ToLower());
         }
+
+        public void testBattle()
+        {
+            BattlePokemon off = new BattlePokemon(Global.lookup("magcargo"));
+            BattlePokemon def = new BattlePokemon(Global.lookup("hippowdon"));
+            Move m1 = Global.moveLookup("Flamethrower");
+            Move m2 = Global.moveLookup("Psychic");
+            int dmg1 = off.rankMove(m1, def);
+            int dmg2 = off.rankMove(m2, def);
+            cwrite(off.mon.name + "'s " + m1.name + " against " + def.mon.name+":"+dmg1, "debug", COLOR_BOT);
+            cwrite(off.mon.name + "'s " + m2.name + " against " + def.mon.name + ":" + dmg2, "debug", COLOR_BOT);
+
+        }
         public bool botForfeit()
         {
             if (mainModule.getState() == State.BATTLE)

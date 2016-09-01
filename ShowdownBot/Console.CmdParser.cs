@@ -130,6 +130,10 @@ namespace ShowdownBot
                 }
 
             }
+            else if (args[0] == "tb")
+            {
+                botUseCommand(() => bot.testBattle(), true);
+            }
             else if (args[0] == "exit" || args[0] == "quit")
             {
                 writef("Shutting down.", "[SYSTEM]", COLOR_SYS);

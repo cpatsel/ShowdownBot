@@ -121,18 +121,6 @@ namespace ShowdownBot
             }
             else
                 Task.Factory.StartNew(cmd);
-
-            /* ts = new ThreadStart(cmd);
-             threadBot = new Thread(ts);
-             threadBot.SetApartmentState(ApartmentState.STA);
-             try
-             {
-                 threadBot.Start();
-             }
-             catch (Exception e)
-             {
-                 writef(e.ToString(), COLOR_ERR);
-             }*/
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)

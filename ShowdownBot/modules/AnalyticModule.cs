@@ -272,7 +272,7 @@ namespace ShowdownBot.modules
             //Switch if fainted
             else if (checkSwitch())
             {
-                active = pickPokeAnalytic(enemy);
+                active = pickPokeAnalytic(enemy,true);
                 if (active == null)
                 {
                     cwrite("Can't find new pokemon, unable to continue.", "[ERROR]", COLOR_ERR);
@@ -286,7 +286,7 @@ namespace ShowdownBot.modules
 
                 cwrite("I'm switching out.", "Turn " + turn.ToString(), COLOR_BOT);
                 wait();
-                BattlePokemon temp = pickPokeAnalytic(enemy);
+                BattlePokemon temp = pickPokeAnalytic(enemy,false);
                 if (temp == null)
                 {
                     cwrite("Couldn't pick a pokemon. Going with moves instead.", "[!]", COLOR_WARN);
@@ -319,13 +319,14 @@ namespace ShowdownBot.modules
             return false;
         }
 
+        
+
         //TODO: add moves to each BattlePokemon as they're encountered so that its not dependent on the web elements.
-        private BattlePokemon pickPokeAnalytic(BattlePokemon enemy)
+        private BattlePokemon pickPokeAnalytic(BattlePokemon enemy,bool offense)
         {
             //Loop over all pokemon
             int bestChoice = 1000;
-            float highestdamage = 5000f;
-            wait();
+            float highestdamage = (offense)? 0 : 5000f;
             for (int i = 1; i <= 5; i++)
             {
                 if (!elementExists(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")))
@@ -333,15 +334,34 @@ namespace ShowdownBot.modules
                 BattlePokemon p = getPokemon(Global.lookup(PERSONAL_PRE+waitFind(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']"),1).Text),myTeam);
                 if (bestChoice == 1000)
                     bestChoice = i; //set a default value that can be accessed.
-                float temp = p.matchup(enemy);
-                //negate the return here in order to coincide with the defensive switching in the loop above.
-                //this should prevent eternally switching pokemon
-                 temp += enemy.checkKOChance(p);
-                 if (temp < highestdamage)
-                 {
-                     highestdamage = temp;
-                     bestChoice = i;
-                 }
+
+                float temp = 0;
+
+                /* Depending if we are switching offensively or defensively compare either the potential
+                 * new mon's aptitude to KO the opponent (offensive) or the opponent's to KO ours (defensive).
+                 */
+                if (offense)
+                {
+                    
+                    temp = enemy.matchup(p);
+                    temp += p.checkKOChance(enemy);
+                    if (temp > highestdamage)
+                    {
+                        highestdamage = temp;
+                        bestChoice = i;
+                    }
+                }
+                else
+                {
+                    temp = p.matchup(enemy);
+                    temp += enemy.checkKOChance(p);
+                    if (temp < highestdamage)
+                    {
+                        highestdamage = temp;
+                        bestChoice = i;
+                    }
+                }
+                
                  cwrite(p.mon.name + " value:" + temp, "[DEBUG]", COLOR_OK);
 
 

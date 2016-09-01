@@ -2,6 +2,7 @@
 
 
 ### v0.5.0 / Unreleased ###
+----
 Added:
 
 * Personalized Pokemon through the personal role override tag.
@@ -26,6 +27,7 @@ Fixes:
 * Bug where the bot could not identify alternate form pokemon.
 
 ### v0.4.1 / 2016-08-26 ###
+----
 Fixes
 
 * Bug where megas weren't updated properly.
@@ -35,6 +37,7 @@ Fixes
 * Various crashes when looking for web elements.
 
 ### v0.4.0 / 2016-08-16 ###
+----
 Added
 
 * Status tracking.

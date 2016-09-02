@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ShowdownBot.modules;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -60,6 +61,12 @@ namespace ShowdownBot
             currentBoosts.accuracy = 0;
         }
 
+
+        /// <summary>
+        /// Gets the modifier to be multiplied to each stat.
+        /// </summary>
+        /// <param name="stat"></param>
+        /// <returns></returns>
         public float getBoostModifier(string stat)
         {
             if (stat == "atk")
@@ -77,6 +84,7 @@ namespace ShowdownBot
 
 
         /// <summary>
+        /// Converts a number of boosts to the percentages they represent.
         /// Doesn't work for accuracy/evasion
         /// </summary>
         /// <param name="boost"></param>
@@ -86,7 +94,7 @@ namespace ShowdownBot
             float mod = 1.0f;
             if (boost > 0)
             {
-                mod = boost / 2;
+                mod = (boost+2) / 2;
             }
            else if (boost < 0)
             {
@@ -105,13 +113,16 @@ namespace ShowdownBot
             float statusmod = 1f;
             float itemmod = 1f;
             float real = mon.getRealStat(stat);
+            float boosts = 1f;
 
             if (status == Status.STATE_PAR && stat == "spe")
                 statusmod = 0.25f;
             else if (status == Status.STATE_BRN && stat == "atk")
                 statusmod = 0.5f;
 
-            return real * statusmod * itemmod;
+            boosts = getBoostModifier(stat);
+
+            return real * statusmod * itemmod * boosts;
         }
 
         /// <summary>
@@ -164,15 +175,45 @@ namespace ShowdownBot
         /// <param name="m"></param>
         /// <param name="enemy"></param>
         /// <returns></returns>
-        public int rankMove(Move m, BattlePokemon enemy)
+        public int rankMove(Move m, BattlePokemon enemy,List<BattlePokemon> enemyTeam, LastBattleAction lba)
         {
-            int rank = hitsToKill(m,enemy);
-            //simple method: if a move is inaccurate, increase the number of hits it takes to KO
-            if (m.accuracy != 1)
-                ++rank;
-
-            //To rank in ascending order (ie 1 is a poor rank) subtract the rank from the max.
-            rank = GlobalConstants.MAX_MOVE_RANK - rank;
+            int DEFAULT_RANK = 11; //(15 - 4)
+            int rank = DEFAULT_RANK; // rank of move m
+            if (m.group != "status")
+            {
+                rank = hitsToKill(m, enemy);
+                //discourage the use of low accuracy moves if they're overkill
+                if (m.accuracy != 1 && enemy.getHPPercentage() < 20)
+                    ++rank;
+                if (m.priority > 0)
+                    rank -= m.priority;
+                //To rank in ascending order (ie 1 is a poor rank) subtract the rank from the max.
+                if (rank > GlobalConstants.MAX_MOVE_RANK) rank = GlobalConstants.MAX_MOVE_RANK;
+                rank = GlobalConstants.MAX_MOVE_RANK - rank;
+               
+            }
+            else
+            {
+               if (m.heal)
+                {
+                    rank = getRecoverChance(enemy, lba);
+                    rank += ((100-getHPPercentage())/10);
+                }
+               else if (m.status)
+                {
+                    rank += getStatusChance(this, enemy, m, enemyTeam);
+                    /* add the status rank to the default rank, meaning a good
+                     * status move will rank around the same as a 2HKO. This
+                     * will prevent cases where an easy OHKO is available, but
+                     * a turn is wasted on status. However it may need more
+                     * balancing.
+                     */
+                }
+               else if (m.isBoost)
+                {
+                    rank += getBoostChance(this, enemy, m, lba);
+                }
+            }
             return rank;
         }
 
@@ -187,10 +228,12 @@ namespace ShowdownBot
         {
             int totalDamage = damageFormula(m, enemy);
             //Compare the damage we will deal to the health of the enemy.
-            int times = 1; //number of times it takes to use this move to KO the opponent.
+            int times = 0; //number of times it takes to use this move to KO the opponent.
             int health = enemy.getHealth();
-            for (;(health > 0) || (times > GlobalConstants.MAX_HKO); times++)
+            for (;(health > 0); times++)
             {
+                if (times > GlobalConstants.MAX_HKO)
+                    break;
                 health -= totalDamage;
             }
             return times;
@@ -198,7 +241,7 @@ namespace ShowdownBot
 
         /// <summary>
         /// The damage formula used by the games / PS!
-        /// This returns an fairly accurate representation of
+        /// This returns a fairly accurate representation of
         /// how much damage this pokemon will do to enemy with move m.
         /// Ignores critical chance and variance.
         /// </summary>
@@ -240,6 +283,105 @@ namespace ShowdownBot
             float multiplier = type * stab * itemmod * immunity;
             return (int)Math.Floor(totaldmg * multiplier);
         }
+
+        /// <summary>
+        /// Returns a rank from -4 to 7
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="lastAction"></param>
+        /// <returns></returns>
+        private int getRecoverChance(BattlePokemon e, LastBattleAction lastAction)
+        {
+            BattlePokemon you = this;
+            int hpThreshold = 40; //Percent of health at which to conisder recovering.
+            int chance = 0;
+
+            if (you.getHPPercentage() <= hpThreshold) chance += 3;
+            else if (you.getHPPercentage() > (100 - hpThreshold)) chance -= 2;
+            if (e.checkKOChance(you) < 0.3f) chance += 2; //heal if the opponent cannot ohko us.
+            if (you.status != Status.STATE_HEALTHY && lastAction != LastBattleAction.ACTION_SLEEPTALK) chance += 2;
+            if (lastAction == LastBattleAction.ACTION_RECOVER) chance -= 2;
+
+            return chance;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="you"></param>
+        /// <param name="e"></param>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        private int getStatusChance(BattlePokemon you, BattlePokemon e, Move m, List<BattlePokemon> enemyTeam)
+        {
+            int max = GlobalConstants.MAX_MOVE_RANK;
+            if (e.status != Status.STATE_HEALTHY)
+                return -max;
+            if (e.mon.hasAbility("magic bounce"))
+                return -max;
+            if (e.mon.hasAbility("poison heal") && m.statuseffect == "tox")
+                return -max;
+            if (e.mon.hasAbility("limber") && m.statuseffect == "par")
+                return -max;
+            if (m.statuseffect == "tox" && (e.hasType(types["poison"]) || e.hasType(types["steel"])))
+                return -max;
+            if (m.statuseffect == "par" && (e.hasType(types["ground"]) || e.hasType(types["electric"])))
+                return -max;
+
+            int chance = 0;
+            if (m.statuseffect == "brn" && e.mon.getRole().physical)
+                chance += 2;
+            else if (m.statuseffect == "par" && (e.getStat("spe") >= you.getStat("spe")))
+                chance += 2;
+            else if (m.statuseffect == "slp" && (you.getStat("spe") >= e.getStat("spe")))
+            {
+                foreach (BattlePokemon bp in enemyTeam)
+                {
+                    if (bp.status == Status.STATE_SLP)
+                        return -max; //abide by sleep clause
+                }
+                chance += 2;
+            }
+
+            chance += (int)Math.Round(10 * e.checkKOChance(you)); //Increase chance if enemy is too strong and needs to be weakened.
+
+            return chance;
+        }
+
+
+        private int getBoostChance(BattlePokemon you, BattlePokemon e, Move m, LastBattleAction lastAction)
+        {
+            int chance = 0;
+            int minHP = 30;
+            float enemyTolerance = 0.5f;
+
+            List<String> boosts = m.whatBoosts();
+            //lower rank if already maxed out.
+            foreach (string s in boosts)
+            {
+                if (this.getBoostModifier(s) == 4f)
+                    chance -= 1;
+            }
+            if (you.getHPPercentage() <= minHP) chance -= 2; //too weak, should focus efforts elsewhere
+
+            if (e.checkKOChance(you) < enemyTolerance) chance += 2; //enemy does not threaten us
+            else if (e.checkKOChance(you) - 0.2f < enemyTolerance) chance += 2; //if boosting will make us survive, do it.
+            else chance -= 2; //otherwise too risky
+
+            if (you.mon.getRole().setup) chance += 4; //if the mon is a setup sweeper, etc, 
+            if (lastAction == LastBattleAction.ACTION_BOOST) chance -= 1; //Be careful not to boost forever.
+            return chance;
+        }
+
+
+
+
+
+
+
+
+
+
         /// <summary>
         /// Calculates the total damage a move will do to a particular pokemon,
         /// with respect to abilities, types, STAB, common items, etc.
@@ -379,6 +521,13 @@ namespace ShowdownBot
 
         }
 
+        /// <summary>
+        /// Checks if a move is immune against another Pokemon based on its abilities, etc.
+        /// NOTE: Type-based immunities are covered within their own typings, not here.
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="p"></param>
+        /// <returns></returns>
         public bool immunityCheck(Type t, BattlePokemon p)
         {
             if (t.value == "ground" && p.mon.hasAbility("levitate"))
@@ -457,6 +606,13 @@ namespace ShowdownBot
                 mon = newmega;
                 type1 = mon.type1;
                 type2 = mon.type2;
+        }
+
+        public bool hasType(Type t)
+        {
+            if (this.type1 == t) return true;
+            if (this.type2 == t) return true;
+            return false;
         }
     }
 }

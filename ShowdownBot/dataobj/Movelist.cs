@@ -65,6 +65,20 @@ namespace ShowdownBot
             else
                 return false;
         }
+        public List<String> whatBoosts()
+        {
+            List<String> toreturn = new List<String>();
+            if (!Object.ReferenceEquals(boosts, null))
+            {
+                if (boosts.atk > 0) toreturn.Add("atk");
+                if (boosts.def > 0) toreturn.Add("def");
+                if (boosts.spa > 0) toreturn.Add("spa");
+                if (boosts.spd > 0) toreturn.Add("spd");
+                if (boosts.spe > 0) toreturn.Add("spe");
+
+            }
+            return toreturn;
+        }
         /// <summary>
         /// Whether or not this move has secondary effects.
         /// Returns 0 if none, 1 if boost/drop, 2 if status.

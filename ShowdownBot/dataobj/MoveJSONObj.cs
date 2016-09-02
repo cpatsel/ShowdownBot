@@ -60,13 +60,13 @@ namespace ShowdownBot
     }
     public class Boosts
     {
-        public int atk { get; set; }
-        public int spa { get; set; }
-        public int def { get; set; }
-        public int spd { get; set; }
-        public int spe { get; set; }
-        public int accuracy { get; set; }
-        public int evasion { get; set; }
+        public int atk { get; set; } = 0;
+        public int spa { get; set; } = 0;
+        public int def { get; set; } = 0;
+        public int spd { get; set; } = 0;
+        public int spe { get; set; } = 0;
+        public int accuracy { get; set; } = 0;
+        public int evasion { get; set; } = 0;
         //TODO: this is a bad gauge of boosts since one boost and one drop will register as 0--no boosts.
         public int total()
         {

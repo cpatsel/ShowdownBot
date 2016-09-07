@@ -62,6 +62,14 @@ namespace ShowdownBot
         }
 
 
+        public void updateBoosts(string boostText)
+        {
+            string[] split = boostText.Split('×');
+            string value = split[0];
+            string whichBoost = split[1].Trim(' ').ToLower();
+            setBoost(whichBoost, convertBoostToCount(float.Parse(value)));
+        }
+
         /// <summary>
         /// Gets the modifier to be multiplied to each stat.
         /// </summary>
@@ -82,6 +90,46 @@ namespace ShowdownBot
             else return 1.0f;
         }
 
+        private void setBoost(string stat, int stage)
+        {
+            if (stat == "atk")
+                currentBoosts.atk = stage;
+            else if (stat == "def")
+                currentBoosts.def = stage;
+            else if (stat == "spa")
+                currentBoosts.spa = stage;
+            else if (stat == "spd")
+                currentBoosts.spd = stage;
+            else if (stat == "spe")
+                currentBoosts.spe = stage;
+        }
+
+        /// <summary>
+        /// Converts boost from a percentage to the 
+        /// integer stage it is (-6 to 6)
+        /// </summary>
+        /// <param name="boost"></param>
+        /// <returns></returns>
+        private int convertBoostToCount(float boost)
+        {
+            float mod = 1.0f;
+            if(boost >= 1)
+            {
+                mod = (boost * 2) - 2;
+            }
+            else
+            {
+                //lazy way
+                float temp = 0;
+                for (int i = 1; i <= 6; i++)
+                {
+                    temp = convertBoost(-i);
+                    if (temp == boost)
+                        mod = -i;
+                }
+            }
+            return (int) mod;
+        }
 
         /// <summary>
         /// Converts a number of boosts to the percentages they represent.

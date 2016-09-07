@@ -173,9 +173,9 @@ namespace ShowdownBot
             BattlePokemon def = new BattlePokemon(Global.lookup("scizor"));
             List<BattlePokemon> defteam = new List<BattlePokemon>();
             defteam.Add(def);
-            Move m1 = Global.moveLookup("Swords Dance");
-            Move m2 = Global.moveLookup("Aqua Jet");
-            //off.currentBoosts.atk = 6;
+            Move m1 = Global.moveLookup("Fire Blast");
+            Move m2 = Global.moveLookup("Flamethrower");
+            def.setHealth(10);
             int dmg1 = off.rankMove(m1, def,defteam, LastBattleAction.ACTION_ATTACK_SUCCESS);
             int dmg2 = off.rankMove(m2, def, defteam, LastBattleAction.ACTION_ATTACK_SUCCESS);
             cwrite(off.mon.name + "'s " + m1.name + " against " + def.mon.name+":"+dmg1, "debug", COLOR_BOT);

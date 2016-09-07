@@ -220,6 +220,32 @@ namespace ShowdownBot.modules
             }
         }
 
+        private void updateModifiers(IWebElement statbar, ref BattlePokemon p)
+        {
+            IList<IWebElement> elems;
+            try
+            {
+                elems = browser.FindElements(By.ClassName("good"));
+                //for some stupid reason, the x isn't an 'x' but an '×'
+                foreach (IWebElement e in elems)
+                {
+                    if (e.Text.Contains("×"))
+                        p.updateBoosts(e.Text);
+                }
+                elems = browser.FindElements(By.ClassName("bad"));
+                foreach (IWebElement e in elems)
+                {
+                    if (e.Text.Contains("×"))
+                        p.updateBoosts(e.Text);
+                }
+            }
+            catch
+            {
+                return;
+            }
+            
+        }
+
         /// <summary>
         /// Updates various information about the two active pokemon including status and health percentage.
         /// </summary>
@@ -236,7 +262,7 @@ namespace ShowdownBot.modules
             else if (findWithin(yourStats, By.ClassName("frz")) != null) you.status = Status.STATE_FRZ;
             else you.status = Status.STATE_HEALTHY;
             updateHealth(yourStats, ref you);
-
+            updateModifiers(yourStats, ref you);
 
             var oppStats = waitFind(By.CssSelector("div[class='statbar lstatbar']"));
             if (oppStats == null) return;
@@ -247,6 +273,7 @@ namespace ShowdownBot.modules
             else if (findWithin(oppStats, By.ClassName("frz")) != null) opponent.status = Status.STATE_FRZ;
             else opponent.status = Status.STATE_HEALTHY;
             updateHealth(oppStats, ref opponent);
+            updateModifiers(oppStats, ref opponent);
         }
         private bool battleAnalytic(ref BattlePokemon active, BattlePokemon enemy, ref int turn)
         {
@@ -491,6 +518,9 @@ namespace ShowdownBot.modules
                     "\nCurrent Pokemon: " + currentActive.mon.name +
                     "\n\tHP: " + currentActive.getHealth() + "/" + currentActive.maxHealth+
                     "\n\tStatus: " + currentActive.status,COLOR_BOT);
+                var_dump(currentActive.mon);
+                var_dump(currentActive.currentBoosts);
+                
             }
         }
 

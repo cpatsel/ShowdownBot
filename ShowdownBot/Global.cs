@@ -394,17 +394,31 @@ namespace ShowdownBot
         public static void var_dump(object obj)
         {
             System.Type t = obj.GetType();
-            FieldInfo[] props = t.GetFields();
-            for (int i = 0; i < props.Length; i++)
+            FieldInfo[] fields = t.GetFields();
+            PropertyInfo[] props = t.GetProperties();
+            for (int i = 0; i < fields.Length; i++)
             {
                 try
                 {
-                    cwrite(props[i].Name +" | "+ props[i].GetValue(obj),"debug",COLOR_OK);
-                    var_dump((object)props[i]);
+                    cwrite(fields[i].Name +" | "+ fields[i].GetValue(obj),"debug",COLOR_OK);
+                    
                 }
                 catch (Exception)
                 {
                    
+                }
+            }
+            if (Object.ReferenceEquals(props, null))
+                return;
+            foreach (PropertyInfo p in props)
+            {
+                try
+                {
+                    cwrite(p.Name + " | " + p.GetValue(obj), "debug", COLOR_OK);
+                }
+                catch(Exception)
+                {
+
                 }
             }
         }

@@ -450,6 +450,7 @@ namespace ShowdownBot.modules
 
                 cwrite(moves[i].name + "'s rank: " + rankings[i].ToString(), "[DEBUG]", COLOR_OK);
             }
+
             for (int i = 0; i < 4; i++)
             {
                 if (rankings[i] > bestMove)
@@ -462,6 +463,9 @@ namespace ShowdownBot.modules
             //TODO: maybe make this chance based, increasing the chance if drops exist.
             if (bestMove < MIN_RANK_OR_SWITCH)
                 return "needswitch";
+            //break any ties
+            if (hasTies(rankings, bestMove))
+                choice = breakTies(moves, rankings, bestMove);
             //figure out what move we've chosen
             Move chosenMove = moves[choice - 1];
             setLastBattleAction(chosenMove);
@@ -481,8 +485,27 @@ namespace ShowdownBot.modules
 
         }
 
-
-
+        private bool hasTies(float[] ranks, float best)
+        {
+            int count = 0;
+            for(int i = 0; i< 4; i++)
+            {
+                if (ranks[i] == best) count++;
+            }
+            return (count > 1);
+        }
+        private int breakTies(Move[] moves, float[] ranks,float best)
+        {
+            List<int> choices = new List<int>();
+            for (int i = 0; i < 4; i++)
+            {
+                if (best == ranks[i])
+                {
+                    choices.Add(i);
+                }
+            }
+            return choices.ElementAt(new Random().Next(0, choices.Count));
+        }
         private void setLastBattleAction(Move m)
         {
             if (m.isBoost) lastAction = LastBattleAction.ACTION_BOOST;

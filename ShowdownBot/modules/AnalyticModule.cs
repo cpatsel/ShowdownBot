@@ -332,14 +332,36 @@ namespace ShowdownBot.modules
             }
             else if (checkMove())
             {
+                //for now, automatically activate mega
                 if (elementExists(By.Name("megaevo")))
                     browser.FindElement(By.Name("megaevo")).Click();
-                //for now, automatically activate mega
+                
+                //pick moves
                 string mv = pickMoveAnalytic(active, enemy);
-                cwrite("I'm picking move " + mv, "Turn " + turn.ToString(), COLOR_BOT);
-                cwrite("Last Move: " + lastAction.ToString(), "DEBUG", COLOR_OK);
+                //if we can't reasonably defeat the opponent, switch.
+                if (mv == "needswitch")
+                {
+                    cwrite("Unable to do enough damage this turn, switching out.", COLOR_BOT);
+                    BattlePokemon temp = pickPokeAnalytic(enemy, false);
+                    if (temp == null)
+                    {
+                        cwrite("Couldn't pick a pokemon.", "[!]", COLOR_WARN);
 
-                turn++;
+
+                    }
+                    else
+                    {
+                        active = temp;
+                        turn++;
+                    }
+                }
+                else
+                {
+                    cwrite("I'm picking move " + mv, "Turn " + turn.ToString(), COLOR_BOT);
+                    cwrite("Last Move: " + lastAction.ToString(), "DEBUG", COLOR_OK);
+
+                    turn++;
+                }
             }
 
             else
@@ -413,6 +435,7 @@ namespace ShowdownBot.modules
             float[] rankings = new float[4]; //ranking of each move
             float bestMove = 0f;
             int choice = 1;
+            const int MIN_RANK_OR_SWITCH = 10; //if no move ranks above this, consider switching.
             float risk = you.matchup(enemy);
             Move[] moves = getMoves();
             for (int i = 0; i < 4; i++)
@@ -436,6 +459,9 @@ namespace ShowdownBot.modules
                 }
             }
 
+            //TODO: maybe make this chance based, increasing the chance if drops exist.
+            if (bestMove < MIN_RANK_OR_SWITCH)
+                return "needswitch";
             //figure out what move we've chosen
             Move chosenMove = moves[choice - 1];
             setLastBattleAction(chosenMove);

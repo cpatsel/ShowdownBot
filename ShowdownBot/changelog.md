@@ -13,7 +13,7 @@ Added:
 * New, more responsive move ranking system.
 * Better help documentation.
 * Specify format when using challengeplayer.
-* Refresh command
+* Refresh command.
 
 Removed:
 

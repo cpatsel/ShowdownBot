@@ -125,7 +125,7 @@ namespace ShowdownBot
                 {
                     temp = convertBoost(-i);
                     if (temp == boost)
-                        mod = -i;
+                        mod = (i*-1);
                 }
             }
             return (int) mod;

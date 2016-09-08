@@ -1,7 +1,7 @@
 ## Changelog ##
 
 
-### v0.5.0 / Unreleased ###
+### v0.5.0 / 2016-09-08 ###
 ----
 Added:
 
@@ -12,7 +12,7 @@ Added:
 * Update feature (kind-of)
 * New, more responsive move ranking system.
 * Better help documentation.
-* Specify format when using challengeplayer.
+* Specify format when using challengeplayer (requires using the -u command for players).
 * Refresh command.
 
 Removed:

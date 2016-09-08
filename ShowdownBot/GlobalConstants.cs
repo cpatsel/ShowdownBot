@@ -8,7 +8,7 @@ namespace ShowdownBot
 {
     public static class GlobalConstants
     {
-        public const string SDB_VERSION = "0.5.0-unreleased";
+        public const string SDB_VERSION = "0.5.0";
         public const string SDB_TITLEBAR = "Showdown Bot v" + SDB_VERSION;
 
         public const string PERSONAL_PRE = "my_";

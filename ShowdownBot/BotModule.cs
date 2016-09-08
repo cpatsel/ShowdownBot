@@ -22,7 +22,8 @@ namespace ShowdownBot
         protected bool isContinuous;
         protected int maxBattles;
         protected int currentBattle;
-        protected State lastBattleState;
+        protected State lastBattleState; //used for continuously battling
+        protected State lastState; //used in error handling.
         public BotModule(Bot m, IWebDriver b)
         {
 
@@ -67,6 +68,10 @@ namespace ShowdownBot
                 lastBattleState = State.SEARCH;
                 ladder();
             }
+            else if (activeState == State.FORFEIT)
+            {
+                forfeitBattle();
+            }
             else if (activeState == State.BATTLE)
             {
                 battle();
@@ -105,7 +110,7 @@ namespace ShowdownBot
             browser.FindElement(By.Name("makeChallenge")).Click();
             ////TODO: implement a way to select alternate teams/ have more than one team.
             //Wait until the battle starts.
-            if (!waitFindClick(By.Name("ignorespects"))) return;
+            if (!waitFindClick(By.Name("ignorespects"),MAX_WAIT_FOR_PLAYER_RESPONSE)) return;
             cwrite("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
 
@@ -121,16 +126,34 @@ namespace ShowdownBot
             if (!waitFindClick(By.Name("search"))) return;
             cwrite("Waiting for an opponent...");
 
-            while (elementExists(By.Name("cancelSearch")))
+            while (elementExists(By.Name("cancelSearch")) && activeState == State.SEARCH)
             {
                 wait();
             }
+            if (activeState != State.SEARCH) return; //allow canceling of wait with "stop" command.
             cwrite("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
         }
 
+        /// <summary>
+        /// Picks a lead if necessary. Defaults to picking the first pokemon on the team.
+        /// Returns the name of the pokemon picked, and "error" if unable.
+        /// </summary>
+        /// <returns></returns>
+        public virtual string pickLead()
+        {
+            string lead;
+            cwrite("Selecting first pokemon as lead", COLOR_BOT);
+            if (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
+            {
+                lead = waitFind(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Text;
+                waitFindClick(By.CssSelector("button[name='chooseTeamPreview'][value='0']"));
+            }
+            else
+                lead = "error";
 
-        
+            return lead;
+        }
 
         #region Battle Information Functions
         /// <summary>
@@ -214,12 +237,12 @@ namespace ShowdownBot
 
 
                 }
-                else if (type == "Normal")
+                else if (Global.moveLookup(name[0]).type.value == "normal")
                 {
                     string nname = name[0]+" (" + type + ")";
                     if (!Global.moves.ContainsKey(nname))
                     {
-                        //This handles both return/frustration and all normal type moves affected by -ate abilities.
+                        //This handles all normal type moves affected by -ate abilities.
                         //I think it also handles Normalize as well.
                         m = new Move(nname, types[type.ToLower()]);
                         Move analog = Global.moveLookup(name[0]);
@@ -300,11 +323,30 @@ namespace ShowdownBot
          {
              for(int i = 0; i<ticons.Count;i++)
              {
+                
                  IWebElement e = ticons[i];
-                 IList<IWebElement> elems = e.FindElements(By.ClassName("pokemonicon"));
+                 IList<IWebElement> elems;
+                try
+                {
+                    elems = e.FindElements(By.ClassName("pokemonicon"));
+                }
+                catch(StaleElementReferenceException)
+                {
+                    continue;
+                }
                  foreach (IWebElement s in elems)
                  {
-                    if (s.GetAttribute("title").Contains("(active)"))
+                    bool isActive = false;
+                    try
+                    {
+                        isActive = s.GetAttribute("title").Contains("(active)");
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        cwrite("Unable to determine active pokemon, maybe it fainted.", "debug", COLOR_WARN);
+                        break;
+                    }
+                    if (isActive)
                      {
                         string[] name;
                         try
@@ -344,7 +386,15 @@ namespace ShowdownBot
             for (int i = 0; i < ticons.Count; i++)
             {
                 IWebElement e = ticons[i];
-                IList<IWebElement> elems = e.FindElements(By.ClassName("pokemonicon"));
+                IList<IWebElement> elems;
+                try
+                {
+                   elems  = e.FindElements(By.ClassName("pokemonicon"));
+                }
+                catch (StaleElementReferenceException)
+                {
+                    continue;
+                }
                 foreach (IWebElement s in elems)
                 {
                     if (s.GetAttribute("title") != "Not revealed")
@@ -505,6 +555,7 @@ namespace ShowdownBot
 
         public void changeState(State ns)
         {
+            lastState = activeState;
             activeState = ns;
         }
         public State getState()

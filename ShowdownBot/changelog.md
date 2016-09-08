@@ -1,7 +1,34 @@
 ## Changelog ##
 
 
+### v0.5.0 / 2016-09-08 ###
+----
+Added:
+
+* Personalized Pokemon through the personal role override tag.
+* Item Support
+* Status move support
+* Lead picking (automatic or with the lead role override)
+* Update feature (kind-of)
+* New, more responsive move ranking system.
+* Better help documentation.
+* Specify format when using challengeplayer (requires using the -u command for players).
+* Refresh command.
+
+Removed:
+
+* Dump log functionality
+
+Fixes:
+* Reworked how forfeiting is handled.
+* Can no longer use commands that require to bot to be running when it is not running.
+* Bot will wait longer (2 minutes) when waiting for a player challenge.
+* Actually really recognizes -ate moves now.
+* Bug where bot would attempt to switch its last Pokemon
+* Bug where the bot could not identify alternate form pokemon.
+
 ### v0.4.1 / 2016-08-26 ###
+----
 Fixes
 
 * Bug where megas weren't updated properly.
@@ -11,6 +38,7 @@ Fixes
 * Various crashes when looking for web elements.
 
 ### v0.4.0 / 2016-08-16 ###
+----
 Added
 
 * Status tracking.

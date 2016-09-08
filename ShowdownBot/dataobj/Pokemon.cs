@@ -35,39 +35,7 @@ namespace ShowdownBot
         }
 
     }
-    
-
-    //TODO: add more specific roles, like fast physical or tank,etc and give them specific spreads in setRealStats
-    public class Role
-    {
-        //Mutually Exclusive:
-        public bool lead { get; set; }
-        public bool physical { get; set; }
-        public bool special { get; set; }
-        public bool mixed { get; set; }
-        public bool stall { get; set; }
-        public bool any { get; set; }
-        public bool tank { get; set; }
-        //Can be set in addition to above:
-        public bool setup { get; set; } //Whether this mon ne
-    }
-  
-    public class DefenseType
-    {
-        public bool physical { get; set; }
-        public bool special { get; set; }
-        public bool mixed { get; set; }
-        public bool bulky { get; set; }
-        public bool any { get; set; }
-    }
-
-    public class Item
-    {
-        public bool choicescarf { get; set; }
-        public bool choiceband { get; set; }
-        public bool leftovers { get; set; }
-        public bool lifeorb { get; set; }
-    }
+   
 
     public class Pokemon
     {      
@@ -75,7 +43,7 @@ namespace ShowdownBot
 
         public string name = "NONAME";
         public Type type1, type2;
-        //string item = "NA";
+        public string item = "none";
         //float apct = 100f;
         //string firstmove = "NA";
         float weight = 50f;
@@ -92,6 +60,43 @@ namespace ShowdownBot
 
         public Pokemon(PokeJSONObj obj)
         {
+            basicInit(obj);           
+            initRoles();
+            RoleOverride ro = getRoleOverride();
+            /*If the pokemon has a "personal" override, create a new pokemon data object to hold the information
+            /* regarding our personal pokemon to keep it seperate from the generic "expected" pokemon 
+             * Otherwise, modify the role as roleoverride is intended.
+            */
+            if (!Object.ReferenceEquals(ro, null))
+            {
+                if (!Object.ReferenceEquals(ro.personal, null))
+                {
+                    if (ro.personal)
+                    {
+                        Pokemon personal = new Pokemon(obj, ro);
+                        if (!Global.pokedex.ContainsKey(personal.name))
+                            Global.pokedex.Add(personal.name, personal); //Only allow 1 personal version of each pkmn.
+                    }
+                    else
+                        modifyRole();
+                }
+            }
+            
+            setRealStats();
+        }
+
+        public Pokemon (PokeJSONObj baseMon, RoleOverride newStats)
+        {
+            basicInit(baseMon);
+            initRoles();
+            modifyRole();
+            setRealStats();
+            name = GlobalConstants.PERSONAL_PRE + name;
+        }
+        
+
+        private void basicInit(PokeJSONObj obj)
+        {
             types = Global.types;
             name = obj.species.ToLower();
             type1 = types[obj.types[0].ToLower()];
@@ -105,12 +110,7 @@ namespace ShowdownBot
             deftype = new DefenseType();
             role = new Role();
             realStats = new Dictionary<string, int>();
-            initRoles();
-            modifyRole();
-            setRealStats();
         }
-
-        
         private void initRoles()
         {
             int max_for_bulk = 250;
@@ -144,8 +144,7 @@ namespace ShowdownBot
             }
         }
 
-
-        public void modifyRole()
+        private RoleOverride getRoleOverride()
         {
             string path = Global.ROLEPATH;
             using (var reader = new StreamReader(path))
@@ -160,18 +159,30 @@ namespace ShowdownBot
                     RoleOverride ro = JsonConvert.DeserializeObject<RoleOverride>(current.First.ToString());
                     if (ro.name == this.name)
                     {
-                        if (!Object.ReferenceEquals(ro.role, null))
-                            this.role = ro.role;
-                        if (!Object.ReferenceEquals(ro.deftype, null))
-                            this.deftype = ro.deftype;
-                        if (!Object.ReferenceEquals(ro.statspread, null))
-                            this.alternativeStatSpread = ro.statspread;
+                        return ro;
                     }
                     current = current.Next;
 
                 }
             }
+            return null;
         }
+
+        public void modifyRole()
+        {
+            RoleOverride ro = getRoleOverride();
+            if (ro != null) { 
+                        if (!Object.ReferenceEquals(ro.role, null))
+                            this.role = ro.role;
+                        if (!Object.ReferenceEquals(ro.deftype, null))
+                            this.deftype = ro.deftype;
+                        if (!Object.ReferenceEquals(ro.statspread, null))
+                            this.statSpread = ro.statspread;
+                        if (!Object.ReferenceEquals(ro.item, null))
+                            this.item = ro.item;
+                }
+        }
+        
 
         public int getRealStat(string stat)
         {
@@ -230,21 +241,14 @@ namespace ShowdownBot
         }
 
 
-        
-
-        
-
-
-        
-        
-
-
         public bool hasAbility(string ability)
         {
-            if (abilities.a1 == ability) return true;
-            else if (abilities.a2 == ability) return true;
-            else if (abilities.H == ability) return true;
-            else return false;
+            if (abilities.a1.ToLower() == ability.ToLower()) return true;
+            if (!Object.ReferenceEquals(abilities.a2,null))
+                if(abilities.a2.ToLower() == ability.ToLower()) return true;
+            if (!Object.ReferenceEquals(abilities.H, null))
+                if (abilities.H.ToLower() == ability.ToLower()) return true;
+            return false;
         }
 
      

@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.IO;
 using static ShowdownBot.GlobalConstants;
 using static ShowdownBot.Global;
+using OpenQA.Selenium;
+
 namespace ShowdownBot
 {
 

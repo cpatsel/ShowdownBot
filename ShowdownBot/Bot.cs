@@ -43,6 +43,7 @@ namespace ShowdownBot
         IWebDriver mainBrowser;
         Movelist movelist;
         bool isRunning;
+       
 
         BotModule mainModule;
         BotModule analyticModule;
@@ -76,6 +77,7 @@ namespace ShowdownBot
             Global.moves = new Dictionary<string,Move>();
             movelist = new Movelist();
             movelist.initialize();
+            cwrite("Ready for input!", COLOR_OK);
 
             
            
@@ -83,11 +85,15 @@ namespace ShowdownBot
 
         public State getState() { return mainModule.getState(); }
         public AiMode getMode() { return modeCurrent; }
+
+        /// <summary>
+        /// Returns whether the bot is running or not
+        /// </summary>
+        /// <returns></returns>
         public bool getStatus() { return isRunning; }
         public Consol getConsole(){ return c;}
         public string getOwner() { return owner;}
         public string getChallengee() { return challengee;}
-
         public void printInfo()
         {
             cwrite("\nCurrent module: " + getMode().ToString() + "\n" +
@@ -160,7 +166,35 @@ namespace ShowdownBot
             cwrite("Changing format to "+nf.ToLower());
             mainModule.changeFormat(nf.ToLower());
         }
-        public bool botForfeit() { return mainModule.forfeitBattle(); }
+
+        public void testBattle()
+        {
+            BattlePokemon off = new BattlePokemon(Global.lookup("magcargo"));
+            BattlePokemon def = new BattlePokemon(Global.lookup("scizor"));
+            List<BattlePokemon> defteam = new List<BattlePokemon>();
+            defteam.Add(def);
+            Move m1 = Global.moveLookup("Fire Blast");
+            Move m2 = Global.moveLookup("Flamethrower");
+            def.setHealth(10);
+            int dmg1 = off.rankMove(m1, def,defteam, LastBattleAction.ACTION_ATTACK_SUCCESS);
+            int dmg2 = off.rankMove(m2, def, defteam, LastBattleAction.ACTION_ATTACK_SUCCESS);
+            cwrite(off.mon.name + "'s " + m1.name + " against " + def.mon.name+":"+dmg1, "debug", COLOR_BOT);
+            cwrite(off.mon.name + "'s " + m2.name + " against " + def.mon.name + ":" + dmg2, "debug", COLOR_BOT);
+
+        }
+        public bool botForfeit()
+        {
+            if (mainModule.getState() == State.BATTLE)
+            {
+                mainModule.changeState(State.FORFEIT);
+                return true;
+            }
+            else
+            {
+                cwrite("No battle to forfeit!",COLOR_WARN);
+                return false;
+            }
+        }
         public void Start(bool auth)
         {
 
@@ -298,7 +332,7 @@ namespace ShowdownBot
                     cwrite("Owner username too long, truncating.", COLOR_WARN);
                 }
             }
-                
+
             else if (key == "[USERNAME]")
             {
                 username = val;
@@ -308,7 +342,7 @@ namespace ShowdownBot
                     cwrite("Username too long, truncating.", COLOR_WARN);
                 }
             }
-               
+
             else if (key == "[PASSWORD]")
                 password = val;
             else if (key == "[PROFILE]")
@@ -322,16 +356,6 @@ namespace ShowdownBot
                     Global.showDebug = true;
                 else
                     cwrite("Unknown value " + val + " for SHOW_DEBUG", "WARNING", COLOR_WARN);
-            }
-            else if (key.Contains("UNKNOWN_PKMN"))
-            {
-                bool result;
-                if (bool.TryParse(val, out result))
-                    ADD_U_PKMN = result;
-                else
-                {
-                    cwrite("Unknown value " + val + "for ADD_UNKNOWN_PKMN", "warning", COLOR_WARN);
-                }
             }
             else if (key.StartsWith("[SLOT"))
             {
@@ -393,7 +417,7 @@ namespace ShowdownBot
             return reply.Status == IPStatus.Success;
            }
 
-
+        public void Refresh() { mainBrowser.Navigate().Refresh(); }
         private void BuildPokedex()
         {
             cwrite("Building pokedex, this may take a moment...");
@@ -417,7 +441,7 @@ namespace ShowdownBot
                     Global.pokedex.Add(p.name, p);
                 }
             }
-            cwrite("Pokedex built!", COLOR_OK);
+            //cwrite("Pokedex built!", COLOR_OK);
 
         }
 
@@ -454,36 +478,7 @@ namespace ShowdownBot
             compareModule.simulate(Global.lookup(you), Global.lookup(enemy));
         }
 
-        /// <summary>
-        /// Doesn't do much of anything with firefox unfortunately.
-        /// </summary>
-        public void saveLog()
-        {
-            if (!isRunning)
-            {
-                cwrite("No browser is running!", "error", COLOR_ERR);
-                return;
-            }
-            
-            if (!Directory.Exists(@"./logs"))
-            {
-                Directory.CreateDirectory(@"./logs");
-            }
-            string date = System.DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-            string fn = @"./logs/" + date + ".txt";
-            IList<LogEntry> list = mainBrowser.Manage().Logs.GetLog(LogType.Browser);
-            using (StreamWriter sw = new StreamWriter(fn))
-            {
-               
-                for (int i = 0; i < list.Count; i++)
-                {
-                    sw.WriteLine(list[i].Message);
-                }
-                sw.Close();
-            }
-            cwrite("log_" + date + ".txt created.");
-
-        }
+        
        
     }//End of Class
 

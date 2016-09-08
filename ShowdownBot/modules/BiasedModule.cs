@@ -30,15 +30,8 @@ namespace ShowdownBot.modules
         public override void battle()
         {
             int turn = 1;
-            if (format != "randombattle")
-            {
-                while (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
-                {
-                    //todo terminate this if after a while.
-                    wait();
-                }
-                pickLeadBiased();
-            }
+            pickLead();
+            
 
             do
             {
@@ -114,6 +107,7 @@ namespace ShowdownBot.modules
 
         /// <summary>
         /// Helper method for pickMoveBiased.
+        /// Returns a value from 1-4 based on specified weights.
         /// </summary>
         /// <returns>Choice index based on the specified weights.</returns>
         private int getIndexBiased()
@@ -135,15 +129,19 @@ namespace ShowdownBot.modules
 
         }
 
-        private void pickLeadBiased()
+        public override string pickLead()
         {
             int lead = getIndexBiased() - 1;
-            while (!elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
+            string l;
+            cwrite("Selecting first pokemon as lead", COLOR_BOT);
+            if (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
             {
-                wait();
-                cwrite("Picking lead...", COLOR_BOT);
+                l = waitFind(By.CssSelector("button[name='chooseTeamPreview'][value='"+lead+"']")).Text;
+                waitFindClick(By.CssSelector("button[name='chooseTeamPreview'][value='"+lead+"']"));
             }
-            browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='" + lead + "']")).Click();
+            else
+                l = "error";
+            return l;
         }
 
         public override void printInfo()

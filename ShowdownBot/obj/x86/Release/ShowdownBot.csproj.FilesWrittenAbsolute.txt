@@ -44,3 +44,4 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Release\S
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\Newtonsoft.Json.dll
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDriver.dll
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\WebDriver.Support.dll
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\data\help.xml

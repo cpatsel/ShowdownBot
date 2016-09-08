@@ -20,7 +20,6 @@ namespace ShowdownBot
     /// status moves.
     /// </summary>
     
-    //TODO:
     public class Move
     {
         public Type type;
@@ -37,9 +36,11 @@ namespace ShowdownBot
         public bool heal = false;
         public bool field = false; //Hazard move?
         public Boosts boosts;
+        public string statuseffect = "none";
         public Move(string n, Type t, float p) { name = n; type = t; bp = p; }
         public Move(string n, Type t) { name = n; type = t; unknown = true; bp = -1; }
         public string desc;
+        private Secondary secondary = null;
         public Move(MoveJSONObj obj)
         {
             name = obj.name;
@@ -50,8 +51,12 @@ namespace ShowdownBot
             priority = obj.priority;
             boosts = obj.boosts;
             desc = obj.desc;
+            statuseffect = obj.status;
+            secondary = obj.secondary;
+            if (statuseffect != "none") status = true;
             if (hasBoosts()) isBoost = true;
             if (Convert.ToBoolean(obj.flags.heal)) heal = true; 
+            
         }
         public bool hasBoosts()
         {
@@ -59,6 +64,34 @@ namespace ShowdownBot
                 return (boosts.total() > 0) ? true : false; //TODO: follow a similar method for finding moves that drop stats.
             else
                 return false;
+        }
+        public List<String> whatBoosts()
+        {
+            List<String> toreturn = new List<String>();
+            if (!Object.ReferenceEquals(boosts, null))
+            {
+                if (boosts.atk > 0) toreturn.Add("atk");
+                if (boosts.def > 0) toreturn.Add("def");
+                if (boosts.spa > 0) toreturn.Add("spa");
+                if (boosts.spd > 0) toreturn.Add("spd");
+                if (boosts.spe > 0) toreturn.Add("spe");
+
+            }
+            return toreturn;
+        }
+        /// <summary>
+        /// Whether or not this move has secondary effects.
+        /// Returns 0 if none, 1 if boost/drop, 2 if status.
+        /// </summary>
+        /// <returns></returns>
+        public int hasSecondaryEffect()
+        {
+            if (!Object.ReferenceEquals(secondary,null))
+            {
+                if (!Object.ReferenceEquals(secondary.status,null))
+                    return 2;
+            }
+            return 0;
         }
 
     }

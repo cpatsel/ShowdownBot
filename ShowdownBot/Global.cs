@@ -16,6 +16,7 @@ namespace ShowdownBot
         BATTLE,
         SEARCH,
         CHALLENGE,
+        FORFEIT,
         BUSY
 
     };
@@ -29,7 +30,7 @@ namespace ShowdownBot
 
         //Options
         public static bool showDebug = false;
-        public static bool ADD_U_PKMN = false;
+        public static bool botIsReady = false;
         public static float m1wgt = 0.4f;
         public static float m2wgt = 0.3f;
         public static float m3wgt = 0.2f;
@@ -40,7 +41,8 @@ namespace ShowdownBot
         public static string MOVELISTPATH = @"./data/moves.js";
         public static string ERRLOGPATH = @"./error.txt";
         public static string ROLEPATH = @"./data/roleOverride.js";
-
+        public static string HELPPATH = @"./data/help.xml";
+        
         //Encyclopedia
         public static Dictionary<string, Type> types;
         public static Dictionary<string, Move> moves;
@@ -161,6 +163,19 @@ namespace ShowdownBot
             }
             catch (Exception)
             {
+                //Tried to look up a personal version, however there was none found.
+                if (_name.Contains(PERSONAL_PRE))
+                {
+                    try
+                    {
+                        p = pokedex[_name.TrimStart(PERSONAL_PRE.ToCharArray())];
+                        return p;
+                    }
+                    catch
+                    {
+
+                    }
+                }
                 cwrite("Unknown pokemon " + _name, "warning", COLOR_WARN);
                 return pokedex["error"];
             }
@@ -170,7 +185,8 @@ namespace ShowdownBot
         {
             Move m;
             TextInfo ti = new CultureInfo("en-us").TextInfo;
-            name = ti.ToTitleCase(name);
+            if (name != "U-turn")
+                name = ti.ToTitleCase(name);
             try
             {
                 m = moves[name];
@@ -197,7 +213,7 @@ namespace ShowdownBot
             //basic wait of 2 seconds
             wait(2000);
         }
-
+        
         public static IWebElement findWithin(IWebElement toSearch, By by)
         {
             try
@@ -282,9 +298,9 @@ namespace ShowdownBot
         /// </summary>
         /// <param name="by"></param>
         /// <returns>Whether the element was clicked.</returns>
-        public static bool waitFindClick(By by)
+        public static bool waitFindClick(By by, int maxw = MAX_WAIT_TIME_S)
         {
-            IWebElement we = waitFind(by);
+            IWebElement we = waitFind(by,maxw);
             if (we != null)
             {
                 try
@@ -378,17 +394,31 @@ namespace ShowdownBot
         public static void var_dump(object obj)
         {
             System.Type t = obj.GetType();
-            FieldInfo[] props = t.GetFields();
-            for (int i = 0; i < props.Length; i++)
+            FieldInfo[] fields = t.GetFields();
+            PropertyInfo[] props = t.GetProperties();
+            for (int i = 0; i < fields.Length; i++)
             {
                 try
                 {
-                    cwrite(props[i].Name +" | "+ props[i].GetValue(obj),"debug",COLOR_OK);
-                    var_dump((object)props[i]);
+                    cwrite(fields[i].Name +" | "+ fields[i].GetValue(obj),"debug",COLOR_OK);
+                    
                 }
                 catch (Exception)
                 {
                    
+                }
+            }
+            if (Object.ReferenceEquals(props, null))
+                return;
+            foreach (PropertyInfo p in props)
+            {
+                try
+                {
+                    cwrite(p.Name + " | " + p.GetValue(obj), "debug", COLOR_OK);
+                }
+                catch(Exception)
+                {
+
                 }
             }
         }

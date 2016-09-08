@@ -7,19 +7,21 @@ using static ShowdownBot.Global;
 using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot.modules
 {
+    public enum LastBattleAction
+    {
+        ACTION_ATTACK_SUCCESS,
+        ACTION_ATTACK_FAILURE,
+        ACTION_STATUS,
+        ACTION_BOOST,
+        ACTION_RECOVER,
+        ACTION_SLEEPTALK,
+        ACTION_SWITCH
+    };
+
     class AnalyticModule : BotModule
     {
-        public enum LastBattleAction
-        {
-            ACTION_ATTACK_SUCCESS,
-            ACTION_ATTACK_FAILURE,
-            ACTION_STATUS,
-            ACTION_BOOST,
-            ACTION_RECOVER,
-            ACTION_SLEEPTALK,
-            ACTION_SWITCH
-        };
-        private LastBattleAction lastAction =LastBattleAction.ACTION_ATTACK_SUCCESS;
+        
+        protected LastBattleAction lastAction =LastBattleAction.ACTION_ATTACK_SUCCESS;
         protected Move lastMove;
         protected List<BattlePokemon> myTeam;
         protected List<BattlePokemon> enemyTeam;
@@ -50,7 +52,11 @@ namespace ShowdownBot.modules
             {
                 if (team[i].mon.name == p.name)
                     return team[i];
-                else if (p.name.Contains("-mega"))
+                else if (team[i].mon.name.Contains(p.name))
+                {
+                    return team[i]; //This handles cases like Tornadus-Therian, who would be in p.name as just "Tornadus"
+                }
+                else if (p.name.Contains("-mega") && p.name.Contains(team[i].mon.name))
                 {
                     team[i].changeMon(p.name);
                     return team[i];
@@ -70,19 +76,9 @@ namespace ShowdownBot.modules
                 buildOwnTeam();
             buildTeams();
 
-            
-            //Select lead
-            string lead;
-            cwrite("Selecting first pokemon as lead", COLOR_BOT);
 
-            //TODO: actually pick this analytically.
-            if (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
-            {
-                lead = browser.FindElement(By.CssSelector("button[name='chooseTeamPreview'][value='0']")).Text;
-                waitFindClick(By.CssSelector("button[name='chooseTeamPreview'][value='0']"));
-            }
-            else
-                lead = "error";
+            //Select lead
+            pickLead();
 
             BattlePokemon active = null;//Global.lookup(lead);
             BattlePokemon enemy = null;
@@ -106,6 +102,59 @@ namespace ShowdownBot.modules
 
 
         /// <summary>
+        /// Picks the last lead-role pokemon on the team, or if none are present,
+        /// Compares scores of each mon against the other team's mons.
+        /// Regardless, this method must be called after BuildTeams.
+        /// </summary>
+        /// <returns></returns>
+        public override string pickLead()
+        {
+            string lead;
+            int index = -1;
+            if (elementExists(By.CssSelector("button[name='chooseTeamPreview']")))
+            {
+                for (int i = 0; i< myTeam.Count; i++)
+                {
+                    if (myTeam[i].mon.getRole().lead)
+                        index = i;
+
+                }
+                
+                if (index == -1)
+                {
+                    float[] scores = new float[myTeam.Count];
+                    scores.Initialize();
+                    for(int i = 0; i < enemyTeam.Count; i++)
+                    {
+                        for (int j = 0; j < myTeam.Count; j++)
+                        {
+                            scores[j] += myTeam[j].checkTypes(enemyTeam[i]);
+                        }
+                    }
+                    //Find the highest score
+                    float maxscore = 0;
+                    for (int i = 0; i < scores.Length; i++)
+                    {
+                        if (scores[i] > maxscore)
+                        {
+                            maxscore = scores[i];
+                            index = i;
+                        }
+                    }
+                }
+                
+                lead = waitFind(By.CssSelector("button[name='chooseTeamPreview'][value='" + index + "']")).Text;
+                waitFindClick(By.CssSelector("button[name='chooseTeamPreview'][value='" + index + "']"));
+            }
+            else
+                lead = "error";
+
+            return lead;
+        }
+
+
+
+        /// <summary>
         /// Iterates over the revealed pokemon and adds them to the team if they have not already been.
         /// </summary>
         /// <returns></returns>
@@ -119,7 +168,8 @@ namespace ShowdownBot.modules
             for (int i = 0; i<names.Count;i++)
             {
                 if (!myTeam.Any(bpkmn => bpkmn.mon.name == names[i])) 
-                    myTeam.Add(new BattlePokemon(Global.lookup(names[i])));
+                    myTeam.Add(new BattlePokemon(Global.lookup(PERSONAL_PRE+names[i])));
+                ////attempt to look up our own custom pokemon
             }
             elems = waitFind(By.ClassName("rightbar")); //opponent
             //ticon = findElementsFromWithin(elems,By.ClassName("teamicons"));
@@ -136,6 +186,8 @@ namespace ShowdownBot.modules
 
         /// <summary>
         /// Populates myTeam from the switch menu, rather than from the team icons.
+        /// This does not cover the currently active pokemon, so it should be used in
+        /// conjunction with the regular buildTeam.
         /// </summary>
         private void buildOwnTeam()
         {
@@ -158,9 +210,9 @@ namespace ShowdownBot.modules
         private void updateHealth(IWebElement statbar, ref BattlePokemon p)
         {
             var elem = findWithin(statbar, By.ClassName("hptext"));
-            string txt = elem.Text;
             if (elem != null)
             {
+                string txt = elem.Text;
                 int pct = 100;
                 txt = txt.Trim('%');
                 int.TryParse(txt, out pct);
@@ -168,6 +220,37 @@ namespace ShowdownBot.modules
             }
         }
 
+        private void updateModifiers(IWebElement statbar, ref BattlePokemon p)
+        {
+            IList<IWebElement> elems;
+            try
+            {
+                elems = browser.FindElements(By.ClassName("good"));
+                //for some stupid reason, the x isn't an 'x' but an '×'
+                foreach (IWebElement e in elems)
+                {
+                    if (e.Text.Contains("×"))
+                        p.updateBoosts(e.Text);
+                }
+                elems = browser.FindElements(By.ClassName("bad"));
+                foreach (IWebElement e in elems)
+                {
+                    if (e.Text.Contains("×"))
+                        p.updateBoosts(e.Text);
+                }
+            }
+            catch
+            {
+                return;
+            }
+            
+        }
+
+        /// <summary>
+        /// Updates various information about the two active pokemon including status and health percentage.
+        /// </summary>
+        /// <param name="you"></param>
+        /// <param name="opponent"></param>
         private void updateActiveStatuses (ref BattlePokemon you, ref BattlePokemon opponent)
         {
             var yourStats = waitFind(By.CssSelector("div[class='statbar rstatbar']"),1);
@@ -179,7 +262,7 @@ namespace ShowdownBot.modules
             else if (findWithin(yourStats, By.ClassName("frz")) != null) you.status = Status.STATE_FRZ;
             else you.status = Status.STATE_HEALTHY;
             updateHealth(yourStats, ref you);
-
+            updateModifiers(yourStats, ref you);
 
             var oppStats = waitFind(By.CssSelector("div[class='statbar lstatbar']"));
             if (oppStats == null) return;
@@ -190,6 +273,7 @@ namespace ShowdownBot.modules
             else if (findWithin(oppStats, By.ClassName("frz")) != null) opponent.status = Status.STATE_FRZ;
             else opponent.status = Status.STATE_HEALTHY;
             updateHealth(oppStats, ref opponent);
+            updateModifiers(oppStats, ref opponent);
         }
         private bool battleAnalytic(ref BattlePokemon active, BattlePokemon enemy, ref int turn)
         {
@@ -217,7 +301,7 @@ namespace ShowdownBot.modules
             //Switch if fainted
             else if (checkSwitch())
             {
-                active = pickPokeAnalytic(enemy);
+                active = pickPokeAnalytic(enemy,true);
                 if (active == null)
                 {
                     cwrite("Can't find new pokemon, unable to continue.", "[ERROR]", COLOR_ERR);
@@ -231,7 +315,7 @@ namespace ShowdownBot.modules
 
                 cwrite("I'm switching out.", "Turn " + turn.ToString(), COLOR_BOT);
                 wait();
-                BattlePokemon temp = pickPokeAnalytic(enemy);
+                BattlePokemon temp = pickPokeAnalytic(enemy,false);
                 if (temp == null)
                 {
                     cwrite("Couldn't pick a pokemon. Going with moves instead.", "[!]", COLOR_WARN);
@@ -248,14 +332,36 @@ namespace ShowdownBot.modules
             }
             else if (checkMove())
             {
+                //for now, automatically activate mega
                 if (elementExists(By.Name("megaevo")))
                     browser.FindElement(By.Name("megaevo")).Click();
-                //for now, automatically activate mega
+                
+                //pick moves
                 string mv = pickMoveAnalytic(active, enemy);
-                cwrite("I'm picking move " + mv, "Turn " + turn.ToString(), COLOR_BOT);
-                cwrite("Last Move: " + lastAction.ToString(), "DEBUG", COLOR_OK);
+                //if we can't reasonably defeat the opponent, switch.
+                if (mv == "needswitch")
+                {
+                    cwrite("Unable to do enough damage this turn, switching out.", COLOR_BOT);
+                    BattlePokemon temp = pickPokeAnalytic(enemy, false);
+                    if (temp == null)
+                    {
+                        cwrite("Couldn't pick a pokemon.", "[!]", COLOR_WARN);
 
-                turn++;
+
+                    }
+                    else
+                    {
+                        active = temp;
+                        turn++;
+                    }
+                }
+                else
+                {
+                    cwrite("I'm picking move " + mv, "Turn " + turn.ToString(), COLOR_BOT);
+                    cwrite("Last Move: " + lastAction.ToString(), "DEBUG", COLOR_OK);
+
+                    turn++;
+                }
             }
 
             else
@@ -264,29 +370,49 @@ namespace ShowdownBot.modules
             return false;
         }
 
+        
+
         //TODO: add moves to each BattlePokemon as they're encountered so that its not dependent on the web elements.
-        private BattlePokemon pickPokeAnalytic(BattlePokemon enemy)
+        private BattlePokemon pickPokeAnalytic(BattlePokemon enemy,bool offense)
         {
             //Loop over all pokemon
             int bestChoice = 1000;
-            float highestdamage = 5000f;
-            wait();
+            float highestdamage = (offense)? 0 : 5000f;
             for (int i = 1; i <= 5; i++)
             {
                 if (!elementExists(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")))
                     continue;
-                BattlePokemon p = getPokemon(Global.lookup(browser.FindElement(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']")).Text),myTeam);
+                BattlePokemon p = getPokemon(Global.lookup(PERSONAL_PRE+waitFind(By.CssSelector("button[value='" + i.ToString() + "'][name='chooseSwitch']"),1).Text),myTeam);
                 if (bestChoice == 1000)
                     bestChoice = i; //set a default value that can be accessed.
-                float temp = p.matchup(enemy);
-                //negate the return here in order to coincide with the defensive switching in the loop above.
-                //this should prevent eternally switching pokemon
-                 temp += enemy.checkKOChance(p);
-                 if (temp < highestdamage)
-                 {
-                     highestdamage = temp;
-                     bestChoice = i;
-                 }
+
+                float temp = 0;
+
+                /* Depending if we are switching offensively or defensively compare either the potential
+                 * new mon's aptitude to KO the opponent (offensive) or the opponent's to KO ours (defensive).
+                 */
+                if (offense)
+                {
+                    
+                    temp = enemy.matchup(p);
+                    temp += p.checkKOChance(enemy);
+                    if (temp > highestdamage)
+                    {
+                        highestdamage = temp;
+                        bestChoice = i;
+                    }
+                }
+                else
+                {
+                    temp = p.matchup(enemy);
+                    temp += enemy.checkKOChance(p);
+                    if (temp < highestdamage)
+                    {
+                        highestdamage = temp;
+                        bestChoice = i;
+                    }
+                }
+                
                  cwrite(p.mon.name + " value:" + temp, "[DEBUG]", COLOR_OK);
 
 
@@ -294,50 +420,37 @@ namespace ShowdownBot.modules
 
             }
             
-            var b = browser.FindElement(By.CssSelector("button[value='" + bestChoice.ToString() + "'][name=chooseSwitch]"));
-            BattlePokemon nextPoke = getPokemon(Global.lookup(b.Text),myTeam);
-            b.Click();
-            return nextPoke;
+            var b = waitFind(By.CssSelector("button[value='" + bestChoice.ToString() + "'][name=chooseSwitch]"));
+            if (b != null)
+            {
+                BattlePokemon nextPoke = getPokemon(Global.lookup(b.Text), myTeam);
+                b.Click();
+                return nextPoke;
+            }
+            return null;
         }
 
         private string pickMoveAnalytic(BattlePokemon you, BattlePokemon enemy)
         {
             float[] rankings = new float[4]; //ranking of each move
             float bestMove = 0f;
-            float RANK_MAX = 255;
-            float DEFAULT_RANK = 50; //Arbitrarily chosen
             int choice = 1;
+            const int MIN_RANK_OR_SWITCH = 10; //if no move ranks above this, consider switching.
             float risk = you.matchup(enemy);
             Move[] moves = getMoves();
             for (int i = 0; i < 4; i++)
             {
-               
-                if (moves[i].bp == 0 || moves[i].bp == -1)
-                {
-                    if (moves[i].heal && getRecoverChance(you,enemy) > 0.2f)
-                        rankings[i] = DEFAULT_RANK + (100 - you.getHPPercentage()); //Calculate ranking in a way that emphasizes lower health.
-                    //Sleep talk if asleep, but never more than twice in a row.
-                    //Must use name.contains due to the way normal moves are added ( with (type) appended).
-                    else if (moves[i].name.Contains("Sleep Talk") && you.status == Status.STATE_SLP && turnsSpentSleepTalking < 2)
-                        rankings[i] = RANK_MAX;
 
-                    else if (moves[i].isBoost)
-                    {
-                        rankings[i] = DEFAULT_RANK + (getBoostChance(you, enemy) * 100f);
-                    }
+                //Sleep talk if asleep, but never more than twice in a row.
+                //Must use name.contains due to the way normal moves are added ( with (type) appended).
+                if (moves[i].name.Contains("Sleep Talk") && you.status == Status.STATE_SLP && turnsSpentSleepTalking < 2)
+                    rankings[i] = MAX_MOVE_RANK;
+                else
+                    rankings[i] = you.rankMove(moves[i], enemy, enemyTeam, lastAction);
 
-
-
-                }
-                else if (moves[i].bp != 0)
-                {
-                    rankings[i] = you.damageCalcTotal(moves[i], enemy);
-
-
-                }
                 cwrite(moves[i].name + "'s rank: " + rankings[i].ToString(), "[DEBUG]", COLOR_OK);
-
             }
+
             for (int i = 0; i < 4; i++)
             {
                 if (rankings[i] > bestMove)
@@ -347,6 +460,12 @@ namespace ShowdownBot.modules
                 }
             }
 
+            //TODO: maybe make this chance based, increasing the chance if drops exist.
+            if (bestMove < MIN_RANK_OR_SWITCH)
+                return "needswitch";
+            //break any ties
+            if (hasTies(rankings, bestMove))
+                choice = breakTies(moves, rankings, bestMove);
             //figure out what move we've chosen
             Move chosenMove = moves[choice - 1];
             setLastBattleAction(chosenMove);
@@ -366,24 +485,27 @@ namespace ShowdownBot.modules
 
         }
 
-
-
-        private float getBoostChance(BattlePokemon you, BattlePokemon e)
+        private bool hasTies(float[] ranks, float best)
         {
-            float chance = 0.0f;
-            int minHP = 30;
-            float enemyTolerance = 0.5f;
-            if (you.getHPPercentage() <= minHP) chance -= 0.2f; //too weak, should focus efforts elsewhere
-
-            if (e.checkKOChance(you) < enemyTolerance) chance += 0.2f; //enemy does not threaten us
-            else if (e.checkKOChance(you) - 0.2f < enemyTolerance) chance += 0.2f; //if boosting will make us survive, do it.
-            else chance -= 0.2f; //otherwise too risky
-
-            if (you.mon.getRole().setup) chance += 0.4f; //if the mon is a setup sweeper, etc, 
-            if (lastAction == LastBattleAction.ACTION_BOOST) chance -= 0.1f; //Be careful not to boost forever.
-            return chance;
+            int count = 0;
+            for(int i = 0; i< 4; i++)
+            {
+                if (ranks[i] == best) count++;
+            }
+            return (count > 1);
         }
-
+        private int breakTies(Move[] moves, float[] ranks,float best)
+        {
+            List<int> choices = new List<int>();
+            for (int i = 0; i < 4; i++)
+            {
+                if (best == ranks[i])
+                {
+                    choices.Add(i);
+                }
+            }
+            return choices.ElementAt(new Random().Next(0, choices.Count));
+        }
         private void setLastBattleAction(Move m)
         {
             if (m.isBoost) lastAction = LastBattleAction.ACTION_BOOST;
@@ -391,27 +513,14 @@ namespace ShowdownBot.modules
             {
                 lastAction = LastBattleAction.ACTION_SLEEPTALK;
             }
+            else if (m.status)
+            {
+                lastAction = LastBattleAction.ACTION_STATUS;
+            }
             else
                 lastAction = LastBattleAction.ACTION_ATTACK_SUCCESS;
             lastMove = m;
         }
-
-        /// <summary>
-        /// Likelihood that the pokemon should recover this turn.
-        /// </summary>
-        private float getRecoverChance(BattlePokemon you,BattlePokemon e)
-        {
-            int hpThreshold = 40; //Percent of health at which to conisder recovering.
-            float chance = 0.0f;
-
-            if (you.getHPPercentage() <= hpThreshold) chance += 0.3f;
-            if (you.checkKOChance(e) < 0.3f) chance += 0.2f; //heal if we can't OHKO opponent.
-            if (you.status != Status.STATE_HEALTHY && lastAction != LastBattleAction.ACTION_SLEEPTALK) chance += 0.2f;
-            if (lastAction == LastBattleAction.ACTION_RECOVER) chance -= 0.2f;
-
-            return chance;
-        }
-
 
         private bool needSwitch(BattlePokemon you, BattlePokemon enemy)
         {
@@ -439,7 +548,7 @@ namespace ShowdownBot.modules
             for (int i = 1; i <= 5; i++)
             {
                 
-                if (elementExists(By.CssSelector("button[value='"+i.ToString()+"']")))
+                if (elementExists(By.CssSelector("button[name='chooseSwitch'][value='"+i.ToString()+"']")))
                     totalMons++;
             }
             if (totalMons == 0)
@@ -458,6 +567,9 @@ namespace ShowdownBot.modules
                     "\nCurrent Pokemon: " + currentActive.mon.name +
                     "\n\tHP: " + currentActive.getHealth() + "/" + currentActive.maxHealth+
                     "\n\tStatus: " + currentActive.status,COLOR_BOT);
+                var_dump(currentActive.mon);
+                var_dump(currentActive.currentBoosts);
+                
             }
         }
 

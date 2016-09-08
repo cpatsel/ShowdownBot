@@ -11,15 +11,18 @@ using System.Threading;
 using static ShowdownBot.Global;
 using static ShowdownBot.GlobalConstants;
 using System.Threading.Tasks;
+using System.Net;
+using System.Xml.Linq;
 
 namespace ShowdownBot
 {
     public partial class Consol : Form
     {
         Bot bot;
+        bool ready = false;
         Thread threadBot;
         ThreadStart ts;
-        
+        XDocument helpdoc;
         public Consol()
         {
             ts = new ThreadStart(() => bot = new Bot(this));
@@ -28,7 +31,9 @@ namespace ShowdownBot
             threadBot.Start();
             InitializeComponent();
             richTextBox1.WordWrap = false;
+            helpdoc = XDocument.Load(HELPPATH);
             write("Console initialized.");
+            
         }
 
         /// <summary>
@@ -104,20 +109,18 @@ namespace ShowdownBot
                 return true;
             else return false;
         }
-        private void botUseCommand(Action cmd)
+        private void botUseCommand(Action cmd, bool startup = false)
         {
-            Task.Factory.StartNew(cmd);
-           /* ts = new ThreadStart(cmd);
-            threadBot = new Thread(ts);
-            threadBot.SetApartmentState(ApartmentState.STA);
-            try
+            //Only allow the start, startf commands to be run when no bot is live.
+            if (!startup)
             {
-                threadBot.Start();
+                if (bot.getStatus())
+                    Task.Factory.StartNew(cmd);
+                else
+                    cwrite("No bot is running!", COLOR_WARN);
             }
-            catch (Exception e)
-            {
-                writef(e.ToString(), COLOR_ERR);
-            }*/
+            else
+                Task.Factory.StartNew(cmd);
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
@@ -128,11 +131,50 @@ namespace ShowdownBot
 
         private void Consol_Load(object sender, EventArgs e)
         {
+            
             while (true)
             {
                 string line = Console.ReadLine();
                 Parse(line);
             }
+        }
+
+        public bool checkForNewVersion()
+        {
+            WebClient wc = new WebClient();
+            string versiontext;
+            try
+            {
+                versiontext = wc.DownloadString(VERSIONFILE_URL).TrimEnd('\n');
+            }
+            catch
+            {
+                cwrite("Unable to connect to github.", "error", COLOR_ERR);
+                return false;
+            }
+            string[] components = versiontext.Split('.');
+            string[] mycomponents = SDB_VERSION.TrimEnd("-unreleased".ToCharArray()).Split('.');
+            bool behind = false;
+            if (Int32.Parse(components[0]) > Int32.Parse(mycomponents[0]))
+            {
+                behind = true;
+            }
+            else if (Int32.Parse(components[1]) > Int32.Parse(mycomponents[1]))
+            {
+                behind = true;
+            }
+            else if ((Int32.Parse(components[2]) > Int32.Parse(mycomponents[2]))
+                && (Int32.Parse(components[1]) == Int32.Parse(mycomponents[1])))
+            {
+                behind = true;
+            }
+            if (behind)
+            {
+                cwrite("There's a new version v" + versiontext + " available!", COLOR_WARN);
+            }
+            else
+                cwrite("You have the latest version!", COLOR_OK);
+            return true;
         }
     }
 }

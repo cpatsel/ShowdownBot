@@ -15,85 +15,75 @@ namespace ShowdownBot
     {
         private void DisplayHelp()
         {
-
-            writef("Available commands are: challenge, clear, dump, exit, info,\n kill, module, " +
-                    "start, startf, stop, version", "[SYSTEM]", COLOR_SYS);
-
+            string cmnds = "";
+            var query = from c in helpdoc.Root.Descendants("command")
+                        select c.Element("name").Value;
+            foreach (string s in query)
+            {
+                cmnds += s + ", ";
+            }
+            writef("Available commands are:\n"+ cmnds, "system", COLOR_SYS);
         }
 
+        public class CmdParam
+        {
+            public string id { get; set; }
+            public string arg { get; set; }
+            public string description { get; set; }
+        }
+        public class Command
+        {
+            public string name { get; set; }
+            public string alias { get; set; } = "None";
+            public string desc { get; set; }
+            public List<CmdParam> args { get; set; }
+            
+        }
         private void help(string cmnd)
         {
-            string desc = cmnd;
-            string alias = "None";
-            string arguments = "None";
-            if (cmnd == "start")
-            {
-                desc = "start: Starts the bot and opens the website.";
-                arguments = "\n\t [-u] - Username\n\t [-p] Password (must have also set username with -u)";
-            }
-            if (cmnd == "learn")
-            {
-                desc = "learn: Starts the bot's replay learning and downloading features";
-                alias = "l";
-                arguments = "\t [d][#] - Download # replays.\n" +
-                         "\t \t [b] - Build database from replays.";
-            }
-            else if (cmnd == "search" || cmnd == "ladder")
-            {
-                desc = "search: The bot will search the ladder for an opponent";
-                alias = "ladder";
-                arguments = "\n\t [-f] - Format";
-
-            }
-            else if (cmnd == "clear" || cmnd == "cls")
-            {
-                desc = "clear: clears the screen among other things";
-                alias = "cls";
-                arguments = "\n\t [-e] - Deletes the error log.";
-            }
-            else if (cmnd == "challenge" || cmnd == "cp")
-            {
-                desc = "challenge: Have the bot challenge a player";
-                alias = "cp";
-                arguments = "\t [... =owner] - Challenge specified player.\n";
-
-            }
-            else if (cmnd == "format" || cmnd == "f")
-            {
-                desc = "format: Change the bot module's selected format.";
-                alias = "f";
-                arguments = "\t [...] - Format name";
-            }
-            else if (cmnd == "forfeit")
-            {
-                desc = "Forfeits the current battle.";
-            }
-            else if (cmnd == "exit")
-            {
-                desc = "exit: Kills the bot and quits the program.";
-                alias = "quit";
-            }
-            else if (cmnd == "info")
-            {
-                desc = "info: displays various information";
-                arguments = "\n\t [-m] - displays info about a specific move. Replace spaces with _\n" +
-                            "\t [-p] - displays info about a specific pokemon. Replace dashes with _";
-            }
-            else if (cmnd == "module" || cmnd == "m")
-            {
-                desc = "module: Switch the bot's AI module.";
-                alias = "mode, m";
-                arguments = "\t [...] - Module (Analytic, Random, Biased)";
-            }
-            else if (cmnd == "me")
+            if (cmnd.ToLower() == "me")
             {
                 writef("I'm a robot, not a miracle worker.", "system", COLOR_SYS);
                 return;
             }
+            var query = from c in helpdoc.Root.Descendants("command")
+                        where (c.Element("name").Value == cmnd || c.Element("alias").Value.Contains(cmnd))
+                        select new Command()
+                        {
+                            name = c.Element("name").Value,
+                            alias = c.Element("alias").Value,
+                            desc = c.Element("description").Value,
+                            args = c.Elements("param").Select(cmdarg => new CmdParam()
+                            {
+                                id = cmdarg.Element("id").Value,
+                                arg = cmdarg.Element("arg").Value,
+                                description = cmdarg.Element("description").Value
 
-            writef(desc + "\n" +
-                    "alias: " + alias + "\n" +
-                    "arguments: " + arguments, "system", COLOR_SYS);
+                            }).ToList()
+
+                        };
+            if (!query.Any())
+            {
+                writef("Unknown command " + cmnd, "system", COLOR_SYS);
+                return;
+            }
+            Command _c = query.First();
+            string text = _c.name + "\n" +
+                    "Alias:" + _c.alias + "\n" +
+                    "Description: "+_c.desc + "\n" +
+                    "Args: \n";
+            foreach (CmdParam cp in _c.args)
+            {
+                if (cp.description != "")
+                {
+                    text += "\t -" + cp.id + "\t" + cp.arg + " " + cp.description + "\n";
+                }
+            }
+            writef(text, "system", COLOR_SYS);
+
+
+            
         }
+
     }
 }

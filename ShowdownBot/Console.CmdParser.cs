@@ -23,19 +23,19 @@ namespace ShowdownBot
                 {
                     
                     if (isSet(param, "-u") && isSet(param, "-p"))
-                        botUseCommand(() => bot.Start(param["-u"], param["-p"]));
+                        botUseCommand(() => bot.Start(param["-u"], param["-p"]),true);
                     else if (isSet(param, "-u"))
-                        botUseCommand(() => bot.Start(param["-u"], null));
+                        botUseCommand(() => bot.Start(param["-u"], null),true);
                     else
                         help("start");
                 }
                 else
-                    botUseCommand(() => bot.Start(true));
+                    botUseCommand(() => bot.Start(true),true);
 
             }
             else if (args[0] == "startf")
             { 
-                botUseCommand(() => bot.Start(false));
+                botUseCommand(() => bot.Start(false),true);
             }
             else if (args[0] == "stop" || args[0] == "idle")
             {
@@ -67,6 +67,14 @@ namespace ShowdownBot
                 }
                 botUseCommand(() => bot.changeState(State.SEARCH));
             }
+            else if (args[0] == "refresh" || args[0] == "rf")
+            {
+                botUseCommand(() => bot.Refresh());
+            }
+            else if (args[0] == "update")
+            {
+                checkForNewVersion();
+            }
             else if (args[0] == "version")
             {
                 writef("ShowdownBot v" + SDB_VERSION, "system", COLOR_SYS);
@@ -76,8 +84,13 @@ namespace ShowdownBot
                 if (paramCheck(2, args, args[0]))
                     botUseCommand(() => bot.changeFormat(args[1]));
             }
-            else if (args[0] == "challenge" || args[0] == "cp")
+            else if (args[0] == "challengeplayer" || args[0] == "challenge" || args[0] == "cp")
             {
+                if (isSet(param,"-f"))
+                {
+                    botUseCommand(() => bot.changeFormat(param["-f"]));
+                }
+
                 if (isSet(param, "-c") && isSet(param, "-u"))
                 {
                     int num;
@@ -117,9 +130,9 @@ namespace ShowdownBot
                 }
 
             }
-            else if (args[0] == "dump" || args[0] == "dumplog")
+            else if (args[0] == "tb")
             {
-                botUseCommand(() => bot.saveLog());
+               // botUseCommand(() => bot.testBattle(), true);
             }
             else if (args[0] == "exit" || args[0] == "quit")
             {
@@ -142,7 +155,7 @@ namespace ShowdownBot
                 else if (isSet(param, "-p"))
                 {
                     string a = param["-p"];
-                    a = a.Replace('_', '-');
+                    a = a.Replace('=', '-');
                     Pokemon p = Global.lookup(a);
                     write(p.name + ": " + p.type1.value + "/" + p.type2.value + "\nTypically " + p.getRoleToString() + " with " + p.getDefTypeToString() + " defenses.");
                     writef("Debug Info:\n" + p.statSpread.ToString(), "debug", COLOR_OK);
@@ -163,10 +176,6 @@ namespace ShowdownBot
             else if (args[0] == "forfeit")
             {
                 botUseCommand(() => bot.botForfeit());
-            }
-            else if (args[0] == "visible" || args[0] == "v")
-            {
-                //change visibility
             }
             else if (args[0] == "clear" || args[0] == "cls")
             {

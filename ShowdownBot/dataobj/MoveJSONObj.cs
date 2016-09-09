@@ -41,22 +41,22 @@ namespace ShowdownBot
     }
     public class Flags
     {
-        public int protect { get; set; }
-        public int mirror { get; set; }
-        public int heal { get; set; }
-        public int bullet { get; set; }
-        public int contact { get; set; }
-        public int punch { get; set; }
-        public int sound { get; set; }
-        public int bite { get; set; }
-        public int charge { get; set; }
-        public int defrost { get; set; }
-        public int gravity { get; set; }
-        public int powder { get; set; }
-        public int pulse { get; set; }
-        public int recharge { get; set; }
-        public int reflectable { get; set; }
-        public int snatch { get; set; }
+        public int protect { get; set; } = 0;
+        public int mirror { get; set; } = 0;
+        public int heal { get; set; } = 0;
+        public int bullet { get; set; } = 0;
+        public int contact { get; set; } = 0;
+        public int punch { get; set; } = 0;
+        public int sound { get; set; } = 0;
+        public int bite { get; set; } = 0;
+        public int charge { get; set; } = 0;
+        public int defrost { get; set; } = 0;
+        public int gravity { get; set; } = 0;
+        public int powder { get; set; } = 0;
+        public int pulse { get; set; } = 0;
+        public int recharge { get; set; } = 0;
+        public int reflectable { get; set; } = 0;
+        public int snatch { get; set; } = 0;
     }
     public class Boosts
     {

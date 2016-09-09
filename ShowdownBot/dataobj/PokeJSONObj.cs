@@ -45,8 +45,9 @@ namespace ShowdownBot
         public Role role { get; set; }
         public DefenseType deftype { get; set; }
         public StatSpread statspread { get; set; }
-        public bool personal { get; set; }
-        public string item { get; set; }
+        public bool personal { get; set; } = false;
+        public string certainAbility { get; set; } = "none";
+        public string item { get; set; } = "none";
     }
 
     public class Abilities

@@ -1,15 +1,6 @@
 ## Changelog ##
 
 
-### v0.6.0 / Unreleased ###
-----
-Planned:
--Weather
--Better Ability support (add "certainAbility", set from ro.js)
--fix #31
--fix #39
-
-
 ### v0.5.0 / 2016-09-08 ###
 ----
 Added:

@@ -27,11 +27,15 @@ namespace ShowdownBot
         }
         public override bool Equals(object obj)
         {
-            return base.Equals(obj);
+            return (value == obj.ToString());
         }
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+        public override string ToString()
+        {
+            return value;
         }
 
     }
@@ -44,6 +48,7 @@ namespace ShowdownBot
         public string name = "NONAME";
         public Type type1, type2;
         public string item = "none";
+        public string certainAbility = "none";
         //float apct = 100f;
         //string firstmove = "NA";
         float weight = 50f;
@@ -180,6 +185,7 @@ namespace ShowdownBot
                             this.statSpread = ro.statspread;
                         if (!Object.ReferenceEquals(ro.item, null))
                             this.item = ro.item;
+                    this.certainAbility = ro.certainAbility;
                 }
         }
         
@@ -239,16 +245,41 @@ namespace ShowdownBot
             
             return toreturn;
         }
+        /// <summary>
+        /// Returns whether the Pokemon has a definite certainAbility defined in roleOverride.js
+        /// </summary>
+        /// <param name="ability"></param>
+        /// <returns></returns>
+        public bool hasCertainAbility(string ability)
+        {
+            if (certainAbility == ability)
+                return true;
+            return false;
+        }
 
-
-        public bool hasAbility(string ability)
+        /// <summary>
+        /// Returns wether the Pokemon can possibly have the specified ability.
+        /// </summary>
+        /// <param name="ability"></param>
+        /// <returns></returns>
+        public bool hasPossibleAbility(string ability)
         {
             if (abilities.a1.ToLower() == ability.ToLower()) return true;
-            if (!Object.ReferenceEquals(abilities.a2,null))
-                if(abilities.a2.ToLower() == ability.ToLower()) return true;
+            if (!Object.ReferenceEquals(abilities.a2, null))
+                if (abilities.a2.ToLower() == ability.ToLower()) return true;
             if (!Object.ReferenceEquals(abilities.H, null))
                 if (abilities.H.ToLower() == ability.ToLower()) return true;
             return false;
+        }
+
+        /// <summary>
+        /// Returns whether the Pokemon definitely has the ability, or could possibly have the ability.
+        /// </summary>
+        /// <param name="ability"></param>
+        /// <returns></returns>
+        public bool hasAbility(string ability)
+        {
+            return (hasCertainAbility(ability) || hasPossibleAbility(ability));
         }
 
      

@@ -67,7 +67,7 @@ namespace ShowdownBot
             string[] split = boostText.Split('×');
             string value = split[0];
             string whichBoost = split[1].Trim(' ').ToLower();
-            setBoost(whichBoost, convertBoostToCount(float.Parse(value)));
+            setBoost(whichBoost, convertBoostToStage(float.Parse(value)));
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace ShowdownBot
         /// </summary>
         /// <param name="boost"></param>
         /// <returns></returns>
-        private int convertBoostToCount(float boost)
+        private int convertBoostToStage(float boost)
         {
             float mod = 1.0f;
             if(boost >= 1)
@@ -316,7 +316,7 @@ namespace ShowdownBot
             float itemmod = 1;
             float stab = 1;
             float immunity = 1;
-
+            float abilitymod = 1;
             float type = damageCalc(m.type, enemy.type1);
             if(enemy.type1 != enemy.type2)
                 type = type * damageCalc(m.type, enemy.type2);
@@ -326,11 +326,28 @@ namespace ShowdownBot
                 stab = 1.5f;
             }
             itemmod = itemDamageMod(m, enemy);
+            abilitymod = abilityDamageMod(m, enemy);
             if (immunityCheck(m.type, enemy))
                 immunity = 0;
-            float multiplier = type * stab * itemmod * immunity;
+            float multiplier = type * stab * itemmod * abilitymod * immunity;
             return (int)Math.Floor(totaldmg * multiplier);
         }
+
+        private float abilityDamageMod(Move m, BattlePokemon enemy)
+        {
+            Pokemon you = this.mon;
+            if (you.hasCertainAbility("technician") && m.bp <= 60)
+                return 1.5f;
+            if (you.hasCertainAbility("toughclaws") && m.flags.contact > 0)
+                return 1.33f;
+            if (you.hasCertainAbility("ironfist") && m.flags.punch > 0)
+                return 1.2f;
+            if (you.hasCertainAbility("strongjaw") && m.flags.bite > 0)
+                return 1.5f;
+            return 1;
+            
+        }
+
 
         /// <summary>
         /// Returns a rank from -4 to 7

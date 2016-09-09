@@ -41,6 +41,7 @@ namespace ShowdownBot
         public Move(string n, Type t) { name = n; type = t; unknown = true; bp = -1; }
         public string desc;
         private Secondary secondary = null;
+        public Flags flags = new Flags();
         public Move(MoveJSONObj obj)
         {
             name = obj.name;
@@ -55,8 +56,9 @@ namespace ShowdownBot
             secondary = obj.secondary;
             if (statuseffect != "none") status = true;
             if (hasBoosts()) isBoost = true;
-            if (Convert.ToBoolean(obj.flags.heal)) heal = true; 
-            
+            if (Convert.ToBoolean(obj.flags.heal)) heal = true;
+            if (!Object.Equals(obj.flags, null))
+                flags = obj.flags;
         }
         public bool hasBoosts()
         {

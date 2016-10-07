@@ -237,8 +237,9 @@ namespace ShowdownBot
 
 
                 }
-                else if (Global.moveLookup(name[0]).type.value == "normal")
+                else if (Global.moveLookup(name[0]).type.value == "normal" && !name[0].Contains("Milk Drink"))
                 {
+                    
                     string nname = name[0]+" (" + type + ")";
                     if (!Global.moves.ContainsKey(nname))
                     {

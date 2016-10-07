@@ -140,7 +140,7 @@ namespace ShowdownBot
                 writef("Killing bot.", "[SYSTEM]", COLOR_SYS);
                 botUseCommand(() => bot.Kill());
                 Environment.Exit(0);
-                this.Close();
+                
             }
             else if (args[0] == "info")
             {

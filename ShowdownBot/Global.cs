@@ -20,6 +20,17 @@ namespace ShowdownBot
         BUSY
 
     };
+
+    public enum Weather
+    {
+        RAIN,
+        SUN,
+        SAND,
+        HEAVYRAIN,
+        HARSHSUN,
+        STRONGWIND,
+        NONE
+    }
     /// <summary>
     /// Contains variables utilized by multiple classes.
     /// </summary>

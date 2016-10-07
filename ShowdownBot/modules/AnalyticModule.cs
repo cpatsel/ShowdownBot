@@ -28,7 +28,7 @@ namespace ShowdownBot.modules
         protected BattlePokemon errormon;
         protected BattlePokemon currentActive;
         protected int turnsSpentSleepTalking;
-
+        protected Weather currentWeather;
         public AnalyticModule(Bot m, IWebDriver b) : base(m,b)
         {
             format = "ou";
@@ -37,6 +37,7 @@ namespace ShowdownBot.modules
             errormon = new BattlePokemon(Global.lookup("error"));
             currentActive = errormon;
             turnsSpentSleepTalking = 0;
+            currentWeather = Weather.NONE;
            // lastMove = moveLookup("error");
         }
 
@@ -90,6 +91,7 @@ namespace ShowdownBot.modules
                         buildTeams(); //if randombattle, check to see if any new pokemon have been revealed.
                     enemy = getPokemon(getActivePokemon(),enemyTeam);
                     active = getPokemon(updateYourPokemon(),myTeam);
+                    currentWeather = checkWeather();
                     updateActiveStatuses(ref active,ref enemy);
                     currentActive = active;
                     battleAnalytic(ref active, enemy, ref turn);
@@ -202,10 +204,7 @@ namespace ShowdownBot.modules
                 }
             }
         }
-        private void updateTeamStatuses()
-        {
-
-        }
+        
 
         private void updateHealth(IWebElement statbar, ref BattlePokemon p)
         {
@@ -275,6 +274,7 @@ namespace ShowdownBot.modules
             updateHealth(oppStats, ref opponent);
             updateModifiers(oppStats, ref opponent);
         }
+
         private bool battleAnalytic(ref BattlePokemon active, BattlePokemon enemy, ref int turn)
         {
             //Extra check to make sure we pick a lead.
@@ -430,6 +430,22 @@ namespace ShowdownBot.modules
             return null;
         }
 
+        private Weather checkWeather()
+        {
+            IWebElement weatherElem = waitFind(By.ClassName("weather"));
+            if (weatherElem != null)
+            {
+                if (weatherElem.Text.Contains("Rain"))
+                    return Weather.RAIN;
+                else if (weatherElem.Text.Contains("Sun"))
+                    return Weather.SUN;
+                else if (weatherElem.Text.Contains("Sandstorm"))
+                    return Weather.SAND;
+                else return Weather.NONE;
+            }
+            else
+                return Weather.NONE;
+        }
         private string pickMoveAnalytic(BattlePokemon you, BattlePokemon enemy)
         {
             float[] rankings = new float[4]; //ranking of each move
@@ -446,7 +462,7 @@ namespace ShowdownBot.modules
                 if (moves[i].name.Contains("Sleep Talk") && you.status == Status.STATE_SLP && turnsSpentSleepTalking < 2)
                     rankings[i] = MAX_MOVE_RANK;
                 else
-                    rankings[i] = you.rankMove(moves[i], enemy, enemyTeam, lastAction);
+                    rankings[i] = you.rankMove(moves[i], enemy, enemyTeam, lastAction, currentWeather);
 
                 cwrite(moves[i].name + "'s rank: " + rankings[i].ToString(), "[DEBUG]", COLOR_OK);
             }
@@ -564,6 +580,7 @@ namespace ShowdownBot.modules
             if (activeState == State.BATTLE)
             {
                 cwrite("Battle: " + browser.Url +
+                    "\n Weather: " + currentWeather +
                     "\nCurrent Pokemon: " + currentActive.mon.name +
                     "\n\tHP: " + currentActive.getHealth() + "/" + currentActive.maxHealth+
                     "\n\tStatus: " + currentActive.status,COLOR_BOT);

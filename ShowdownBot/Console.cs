@@ -16,7 +16,7 @@ using System.Xml.Linq;
 
 namespace ShowdownBot
 {
-    public partial class Consol : Form
+    public partial class Consol
     {
         Bot bot;
         bool ready = false;
@@ -29,11 +29,9 @@ namespace ShowdownBot
             threadBot = new Thread(ts);
             threadBot.SetApartmentState(ApartmentState.STA);
             threadBot.Start();
-            InitializeComponent();
-            richTextBox1.WordWrap = false;
             helpdoc = XDocument.Load(HELPPATH);
             write("Console initialized.");
-            
+            Consol_Load();
         }
 
         /// <summary>
@@ -129,7 +127,7 @@ namespace ShowdownBot
             job();
         }
 
-        private void Consol_Load(object sender, EventArgs e)
+        private void Consol_Load()
         {
             
             while (true)

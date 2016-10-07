@@ -223,13 +223,13 @@ namespace ShowdownBot
         /// <param name="m"></param>
         /// <param name="enemy"></param>
         /// <returns></returns>
-        public int rankMove(Move m, BattlePokemon enemy,List<BattlePokemon> enemyTeam, LastBattleAction lba)
+        public int rankMove(Move m, BattlePokemon enemy,List<BattlePokemon> enemyTeam, LastBattleAction lba, Weather weather)
         {
             int DEFAULT_RANK = 11; //(15 - 4)
             int rank = DEFAULT_RANK; // rank of move m
             if (m.group != "status")
             {
-                rank = hitsToKill(m, enemy);
+                rank = hitsToKill(m, enemy,weather);
                 //discourage the use of low accuracy moves if they're overkill
                 if (m.accuracy != 1 && enemy.getHPPercentage() < 20)
                     ++rank;
@@ -272,15 +272,15 @@ namespace ShowdownBot
         /// <param name="m"></param>
         /// <param name="enemy"></param>
         /// <returns></returns>
-        public int hitsToKill(Move m, BattlePokemon enemy)
+        public int hitsToKill(Move m, BattlePokemon enemy, Weather weather)
         {
-            int totalDamage = damageFormula(m, enemy);
+            int totalDamage = damageFormula(m, enemy,weather);
             //Compare the damage we will deal to the health of the enemy.
             int times = 0; //number of times it takes to use this move to KO the opponent.
             int health = enemy.getHealth();
             for (;(health > 0); times++)
             {
-                if (times > GlobalConstants.MAX_HKO)
+                if (times == GlobalConstants.MAX_HKO)
                     break;
                 health -= totalDamage;
             }
@@ -296,7 +296,7 @@ namespace ShowdownBot
         /// <param name="m"></param>
         /// <param name="enemy"></param>
         /// <returns></returns>
-        private int damageFormula(Move m, BattlePokemon enemy)
+        private int damageFormula(Move m, BattlePokemon enemy, Weather weather)
         {
             float first = (2f * this.level + 10f) / 250f;
             float second = 0;
@@ -348,6 +348,25 @@ namespace ShowdownBot
             
         }
 
+       //TODO: I don't know if heavy rain/sun also boosts water/fire like the regular counterparts.
+       //let's take a raincheck on that for now (ha ha)
+        private float weatherMod(Move m, Weather w)
+        {
+            if (m.type.value == "water" && w == Weather.RAIN)
+                return 1.5f;
+            else if (m.type.value == "water" && w == Weather.SUN)
+                return 0.5f;
+            else if (m.type.value == "fire" && w == Weather.RAIN)
+                return 0.5f;
+            else if (m.type.value == "fire" && w == Weather.SUN)
+                return 1.5f;
+            else if (m.type.value == "water" && w == Weather.HARSHSUN)
+                return 0;
+            else if (m.type.value == "fire" && w == Weather.HEAVYRAIN)
+                return 0;
+            else
+                return 1;
+        }
 
         /// <summary>
         /// Returns a rank from -4 to 7

@@ -35,6 +35,7 @@ namespace ShowdownBot
         public bool phase = false; //Is a phasing move? ie. Whirlwind
         public bool heal = false;
         public bool field = false; //Hazard move?
+        public bool shouldNotRepeat = false;
         public Boosts boosts;
         public string statuseffect = "none";
         public Move(string n, Type t, float p) { name = n; type = t; bp = p; }
@@ -59,6 +60,7 @@ namespace ShowdownBot
             if (Convert.ToBoolean(obj.flags.heal)) heal = true;
             if (!Object.Equals(obj.flags, null))
                 flags = obj.flags;
+            
         }
         public bool hasBoosts()
         {

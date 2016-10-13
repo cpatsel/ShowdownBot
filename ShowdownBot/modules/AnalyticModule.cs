@@ -15,6 +15,7 @@ namespace ShowdownBot.modules
         ACTION_BOOST,
         ACTION_RECOVER,
         ACTION_SLEEPTALK,
+        ACTION_FAKEOUT,
         ACTION_SWITCH
     };
 
@@ -425,6 +426,7 @@ namespace ShowdownBot.modules
             {
                 BattlePokemon nextPoke = getPokemon(Global.lookup(b.Text), myTeam);
                 b.Click();
+                currentActive.canUseFakeout = true;
                 return nextPoke;
             }
             return null;
@@ -528,6 +530,11 @@ namespace ShowdownBot.modules
             else if (m.name.Contains("Sleep Talk"))
             {
                 lastAction = LastBattleAction.ACTION_SLEEPTALK;
+            }
+            else if (m.name.Contains("Fake Out"))
+            {
+                lastAction = LastBattleAction.ACTION_FAKEOUT;
+                currentActive.canUseFakeout = false;
             }
             else if (m.status)
             {

@@ -34,6 +34,7 @@ namespace ShowdownBot
         public Boosts currentBoosts;
         public string item;
         public int level;
+        public bool canUseFakeout;
         public BattlePokemon(Pokemon p)
         {
             this.mon = p;
@@ -46,7 +47,7 @@ namespace ShowdownBot
             item = mon.item;
             level = 100; //TODO: actually find this, for now just assume its max.
             initBoosts();
-
+            canUseFakeout = true;
            
         }
 
@@ -230,13 +231,21 @@ namespace ShowdownBot
             if (m.group != "status")
             {
                 rank = hitsToKill(m, enemy,weather);
+                /*
+                 * Set the rank to the maximum if this move is fake out, and it can be used.
+                 * This is isn't always the move we want to make, so further checks need
+                 * to be developed. Namely, prevent using it against ghost types and
+                 * rough skin/iron barbs, etc. */
+                if (m.name.Contains("Fake Out") && this.canUseFakeout)
+                    rank = 0; //Rank order is reversed for damaging moves, 0 = Max Rank.
+
                 //discourage the use of low accuracy moves if they're overkill
                 if (m.accuracy != 1 && enemy.getHPPercentage() < 20)
                     ++rank;
                 if (m.priority > 0)
                     rank -= m.priority;
                 //To rank in ascending order (ie 1 is a poor rank) subtract the rank from the max.
-                if (rank > GlobalConstants.MAX_MOVE_RANK) rank = GlobalConstants.MAX_MOVE_RANK;
+                if (rank > GlobalConstants.MAX_MOVE_RANK) rank = GlobalConstants.MAX_MOVE_RANK; //Prevent negative ranks.
                 rank = GlobalConstants.MAX_MOVE_RANK - rank;
                
             }

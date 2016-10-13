@@ -176,8 +176,8 @@ namespace ShowdownBot
             Move m1 = Global.moveLookup("Fire Blast");
             Move m2 = Global.moveLookup("Flamethrower");
             def.setHealth(10);
-            int dmg1 = off.rankMove(m1, def,defteam, LastBattleAction.ACTION_ATTACK_SUCCESS);
-            int dmg2 = off.rankMove(m2, def, defteam, LastBattleAction.ACTION_ATTACK_SUCCESS);
+            int dmg1 = off.rankMove(m1, def,defteam, LastBattleAction.ACTION_ATTACK_SUCCESS, Weather.NONE);
+            int dmg2 = off.rankMove(m2, def, defteam, LastBattleAction.ACTION_ATTACK_SUCCESS, Weather.NONE);
             cwrite(off.mon.name + "'s " + m1.name + " against " + def.mon.name+":"+dmg1, "debug", COLOR_BOT);
             cwrite(off.mon.name + "'s " + m2.name + " against " + def.mon.name + ":" + dmg2, "debug", COLOR_BOT);
 

@@ -4,13 +4,16 @@
 ### v0.6.0 / Unreleased ###
 ----
 Planned:
--fix #31
 -fix #39
 
 Added:
 
 * Weather support
 * "certainAbility" attribute for roleOverride pokemon.
+
+Fixes:
+
+* Milk Drink is treated correctly as a healing move.
 
 ### v0.5.0 / 2016-09-08 ###
 ----

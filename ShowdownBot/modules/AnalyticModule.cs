@@ -15,6 +15,7 @@ namespace ShowdownBot.modules
         ACTION_BOOST,
         ACTION_RECOVER,
         ACTION_SLEEPTALK,
+        ACTION_HAZARD,
         ACTION_FAKEOUT,
         ACTION_SWITCH
     };
@@ -535,6 +536,11 @@ namespace ShowdownBot.modules
             {
                 lastAction = LastBattleAction.ACTION_FAKEOUT;
                 currentActive.canUseFakeout = false;
+            }
+            else if (m.field)
+            {
+                lastAction = LastBattleAction.ACTION_HAZARD;
+                currentActive.hasUsedHazard = true;
             }
             else if (m.status)
             {

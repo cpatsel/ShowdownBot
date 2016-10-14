@@ -3,8 +3,7 @@
 
 ### v0.6.0 / Unreleased ###
 ----
-Planned:
--fix #39
+
 
 Added:
 

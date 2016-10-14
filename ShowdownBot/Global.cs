@@ -267,43 +267,9 @@ namespace ShowdownBot
                 }
             
         }
-        /// <summary>
-        /// Exception handling method for webbrowser.findElements
-        /// Returns null on exceptions.
-        /// </summary>
-        /// <param name="by"></param>
-        /// <returns></returns>
-        public static IList<IWebElement> findElements(By by)
-        {
-            try
-            {
-               return gBrowserInstance.FindElements(by);
-            }
-            catch (Exception e)
-            {
-                cwrite("Something went horribly wrong finding some elements: " + e.Message);
-                return null;
-            }
-        }
 
-        /// <summary>
-        /// Exception handling method for finding elements within another web element.
-        /// Returns null on exceptions.
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="by"></param>
-        /// <returns></returns>
-        public static IList<IWebElement> findElementsFromWithin(IWebElement from, By by)
-        {
-            try
-            {
-                return from.FindElements(by);
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-        }
+
+       
         /// <summary>
         /// Waits until an element is available and then clicks it.
         /// </summary>

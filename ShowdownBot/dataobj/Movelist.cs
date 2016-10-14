@@ -55,6 +55,7 @@ namespace ShowdownBot
             desc = obj.desc;
             statuseffect = obj.status;
             secondary = obj.secondary;
+            if (obj.sideCondition != "none") field = true; //Hazard moves
             if (statuseffect != "none") status = true;
             if (hasBoosts()) isBoost = true;
             if (Convert.ToBoolean(obj.flags.heal)) heal = true;

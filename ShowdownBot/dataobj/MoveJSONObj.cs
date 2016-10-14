@@ -30,7 +30,7 @@ namespace ShowdownBot
         public string type { get; set; }
         public string contestType { get; set; }
         public bool isViable { get; set; }
-
+        public string sideCondition { get; set; } = "none";
 
         public class Self
         {

@@ -35,6 +35,7 @@ namespace ShowdownBot
         public string item;
         public int level;
         public bool canUseFakeout;
+        public bool hasUsedHazard;
         public BattlePokemon(Pokemon p)
         {
             this.mon = p;
@@ -48,6 +49,7 @@ namespace ShowdownBot
             level = 100; //TODO: actually find this, for now just assume its max.
             initBoosts();
             canUseFakeout = true;
+            hasUsedHazard = true;
            
         }
 
@@ -269,6 +271,19 @@ namespace ShowdownBot
                else if (m.isBoost)
                 {
                     rank += getBoostChance(this, enemy, m, lba);
+                }
+               else if (m.field)
+                {
+                    /*
+                     * If the pokemon is a lead and hasn't used a hazard,
+                     * rank this highly. Otherwise give it a small boost,
+                     * or have it remain default for non-lead pokemon.
+                     * This needs to be refined more. */
+                    if (this.mon.getRole().lead && !this.hasUsedHazard)
+                        rank = GlobalConstants.MAX_MOVE_RANK;
+                    else if (this.mon.getRole().lead)
+                        rank += 1;
+
                 }
             }
             return rank;

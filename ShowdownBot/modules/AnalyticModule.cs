@@ -193,7 +193,7 @@ namespace ShowdownBot.modules
         /// This does not cover the currently active pokemon, so it should be used in
         /// conjunction with the regular buildTeam.
         /// </summary>
-        private void buildOwnTeam()
+        protected void buildOwnTeam()
         {
             var switchmenu = waitFind(By.ClassName("switchmenu"));
             var elems = switchmenu.FindElements(By.ClassName("chooseSwitch"));
@@ -208,7 +208,7 @@ namespace ShowdownBot.modules
         }
         
 
-        private void updateHealth(IWebElement statbar, ref BattlePokemon p)
+        protected void updateHealth(IWebElement statbar, ref BattlePokemon p)
         {
             var elem = findWithin(statbar, By.ClassName("hptext"));
             if (elem != null)
@@ -221,7 +221,7 @@ namespace ShowdownBot.modules
             }
         }
 
-        private void updateModifiers(IWebElement statbar, ref BattlePokemon p)
+        protected void updateModifiers(IWebElement statbar, ref BattlePokemon p)
         {
             IList<IWebElement> elems;
             try
@@ -252,7 +252,7 @@ namespace ShowdownBot.modules
         /// </summary>
         /// <param name="you"></param>
         /// <param name="opponent"></param>
-        private void updateActiveStatuses (ref BattlePokemon you, ref BattlePokemon opponent)
+        protected void updateActiveStatuses (ref BattlePokemon you, ref BattlePokemon opponent)
         {
             var yourStats = waitFind(By.CssSelector("div[class='statbar rstatbar']"),1);
             if (yourStats == null) return;
@@ -277,7 +277,7 @@ namespace ShowdownBot.modules
             updateModifiers(oppStats, ref opponent);
         }
 
-        private bool battleAnalytic(ref BattlePokemon active, BattlePokemon enemy, ref int turn)
+        protected virtual bool battleAnalytic(ref BattlePokemon active, BattlePokemon enemy, ref int turn)
         {
             //Extra check to make sure we pick a lead.
             //Possibly redundant
@@ -375,7 +375,7 @@ namespace ShowdownBot.modules
         
 
         //TODO: add moves to each BattlePokemon as they're encountered so that its not dependent on the web elements.
-        private BattlePokemon pickPokeAnalytic(BattlePokemon enemy,bool offense)
+        protected BattlePokemon pickPokeAnalytic(BattlePokemon enemy,bool offense)
         {
             //Loop over all pokemon
             int bestChoice = 1000;
@@ -433,7 +433,7 @@ namespace ShowdownBot.modules
             return null;
         }
 
-        private Weather checkWeather()
+        protected Weather checkWeather()
         {
             IWebElement weatherElem = waitFind(By.ClassName("weather"));
             if (weatherElem != null)
@@ -457,7 +457,7 @@ namespace ShowdownBot.modules
             else
                 return Weather.NONE;
         }
-        private string pickMoveAnalytic(BattlePokemon you, BattlePokemon enemy)
+        protected string pickMoveAnalytic(BattlePokemon you, BattlePokemon enemy)
         {
             float[] rankings = new float[4]; //ranking of each move
             float bestMove = 0f;
@@ -512,7 +512,7 @@ namespace ShowdownBot.modules
 
         }
 
-        private bool hasTies(float[] ranks, float best)
+        protected bool hasTies(float[] ranks, float best)
         {
             int count = 0;
             for(int i = 0; i< 4; i++)
@@ -521,7 +521,7 @@ namespace ShowdownBot.modules
             }
             return (count > 1);
         }
-        private int breakTies(Move[] moves, float[] ranks,float best)
+        protected int breakTies(Move[] moves, float[] ranks,float best)
         {
             List<int> choices = new List<int>();
             for (int i = 0; i < 4; i++)
@@ -533,7 +533,7 @@ namespace ShowdownBot.modules
             }
             return choices.ElementAt(new Random().Next(0, choices.Count));
         }
-        private void setLastBattleAction(Move m)
+        protected void setLastBattleAction(Move m)
         {
             if (m.isBoost) lastAction = LastBattleAction.ACTION_BOOST;
             else if (m.name.Contains("Sleep Talk"))
@@ -559,7 +559,7 @@ namespace ShowdownBot.modules
             lastMove = m;
         }
 
-        private bool needSwitch(BattlePokemon you, BattlePokemon enemy)
+       protected bool needSwitch(BattlePokemon you, BattlePokemon enemy)
         {
             if (isLastMon())
                 return false;
@@ -579,7 +579,7 @@ namespace ShowdownBot.modules
                 return true;
             else return false;
         }
-        private bool isLastMon()
+        protected bool isLastMon()
         {
             int totalMons = 0;
             for (int i = 1; i <= 5; i++)

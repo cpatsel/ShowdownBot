@@ -9,6 +9,7 @@ Added:
 
 * Weather support
 * "certainAbility" attribute for roleOverride pokemon.
+* Check for updates on startup option.
 
 Fixes:
 

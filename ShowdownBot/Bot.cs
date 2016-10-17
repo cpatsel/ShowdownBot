@@ -38,6 +38,7 @@ namespace ShowdownBot
         string passwordField = "password";
         // ///Vars
 
+        Dictionary<string, string> options;
         string challengee;
         AiMode modeCurrent;
         IWebDriver mainBrowser;
@@ -71,6 +72,7 @@ namespace ShowdownBot
             //activeState = State.IDLE;
             modeCurrent = AiMode.RANDOM; //TODO: set default in config to be read
             Global.pokedex = new Dictionary<string, Pokemon>();
+            options = new Dictionary<string, string>();
             ReadFile();
             Global.setupTypes();
             BuildPokedex();
@@ -303,7 +305,6 @@ namespace ShowdownBot
                 cwrite("You can try starting without authenticating (startf)", COLOR_WARN);
                 return;
             }
-            wait(1000);
             using (var reader = new StreamReader("botInfo.txt"))
             {
                 string line;
@@ -367,6 +368,13 @@ namespace ShowdownBot
                     Global.m3wgt = float.Parse(val);
                 else
                     Global.m4wgt = float.Parse(val);
+            }
+            else if (key.Contains("UPDATE_ONSTART"))
+            {
+                if (val.ToLower().Contains("true"))
+                    Global.updateOnStart = true;
+                else
+                    Global.updateOnStart = false;
             }
         }
         private void Update()

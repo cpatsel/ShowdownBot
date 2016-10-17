@@ -30,6 +30,8 @@ namespace ShowdownBot
             threadBot.SetApartmentState(ApartmentState.STA);
             threadBot.Start();
             helpdoc = XDocument.Load(HELPPATH);
+            if (Global.updateOnStart)
+                this.checkForNewVersion();
             write("Console initialized.");
             Consol_Load();
         }
@@ -168,10 +170,10 @@ namespace ShowdownBot
             }
             if (behind)
             {
-                cwrite("There's a new version v" + versiontext + " available!", COLOR_WARN);
+                cwrite("There's a new version v" + versiontext + " available!","updater", COLOR_WARN);
             }
             else
-                cwrite("You have the latest version!", COLOR_OK);
+                cwrite("You have the latest version!","updater", COLOR_OK);
             return true;
         }
     }

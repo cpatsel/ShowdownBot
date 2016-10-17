@@ -5,6 +5,7 @@
 [PASSWORD]=changeMeToo
 [OWNER]=yourusername
 [PROFILE]=sdb
+[UPDATE_ONSTART]=true
 
 #### Biased Mode moveslot weights ####
 [SLOT1_WEIGHT]=0.4

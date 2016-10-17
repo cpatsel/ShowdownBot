@@ -29,6 +29,7 @@ namespace ShowdownBot
         HEAVYRAIN,
         HARSHSUN,
         STRONGWIND,
+        HAIL,
         NONE
     }
     /// <summary>
@@ -42,6 +43,7 @@ namespace ShowdownBot
         //Options
         public static bool showDebug = false;
         public static bool botIsReady = false;
+        public static bool updateOnStart = true;
         public static float m1wgt = 0.4f;
         public static float m2wgt = 0.3f;
         public static float m3wgt = 0.2f;

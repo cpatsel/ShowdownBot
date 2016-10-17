@@ -374,6 +374,7 @@ namespace ShowdownBot
 
        //TODO: I don't know if heavy rain/sun also boosts water/fire like the regular counterparts.
        //let's take a raincheck on that for now (ha ha)
+       //TODO: doesn't account for defense boost of sandstorm, or half damage of strong winds.
         private float weatherMod(Move m, Weather w)
         {
             if (m.type.value == "water" && w == Weather.RAIN)

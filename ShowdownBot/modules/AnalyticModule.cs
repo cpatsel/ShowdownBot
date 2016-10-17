@@ -438,12 +438,20 @@ namespace ShowdownBot.modules
             IWebElement weatherElem = waitFind(By.ClassName("weather"));
             if (weatherElem != null)
             {
-                if (weatherElem.Text.Contains("Rain"))
-                    return Weather.RAIN;
+                if (weatherElem.Text.Contains("Heavy Rain"))
+                    return Weather.HEAVYRAIN;
+                else if (weatherElem.Text.Contains("Intense Sun"))
+                    return Weather.HARSHSUN;
                 else if (weatherElem.Text.Contains("Sun"))
                     return Weather.SUN;
+                else if (weatherElem.Text.Contains("Rain"))
+                    return Weather.RAIN;
                 else if (weatherElem.Text.Contains("Sandstorm"))
                     return Weather.SAND;
+                else if (weatherElem.Text.Contains("Strong Winds"))
+                    return Weather.STRONGWIND;
+                else if (weatherElem.Text.Contains("Hail"))
+                    return Weather.HAIL;
                 else return Weather.NONE;
             }
             else

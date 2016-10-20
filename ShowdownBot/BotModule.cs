@@ -398,7 +398,16 @@ namespace ShowdownBot
                 }
                 foreach (IWebElement s in elems)
                 {
-                    if (s.GetAttribute("title") != "Not revealed")
+                    bool isNotRevealed;
+                    try
+                    {
+                        isNotRevealed = (s.GetAttribute("title") != "Not revealed");
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        isNotRevealed = false;
+                    }
+                    if (isNotRevealed)
                     {
                         string[] name;
                         try

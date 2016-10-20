@@ -461,7 +461,8 @@ namespace ShowdownBot.modules
         {
             float[] rankings = new float[4]; //ranking of each move
             float bestMove = 0f;
-            int choice = 1;
+            int chosenMoveSlot = 1; //ID of the button, ranges 1-4
+            int chosenIndex = 0; //Index of the button in arrays, ranges 0-3
             const int MIN_RANK_OR_SWITCH = 10; //if no move ranks above this, consider switching.
             float risk = you.matchup(enemy);
             Move[] moves = getMoves();
@@ -483,7 +484,8 @@ namespace ShowdownBot.modules
                 if (rankings[i] > bestMove)
                 {
                     bestMove = rankings[i];
-                    choice = i + 1;
+                    chosenMoveSlot = i + 1;
+                    chosenIndex = i;
                 }
             }
 
@@ -492,9 +494,12 @@ namespace ShowdownBot.modules
                 return "needswitch";
             //break any ties
             if (hasTies(rankings, bestMove))
-                choice = breakTies(moves, rankings, bestMove);
+            {
+                chosenIndex = (breakTies(moves, rankings, bestMove));
+                chosenMoveSlot = chosenIndex + 1;
+            }
             //figure out what move we've chosen
-            Move chosenMove = moves[choice - 1];
+            Move chosenMove = moves[chosenIndex];
             setLastBattleAction(chosenMove);
 
             if (chosenMove.name.Contains("Sleep Talk"))
@@ -502,9 +507,9 @@ namespace ShowdownBot.modules
             else
                 turnsSpentSleepTalking = 0;
 
-            if (elementExists(By.CssSelector("button[value='" + choice.ToString() + "'][name='chooseMove']")))
+            if (elementExists(By.CssSelector("button[value='" + chosenMoveSlot.ToString() + "'][name='chooseMove']")))
             {
-                browser.FindElement(By.CssSelector("button[value='" + choice.ToString() + "'][name='chooseMove']")).Click();
+                browser.FindElement(By.CssSelector("button[value='" + chosenMoveSlot.ToString() + "'][name='chooseMove']")).Click();
                 return chosenMove.name;
             }
             else
@@ -521,6 +526,13 @@ namespace ShowdownBot.modules
             }
             return (count > 1);
         }
+        /// <summary>
+        /// This returns the index of the array of the move.
+        /// </summary>
+        /// <param name="moves"></param>
+        /// <param name="ranks"></param>
+        /// <param name="best"></param>
+        /// <returns></returns>
         protected int breakTies(Move[] moves, float[] ranks,float best)
         {
             List<int> choices = new List<int>();

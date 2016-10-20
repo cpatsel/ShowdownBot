@@ -49,7 +49,7 @@ namespace ShowdownBot
             level = 100; //TODO: actually find this, for now just assume its max.
             initBoosts();
             canUseFakeout = true;
-            hasUsedHazard = true;
+            hasUsedHazard = false;
            
         }
 

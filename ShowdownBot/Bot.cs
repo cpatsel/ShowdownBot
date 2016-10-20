@@ -171,13 +171,13 @@ namespace ShowdownBot
 
         public void testBattle()
         {
-            BattlePokemon off = new BattlePokemon(Global.lookup("magcargo"));
+            BattlePokemon off = new BattlePokemon(Global.lookup("my_magcargo"));
             BattlePokemon def = new BattlePokemon(Global.lookup("scizor"));
             List<BattlePokemon> defteam = new List<BattlePokemon>();
             defteam.Add(def);
-            Move m1 = Global.moveLookup("Fire Blast");
-            Move m2 = Global.moveLookup("Flamethrower");
-            def.setHealth(10);
+            Move m1 = Global.moveLookup("Return 102");
+            Move m2 = Global.moveLookup("Fire Blast");
+            def.setHealth(100);
             int dmg1 = off.rankMove(m1, def,defteam, LastBattleAction.ACTION_ATTACK_SUCCESS, Weather.NONE);
             int dmg2 = off.rankMove(m2, def, defteam, LastBattleAction.ACTION_ATTACK_SUCCESS, Weather.NONE);
             cwrite(off.mon.name + "'s " + m1.name + " against " + def.mon.name+":"+dmg1, "debug", COLOR_BOT);

@@ -53,8 +53,8 @@ namespace ShowdownBot
     public class Abilities
     {
         public string a1 { get; set; }
-        public string a2 { get; set; }
-        public string H { get; set; }
+        public string a2 { get; set; } = "none";
+        public string H { get; set; } = "none";
         
     }
 

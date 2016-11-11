@@ -110,12 +110,23 @@ namespace ShowdownBot
             else
                 type2 = types[obj.types[1].ToLower()];
             stats = obj.baseStats;
-            abilities = obj.abilities;
+            setAbilities(obj.abilities);
             weight = (float)obj.weightkg;
             deftype = new DefenseType();
             role = new Role();
             realStats = new Dictionary<string, int>();
         }
+
+        //TODO: use the PS!'s abilities.js to get their rankings, and then use them
+        // to determine whether or not it should consider it for certain ability.
+        private void setAbilities(Abilities ab)
+        {
+            abilities = ab;
+            //If there is only one possible ability, set certainAbility.
+            if (ab.a2 == "none" && ab.H == "none")
+                certainAbility = abilities.a1;
+        }
+
         private void initRoles()
         {
             int max_for_bulk = 250;

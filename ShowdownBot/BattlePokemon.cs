@@ -299,6 +299,10 @@ namespace ShowdownBot
         public int hitsToKill(Move m, BattlePokemon enemy, Weather weather)
         {
             int totalDamage = damageFormula(m, enemy,weather);
+            if (totalDamage == 0)
+                return GlobalConstants.MAX_HKO + 5;
+
+
             //Compare the damage we will deal to the health of the enemy.
             int times = 0; //number of times it takes to use this move to KO the opponent.
             int health = enemy.getHealth();

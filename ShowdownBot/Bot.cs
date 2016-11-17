@@ -448,17 +448,21 @@ namespace ShowdownBot
                 cwrite("Continuing operation.",COLOR_OK);
                 return;
             }
-            string json;
+            
             using (var reader = new StreamReader(Global.POKEBASEPATH))
             {
-                while ((json = reader.ReadLine()) != null)
+                string json;
+                json = reader.ReadToEnd();
+                JObject jo = JsonConvert.DeserializeObject<JObject>(json);
+                string allmons = jo.First.ToString();
+                var current = jo.First;
+                for (int i = 0; i < jo.Count; i++)
                 {
-                    string full = "{" + json + "}";
-                    JObject po = JsonConvert.DeserializeObject<JObject>(full);
-                    var first = po.First;
-                    PokeJSONObj obj = JsonConvert.DeserializeObject<PokeJSONObj>(po.First.First.ToString());
-                    Pokemon p = new Pokemon(obj);
-                    Global.pokedex.Add(p.name, p);
+                    PokeJSONObj pk = JsonConvert.DeserializeObject<PokeJSONObj>(current.First.ToString());
+                    Pokemon mon = new Pokemon(pk);
+                    Global.pokedex.Add(mon.name, mon);
+                    current = current.Next;
+
                 }
             }
             //cwrite("Pokedex built!", COLOR_OK);

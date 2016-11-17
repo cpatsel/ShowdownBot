@@ -14,6 +14,7 @@ Added:
 
 Fixes:
 
+* Ground moves will rank 0 against foes with levitate.
 * Milk Drink is treated correctly as a healing move.
 
 ### v0.5.0 / 2016-09-08 ###

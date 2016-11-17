@@ -641,6 +641,7 @@ namespace ShowdownBot
         /// <returns></returns>
         public bool immunityCheck(Type t, BattlePokemon p)
         {
+            //Of the Pokemon with levitate, almost all of them have it as their only ability
             if (t.value == "ground" && p.mon.hasAbility("levitate"))
                 return true;
             if (t.value == "fire" && p.mon.hasAbility("flashfire"))

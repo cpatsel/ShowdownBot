@@ -67,10 +67,21 @@ namespace ShowdownBot
         public int spe { get; set; } = 0;
         public int accuracy { get; set; } = 0;
         public int evasion { get; set; } = 0;
-        //TODO: this is a bad gauge of boosts since one boost and one drop will register as 0--no boosts.
         public int total()
         {
             return atk + spa + def + spd + spe + accuracy + evasion;
+        }
+        public bool hasBoosts()
+        {
+            return (atk > 0 || spa > 0 || def > 0 || spd > 0 || spe > 0 || accuracy > 0 || evasion > 0);
+        }
+        public bool hasDrops()
+        {
+            return (atk < 0 || spa < 0 || def < 0 || spd < 0 || spe < 0 || accuracy < 0 || evasion < 0);
+        }
+        public bool noStatChanges()
+        {
+            return (atk == 0 && spa == 0 && def == 0 && spd == 0 && spe == 0 && accuracy == 0 && evasion == 0);
         }
     }
     public class Secondary

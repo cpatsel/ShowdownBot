@@ -70,7 +70,7 @@ namespace ShowdownBot
             this.c = c;
             isRunning = false;
             //activeState = State.IDLE;
-            modeCurrent = AiMode.RANDOM; //TODO: set default in config to be read
+            modeCurrent = AiMode.RANDOM; 
             Global.pokedex = new Dictionary<string, Pokemon>();
             options = new Dictionary<string, string>();
             ReadFile();
@@ -135,9 +135,10 @@ namespace ShowdownBot
             
 
         }
-        public void changeMode(AiMode nmode)
+        public void changeMode(AiMode nmode, bool silent = false)
         {
-            cwrite("Changing AI mode from " + modeCurrent.ToString() + " to: " + nmode.ToString());
+            if (!silent)
+                cwrite("Changing AI mode from " + modeCurrent.ToString() + " to: " + nmode.ToString());
             modeCurrent = nmode;
             switch (modeCurrent)
             {
@@ -358,6 +359,16 @@ namespace ShowdownBot
                     Global.showDebug = true;
                 else
                     cwrite("Unknown value " + val + " for SHOW_DEBUG", "WARNING", COLOR_WARN);
+            }
+            else if (key == "[DEFAULT_MODULE]")
+            {
+                val = val.ToLower();
+                if (val == "r" || val == "random")
+                    changeMode(AiMode.RANDOM,true);
+                else if (val == "b" || val == "biased")
+                    changeMode(AiMode.BIAS,true);
+                else if (val == "a" || val == "analytic")
+                    changeMode(AiMode.ANALYTIC,true);
             }
             else if (key.StartsWith("[SLOT"))
             {

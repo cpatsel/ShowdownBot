@@ -66,9 +66,13 @@ namespace ShowdownBot
         public bool hasBoosts()
         {
             if (!Object.ReferenceEquals(boosts, null))
-                return (boosts.total() > 0) ? true : false; //TODO: follow a similar method for finding moves that drop stats.
+                return (boosts.hasBoosts()) ? true : false;
             else
                 return false;
+        }
+        public bool hasDrops()
+        {
+            return boosts.hasDrops();
         }
         public List<String> whatBoosts()
         {

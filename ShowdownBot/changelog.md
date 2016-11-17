@@ -10,6 +10,7 @@ Added:
 * Weather support
 * "certainAbility" attribute for roleOverride pokemon.
 * Check for updates on startup option.
+* Default AI mode set in botInfo.txt
 
 Fixes:
 

@@ -285,11 +285,8 @@ namespace ShowdownBot.modules
             {
                 if (checkSwitch())
                 {
-
                     browser.FindElement(By.CssSelector
                         ("button[value='" + pickPokeRandomly().ToString() + "'][name='chooseSwitch']"));
-                    
-                    //todo change this to analytic pick
                 }
                 else
                     return false;

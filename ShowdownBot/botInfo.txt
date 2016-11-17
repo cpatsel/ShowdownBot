@@ -6,7 +6,7 @@
 [OWNER]=yourusername
 [PROFILE]=sdb
 [UPDATE_ONSTART]=true
-
+[DEFAULT_MODULE]=r
 #### Biased Mode moveslot weights ####
 [SLOT1_WEIGHT]=0.4
 [SLOT2_WEIGHT]=0.3

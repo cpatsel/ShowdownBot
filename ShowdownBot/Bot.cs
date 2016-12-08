@@ -109,13 +109,13 @@ namespace ShowdownBot
             if (browser)
             {
                 FirefoxProfileManager pm = new FirefoxProfileManager();
-                FirefoxProfile ffp = pm.GetProfile(Global.FF_PROFILE);
+                FirefoxProfile ffp = pm.GetProfile("default");
                 FirefoxOptions fo = new FirefoxOptions();
                 fo.SetLoggingPreference(LogType.Driver, LogLevel.Off); //todo allow toggling this
                 fo.SetLoggingPreference(LogType.Client, LogLevel.Off);
                 
-                mainBrowser = new FirefoxDriver(ffp);
-            
+                mainBrowser = new FirefoxDriver();
+
                 mainBrowser.Manage().Window.Maximize(); //prevent unintenttionally hiding elements in some versions of FF
                 
                 gBrowserInstance = mainBrowser;

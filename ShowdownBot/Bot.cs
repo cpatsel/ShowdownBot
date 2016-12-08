@@ -458,6 +458,7 @@ namespace ShowdownBot
                 var current = jo.First;
                 for (int i = 0; i < jo.Count; i++)
                 {
+                    
                     PokeJSONObj pk = JsonConvert.DeserializeObject<PokeJSONObj>(current.First.ToString());
                     Pokemon mon = new Pokemon(pk);
                     Global.pokedex.Add(mon.name, mon);

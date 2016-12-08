@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using static ShowdownBot.Global;
 using static ShowdownBot.GlobalConstants;
+using ShowdownBot.dataobj;
+
 namespace ShowdownBot
 {
 
@@ -127,6 +129,9 @@ namespace ShowdownBot
                 cwrite("Attempting to continue", COLOR_OK);
                 return;
             }
+            var settings = new JsonSerializerSettings {
+
+            };
             using (var reader = new StreamReader(path))
             {
                 string json;

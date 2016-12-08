@@ -6,7 +6,7 @@ For a list of recent changes and features, see [the changelog](ShowdownBot/chang
 ##Requirements
 ### Windows
   * [.NET Framework 4.6](https://www.microsoft.com/en-us/download/details.aspx?id=48130)
-  * Firefox 47.0.1 or higher
+  * Firefox 47.0.1
 
 ### Linux
  * [See the install/compile guide.](https://github.com/Deviach/ShowdownBot/wiki/Linux-Compilation-and-Install)

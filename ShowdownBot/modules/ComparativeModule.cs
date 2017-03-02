@@ -16,7 +16,7 @@ namespace ShowdownBot.modules
         public ComparativeModule( Bot m,IWebDriver b)
             : base(m, b)
         {
-            format = "ou";
+            format = "gen7ou";
             db = new List<string>();
         }
 

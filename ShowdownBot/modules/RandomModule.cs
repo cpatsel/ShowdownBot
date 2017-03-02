@@ -12,7 +12,7 @@ namespace ShowdownBot.modules
         public RandomModule(Bot m, IWebDriver b)
             : base(m, b)
         {
-            format = "randombattle";
+            format = "gen7randombattle";
             
         }
 

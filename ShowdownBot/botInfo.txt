@@ -4,7 +4,8 @@
 [USERNAME]=changeMe
 [PASSWORD]=changeMeToo
 [OWNER]=yourusername
-[PROFILE]=sdb
+[USERDATA_PATH]=C:/Users/YOURNAMEHERE/AppData/Local/Google/Chrome/User Data/
+[PROFILE]=Profile 1
 [UPDATE_ONSTART]=true
 [DEFAULT_MODULE]=r
 #### Biased Mode moveslot weights ####

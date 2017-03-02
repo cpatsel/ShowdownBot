@@ -48,7 +48,8 @@ namespace ShowdownBot
         public static float m2wgt = 0.3f;
         public static float m3wgt = 0.2f;
         public static float m4wgt = 0.1f;
-        public static string FF_PROFILE = "sdb";
+        public static string PROFILE_NAME = "Profile 1";
+        public static string USERDATA_PATH = @"C:/User_Data";
         public static string DBPATH = @"./data/mtdb.sdb";
         public static string POKEBASEPATH = @"./data/pokedex.js";
         public static string MOVELISTPATH = @"./data/moves.js";

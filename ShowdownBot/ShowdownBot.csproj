@@ -172,6 +172,9 @@
     <None Include="data\moves.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="chromedriver.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="data\help.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -180,9 +183,6 @@
     </Content>
     <Content Include="data\roleOverride.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="geckodriver.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="lib\Newtonsoft.Json.dll" />
     <Content Include="lib\Newtonsoft.Json.pdb" />

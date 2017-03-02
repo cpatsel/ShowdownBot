@@ -33,7 +33,7 @@ namespace ShowdownBot.modules
         protected Weather currentWeather;
         public AnalyticModule(Bot m, IWebDriver b) : base(m,b)
         {
-            format = "ou";
+            format = "gen7ou";
             myTeam = new List<BattlePokemon>();
             enemyTeam = new List<BattlePokemon>();
             errormon = new BattlePokemon(Global.lookup("error"));

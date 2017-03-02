@@ -74,4 +74,4 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\Newtons
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\data\moves.js
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\data\roleOverride.js
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\data\help.xml
-C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\geckodriver.exe
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\chromedriver.exe

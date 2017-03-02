@@ -79,7 +79,7 @@ namespace ShowdownBot
             Global.moves = new Dictionary<string,Move>();
             movelist = new Movelist();
             movelist.initialize();
-            cwrite("Ready for input!", COLOR_OK);
+            
 
             
            
@@ -108,14 +108,16 @@ namespace ShowdownBot
         {
             if (browser)
             {
-                FirefoxProfileManager pm = new FirefoxProfileManager();
-                FirefoxProfile ffp = pm.GetProfile("default");
-                FirefoxOptions fo = new FirefoxOptions();
-                fo.SetLoggingPreference(LogType.Driver, LogLevel.Off); //todo allow toggling this
-                fo.SetLoggingPreference(LogType.Client, LogLevel.Off);
-                
-                mainBrowser = new FirefoxDriver();
-
+                /* FirefoxProfileManager pm = new FirefoxProfileManager();
+                 FirefoxProfile ffp = pm.GetProfile(FF_PROFILE);
+                 FirefoxOptions fo = new FirefoxOptions();
+                 fo.SetLoggingPreference(LogType.Driver, LogLevel.Off); //todo allow toggling this
+                 fo.SetLoggingPreference(LogType.Client, LogLevel.Off);
+                 fo.Profile = ffp;*/
+                ChromeOptions options = new ChromeOptions();
+                options.AddArgument("user-data-dir=" + USERDATA_PATH);
+                options.AddArgument("--profile-directory=" + PROFILE_NAME);
+                mainBrowser = new ChromeDriver(options);
                 mainBrowser.Manage().Window.Maximize(); //prevent unintenttionally hiding elements in some versions of FF
                 
                 gBrowserInstance = mainBrowser;
@@ -166,8 +168,14 @@ namespace ShowdownBot
         }
         public void changeFormat(string nf)
         {
-            cwrite("Changing format to "+nf.ToLower());
-            mainModule.changeFormat(nf.ToLower());
+            //Do a quick error check for randombattle and ou
+            //This allows users to type in ou and randombattle, and format it to
+            //the now named gen7ou and gen7randombattle respectively
+            String f = nf.ToLower();
+            if (f == "ou" || f == "randombattle")
+                f = "gen7" + f;
+            cwrite("Changing format to "+f.ToLower());
+            mainModule.changeFormat(f.ToLower());
         }
 
         public void testBattle()
@@ -348,8 +356,10 @@ namespace ShowdownBot
 
             else if (key == "[PASSWORD]")
                 password = val;
+            else if (key == "[USERDATA_PATH]")
+                Global.USERDATA_PATH = val;
             else if (key == "[PROFILE]")
-                Global.FF_PROFILE = val;
+                Global.PROFILE_NAME = val;
             else if (key == "[SHOW_DEBUG]")
             {
                 val = val.ToLower();
@@ -364,11 +374,11 @@ namespace ShowdownBot
             {
                 val = val.ToLower();
                 if (val == "r" || val == "random")
-                    changeMode(AiMode.RANDOM,true);
+                    changeMode(AiMode.RANDOM, true);
                 else if (val == "b" || val == "biased")
-                    changeMode(AiMode.BIAS,true);
+                    changeMode(AiMode.BIAS, true);
                 else if (val == "a" || val == "analytic")
-                    changeMode(AiMode.ANALYTIC,true);
+                    changeMode(AiMode.ANALYTIC, true);
             }
             else if (key.StartsWith("[SLOT"))
             {

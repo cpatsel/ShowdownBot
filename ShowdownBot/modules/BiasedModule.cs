@@ -19,7 +19,7 @@ namespace ShowdownBot.modules
         public BiasedModule(Bot m, IWebDriver b)
             : base(m, b)
         {
-            format = "ou";
+            format = "gen7ou";
             M1WGT = Global.m1wgt;
             M2WGT = Global.m2wgt;
             M3WGT = Global.m3wgt;

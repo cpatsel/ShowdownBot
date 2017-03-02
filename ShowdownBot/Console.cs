@@ -33,6 +33,7 @@ namespace ShowdownBot
             if (Global.updateOnStart)
                 this.checkForNewVersion();
             write("Console initialized.");
+            cwrite("Ready for input!", COLOR_OK);
             Consol_Load();
         }
 

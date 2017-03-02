@@ -57,10 +57,7 @@ namespace ShowdownBot.modules
 
             if (checkMove())
             {
-                if (elementExists(By.Name("megaevo")))
-                {
-                    browser.FindElement(By.Name("megaevo")).Click();
-                }
+                findMegaZ(true);
                 wait();
                 moveSelection = pickMoveBiased();
                 cwrite("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", COLOR_BOT);

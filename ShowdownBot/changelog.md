@@ -1,16 +1,18 @@
 ## Changelog ##
 
 
-### v0.6.0 / Unreleased ###
+### v1.0.0 / Unreleased ###
 ----
 
 
-Added:
+New:
 
+* Now uses google chrome as the browser.
 * Weather support
 * "certainAbility" attribute for roleOverride pokemon.
 * Check for updates on startup option.
 * Default AI mode set in botInfo.txt
+
 
 Fixes:
 

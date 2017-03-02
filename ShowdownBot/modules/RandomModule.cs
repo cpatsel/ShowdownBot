@@ -62,10 +62,7 @@ namespace ShowdownBot.modules
             if (checkMove())
             {
 
-                //first check if there's a mega evo option
-
-                if (elementExists(By.Name("megaevo")))
-                    browser.FindElement(By.Name("megaevo")).Click();
+                findMegaZ(true);
 
                 moveSelection = determineMoveRandomly();
                 cwrite("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", COLOR_BOT);

@@ -332,8 +332,7 @@ namespace ShowdownBot.modules
             else if (checkMove())
             {
                 //for now, automatically activate mega
-                if (elementExists(By.Name("megaevo")))
-                    browser.FindElement(By.Name("megaevo")).Click();
+                findMegaZ(true);
                 
                 //pick moves
                 string mv = pickMoveAnalytic(active, enemy);

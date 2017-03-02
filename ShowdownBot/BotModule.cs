@@ -547,6 +547,28 @@ namespace ShowdownBot
 
         #endregion
 
+        /// <summary>
+        /// Finds Mega Evo/Z-Move checkbox and clicks it if desired.
+        /// Returns true if found, false if not. Megas and Z-Moves are mutually exclusive.
+        /// </summary>
+        /// <param name="click"></param>
+        /// <returns></returns>
+        public bool findMegaZ(bool click)
+        {
+            if (elementExists(By.Name("megaevo")))
+            {
+                if (click)
+                    browser.FindElement(By.Name("megaevo")).Click();
+                return true;
+            }
+            else if (elementExists(By.Name("zmove")))
+            {
+                if (click)
+                    browser.FindElement(By.Name("zmove")).Click();
+                return true;
+            }
+            return false;
+        }
 
         public bool forfeitBattle()
         {

@@ -12,12 +12,14 @@ New:
 * "certainAbility" attribute for roleOverride pokemon.
 * Check for updates on startup option.
 * Default AI mode set in botInfo.txt
+* Gen 7 Pokemon and Z-Moves support
+* Save log output command (save)
 
 
 Fixes:
 
 * Ground moves will rank 0 against foes with levitate.
-* Milk Drink is treated correctly as a healing move.
+* Milk Drink and other normal recovery moves are treated correctly as  healing moves.
 
 ### v0.5.0 / 2016-09-08 ###
 ----

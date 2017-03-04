@@ -23,8 +23,10 @@ namespace ShowdownBot
         Thread threadBot;
         ThreadStart ts;
         XDocument helpdoc;
+        
         public Consol()
         {
+           
             ts = new ThreadStart(() => bot = new Bot(this));
             threadBot = new Thread(ts);
             threadBot.SetApartmentState(ApartmentState.STA);

@@ -39,6 +39,6 @@ namespace ShowdownBot
 #else
         public static ConsoleColor COLOR_BOT = ConsoleColor.Magenta;
 #endif
-        public static ConsoleColor COLOR_DEFAULT = ConsoleColor.White;
+        public static ConsoleColor COLOR_DEFAULT = ConsoleColor.Gray;
     }
 }

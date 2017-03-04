@@ -64,7 +64,7 @@ namespace ShowdownBot
         public static Dictionary<string, Pokemon> pokedex;
         public static IWebDriver gBrowserInstance;
 
-        public static string lastcmd = "";
+        public static Queue<String> outputBuffer = new Queue<string>(100);
 
         public static void setupTypes()
         {
@@ -340,8 +340,7 @@ namespace ShowdownBot
         }
         public static void cwrite(string t)
         {
-            Console.WriteLine("[" + GetTimestamp() + "]" + t);
-            Console.ResetColor();
+            cwrite(t, COLOR_DEFAULT);
         }
         public static void cwrite(string t, ConsoleColor c)
         {
@@ -349,6 +348,7 @@ namespace ShowdownBot
             Console.ForegroundColor = c;
             Console.WriteLine("[" + date + "]" + t);
             Console.ResetColor();
+            saveOutputToConsoleBuffer("[" + date + "]" + t);
 
         }
         public static void cwrite(string t, string header, ConsoleColor c)
@@ -362,7 +362,7 @@ namespace ShowdownBot
             Console.Write("[" + header + "]");
             Console.ResetColor();
             Console.Write(t + "\n");
-
+            saveOutputToConsoleBuffer("[" + date + "]" + "[" + header + "]" + t);
 
         }
         public static string GetTimestamp()
@@ -372,6 +372,27 @@ namespace ShowdownBot
         }
 
 
+        public static void saveOutputToConsoleBuffer(string s)
+        {
+            if (outputBuffer.Count > 99)
+                outputBuffer.Dequeue(); //Clear out oldest after 100 entries.
+            outputBuffer.Enqueue(s);
+        }
+
+
+        public static void writeConsoleOutput()
+        {
+            if (!Directory.Exists(@"./logs/"))
+                Directory.CreateDirectory(@"./logs/");
+            using (var writer = new StreamWriter(@"./logs/consoleout_" + DateTime.Now.ToString("yyyy-MM-dd H-mm-ss") + ".txt"))
+            {
+                while (outputBuffer.Count != 0)
+                {
+                    writer.WriteLine(outputBuffer.Dequeue());
+                }
+            }
+           
+        }
         public static void var_dump(object obj)
         {
             System.Type t = obj.GetType();
@@ -413,6 +434,7 @@ namespace ShowdownBot
                 sw.WriteLine("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "] - On: " + Environment.OSVersion.ToString());
                 sw.WriteLine("ERROR:" + ex.Message);
                 sw.WriteLine(ex.StackTrace);
+                writeConsoleOutput();
 
             }
             if (fatal)

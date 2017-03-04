@@ -41,6 +41,11 @@ namespace ShowdownBot
             {
                 botUseCommand(() => bot.changeState(State.IDLE));
             }
+            else if (args[0] == "save")
+            {
+                writeConsoleOutput();
+                cwrite("Saved current console output to /logs");
+            }
             else if (args[0] == "kill")
             {
 

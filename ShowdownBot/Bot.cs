@@ -178,13 +178,13 @@ namespace ShowdownBot
 
         public void testBattle()
         {
-            BattlePokemon off = new BattlePokemon(Global.lookup("my_magcargo"));
-            BattlePokemon def = new BattlePokemon(Global.lookup("bronzong"));
+            BattlePokemon off = new BattlePokemon(Global.lookup("my_metagross"));
+            BattlePokemon def = new BattlePokemon(Global.lookup("Landorus-Therian"));
             List<BattlePokemon> defteam = new List<BattlePokemon>();
             defteam.Add(def);
             def.mon.certainAbility = "levitate";
-            Move m1 = Global.moveLookup("Earthquake");
-            Move m2 = Global.moveLookup("Fire Blast");
+            Move m1 = Global.moveLookup("Meteor Mash");
+            Move m2 = Global.moveLookup("Earthquake");
             def.setHealth(100);
             int dmg1 = off.rankMove(m1, def,defteam, LastBattleAction.ACTION_ATTACK_SUCCESS, Weather.NONE);
             int dmg2 = off.rankMove(m2, def, defteam, LastBattleAction.ACTION_ATTACK_SUCCESS, Weather.NONE);

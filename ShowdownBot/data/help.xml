@@ -107,6 +107,16 @@
         <description></description>
       </param>
     </command>
+  <command>
+    <name>save</name>
+    <description>Saves the last 100 lines of console output to a file in the logs directory.</description>
+    <alias></alias>
+    <param>
+      <id></id>
+      <arg></arg>
+      <description></description>
+    </param>
+  </command>
  <command>
       <name>search</name>
       <description>Search for a battle on the ladder.</description>
@@ -183,14 +193,5 @@
    
    
      
-  <command>
-      <name></name>
-      <description></description>
-      <alias></alias>
-      <param>
-        <id></id>
-        <arg></arg>
-        <description></description>
-      </param>
-    </command>
+
 </help>

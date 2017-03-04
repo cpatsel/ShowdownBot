@@ -38,6 +38,7 @@ namespace ShowdownBot
         public bool heal = false;
         public bool field = false; //Hazard move?
         public bool shouldNotRepeat = false;
+        public bool isZ = false; //Is a Z move?
         public Boosts boosts;
         public string statuseffect = "none";
         public Move(string n, Type t, float p) { name = n; type = t; bp = p; }
@@ -58,6 +59,12 @@ namespace ShowdownBot
             statuseffect = obj.status;
             secondary = obj.secondary;
             if (obj.sideCondition != "none") field = true; //Hazard moves
+            if (obj.isZ != "false")
+            {
+                isZ = true;
+                bp = 100; //for now just set bp to a high value to encourage usage --otherwise endlessly switches.
+              
+            } 
             if (statuseffect != "none") status = true;
             if (hasBoosts()) isBoost = true;
             if (Convert.ToBoolean(obj.flags.heal)) heal = true;
@@ -65,6 +72,8 @@ namespace ShowdownBot
                 flags = obj.flags;
             
         }
+
+        
         public bool hasBoosts()
         {
             if (!Object.ReferenceEquals(boosts, null))
@@ -89,6 +98,11 @@ namespace ShowdownBot
 
             }
             return toreturn;
+        }
+
+        public Move copyDetails()
+        {
+            return (Move)this.MemberwiseClone();
         }
         /// <summary>
         /// Whether or not this move has secondary effects.

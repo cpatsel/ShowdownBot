@@ -236,7 +236,7 @@ namespace ShowdownBot
 
 
             }
-            else if (Global.moveLookup(name[0]).type.value == "normal" && !name[0].Contains("Milk Drink"))
+            else if (Global.moveLookup(name[0]).type.value == "normal" && !Global.moveLookup(name[0]).heal)
             {
 
                 string nname = name[0] + " (" + type + ")";
@@ -244,7 +244,9 @@ namespace ShowdownBot
                 {
                     //This handles all normal type moves affected by -ate abilities.
                     //I think it also handles Normalize as well.
-                    m = new Move(nname, types[type.ToLower()]);
+
+                    m = Global.moveLookup(nname).copyDetails();
+                    m.type = types[type.ToLower()]; 
                     Move analog = Global.moveLookup(name[0]);
                     m.group = analog.group;
                     /* Check for -ate abilities by comparing the original type to the one we have.
@@ -358,7 +360,7 @@ namespace ShowdownBot
                  IList<IWebElement> elems;
                 try
                 {
-                    elems = e.FindElements(By.ClassName("pokemonicon"));
+                    elems = e.FindElements(By.ClassName("picon"));
                 }
                 catch(StaleElementReferenceException)
                 {

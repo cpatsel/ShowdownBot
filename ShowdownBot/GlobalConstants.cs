@@ -10,7 +10,8 @@ namespace ShowdownBot
     {
         public const string SDB_VERSION = "0.6.0-unreleased";
         public const string SDB_TITLEBAR = "Showdown Bot v" + SDB_VERSION;
-
+        public const string FORMAT_RANDOMSINGLE = "gen7randombattle";
+        public const string FORMAT_OU = "gen7ou";
         public const string PERSONAL_PRE = "my_";
         //Colors
         public static ConsoleColor COLOR_WARN = ConsoleColor.Yellow;

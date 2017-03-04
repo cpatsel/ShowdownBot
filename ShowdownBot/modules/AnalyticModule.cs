@@ -33,7 +33,7 @@ namespace ShowdownBot.modules
         protected Weather currentWeather;
         public AnalyticModule(Bot m, IWebDriver b) : base(m,b)
         {
-            format = "gen7ou";
+            format = FORMAT_OU;
             myTeam = new List<BattlePokemon>();
             enemyTeam = new List<BattlePokemon>();
             errormon = new BattlePokemon(Global.lookup("error"));
@@ -75,7 +75,7 @@ namespace ShowdownBot.modules
             int turn = 1;
             
             wait(5000); //give battle time to load
-            if (format == "randombattle")
+            if (format == FORMAT_RANDOMSINGLE)
                 buildOwnTeam();
             buildTeams();
 
@@ -89,7 +89,7 @@ namespace ShowdownBot.modules
             {
                    
                     wait();
-                    if(format == "randombattle")
+                    if(format == FORMAT_RANDOMSINGLE)
                         buildTeams(); //if randombattle, check to see if any new pokemon have been revealed.
                     enemy = getPokemon(getActivePokemon(),enemyTeam);
                     active = getPokemon(updateYourPokemon(),myTeam);

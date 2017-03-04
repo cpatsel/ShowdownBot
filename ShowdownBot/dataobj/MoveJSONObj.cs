@@ -31,6 +31,8 @@ namespace ShowdownBot
         public string contestType { get; set; }
         public bool isViable { get; set; }
         public string sideCondition { get; set; } = "none";
+        public string isZ { get; set; } = "false";
+        public Boosts zMoveBoost { get; set; };
         public class Self
         {
             int chance { get; set; }

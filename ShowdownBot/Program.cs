@@ -29,6 +29,7 @@ namespace ShowdownBot
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+            
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(HandleException);
             Console.Title = SDB_TITLEBAR;
             Consol c = new ShowdownBot.Consol();

@@ -108,16 +108,14 @@ namespace ShowdownBot
         {
             if (browser)
             {
-                /* FirefoxProfileManager pm = new FirefoxProfileManager();
-                 FirefoxProfile ffp = pm.GetProfile(FF_PROFILE);
-                 FirefoxOptions fo = new FirefoxOptions();
-                 fo.SetLoggingPreference(LogType.Driver, LogLevel.Off); //todo allow toggling this
-                 fo.SetLoggingPreference(LogType.Client, LogLevel.Off);
-                 fo.Profile = ffp;*/
                 ChromeOptions options = new ChromeOptions();
+                ChromeDriverService svc = ChromeDriverService.CreateDefaultService(@"./cd/");
+                svc.SuppressInitialDiagnosticInformation = true;
+
+                options.AddArgument(CD_ARGS);
                 options.AddArgument("user-data-dir=" + USERDATA_PATH);
                 options.AddArgument("--profile-directory=" + PROFILE_NAME);
-                mainBrowser = new ChromeDriver(options);
+                mainBrowser = new ChromeDriver(svc,options);
                 mainBrowser.Manage().Window.Maximize(); //prevent unintenttionally hiding elements in some versions of FF
                 
                 gBrowserInstance = mainBrowser;
@@ -369,6 +367,22 @@ namespace ShowdownBot
                     Global.showDebug = true;
                 else
                     cwrite("Unknown value " + val + " for SHOW_DEBUG", "WARNING", COLOR_WARN);
+            }
+            else if (key == "[CHROMEARGS]")
+            {
+                string path = @"" + val;
+                if (File.Exists(path))
+                {
+                    using (var reader = new StreamReader(path))
+                    {
+                        CD_ARGS = reader.ReadToEnd();
+                    }
+                }
+                else
+                {
+                    cwrite("No chromedriver argument file found at path "+path+". Check that the path in botInfo.txt is correct.", "warning", COLOR_WARN);
+                    cwrite("Continuing with default logging-level=3", COLOR_OK);
+                }
             }
             else if (key == "[DEFAULT_MODULE]")
             {

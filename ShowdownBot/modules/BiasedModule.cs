@@ -36,6 +36,7 @@ namespace ShowdownBot.modules
             do
             {
                battleBiased(ref turn);
+                turnEnd();
 
             } while (activeState == State.BATTLE);
 

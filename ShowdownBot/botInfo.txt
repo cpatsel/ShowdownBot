@@ -4,7 +4,7 @@
 [USERNAME]=changeMe
 [PASSWORD]=changeMeToo
 [OWNER]=yourusername
-[USERDATA_PATH]=C:/Users/YOURNAMEHERE/AppData/Local/Google/Chrome/User Data/
+[USERDATA_PATH]=C:/Users/Steven/AppData/Local/Google/Chrome/User Data/
 [PROFILE]=Profile 1
 [UPDATE_ONSTART]=true
 [DEFAULT_MODULE]=r

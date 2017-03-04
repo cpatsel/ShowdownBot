@@ -24,6 +24,7 @@ namespace ShowdownBot
         protected int currentBattle;
         protected State lastBattleState; //used for continuously battling
         protected State lastState; //used in error handling.
+        protected bool isUsingZMove = false;
         public BotModule(Bot m, IWebDriver b)
         {
 
@@ -85,6 +86,13 @@ namespace ShowdownBot
         }
 
         /// <summary>
+        /// Perform housekeeping on turn end.
+        /// </summary>
+        public virtual void turnEnd()
+        {
+            isUsingZMove = false; //reset this for cases where z-move was clicked, but ended up switching.
+        }
+        /// <summary>
         /// Sends a challenge to a player.
         /// If no player is specified, it defaults to owner.
         /// </summary>
@@ -110,7 +118,7 @@ namespace ShowdownBot
             browser.FindElement(By.Name("makeChallenge")).Click();
             ////TODO: implement a way to select alternate teams/ have more than one team.
             //Wait until the battle starts.
-            if (!waitFindClick(By.Name("ignorespects"),MAX_WAIT_FOR_PLAYER_RESPONSE)) return;
+            if (!waitFindClick(By.Name("openBattleOptions"),MAX_WAIT_FOR_PLAYER_RESPONSE)) return;
             cwrite("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
 
@@ -189,12 +197,103 @@ namespace ShowdownBot
              
          }
 
+        /// <summary>
+        /// Takes the move from collection at index i and converts it into a Move class.
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        private Move processMove(int i,IWebElement collection)
+        {
+            IWebElement b = collection.FindElement(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"));
+            string htmla = (string)((IJavaScriptExecutor)browser).ExecuteScript("return arguments[0].outerHTML;", b);
+            string[] html = htmla.Split(new string[] { "data-move=\"" }, StringSplitOptions.None);
+            //string[] html = b.GetAttribute("innerhtml").Split(new string[]{"data-move=\""},StringSplitOptions.None);
+            var nametag = Array.Find(html, s => s.StartsWith("data-move"));
+            string[] name = html[1].Split('"');
+            string[] temp = b.GetAttribute("class").Split('-');
+            string type = temp[1];
 
+            Move m;
+            //hidden power and frustration check
+            if (name[0] == "Hidden Power")
+            {
+                string nname = "Hidden Power " + type;
+                if (!Global.moves.ContainsKey(nname))
+                {
+                    m = new Move(nname, types[type.ToLower()], 60);
+                    m.group = "special";
+                    Global.moves.Add(m.name, m);
+                    //moves[i] = m;
+                    cwrite("Move " + i.ToString() + " " + m.name, COLOR_BOT);
+
+                }
+                else
+                {
+                    m = Global.moveLookup("Hidden Power " + type);
+                    //moves[i] = m;
+                }
+
+
+            }
+            else if (Global.moveLookup(name[0]).type.value == "normal" && !name[0].Contains("Milk Drink"))
+            {
+
+                string nname = name[0] + " (" + type + ")";
+                if (!Global.moves.ContainsKey(nname))
+                {
+                    //This handles all normal type moves affected by -ate abilities.
+                    //I think it also handles Normalize as well.
+                    m = new Move(nname, types[type.ToLower()]);
+                    Move analog = Global.moveLookup(name[0]);
+                    m.group = analog.group;
+                    /* Check for -ate abilities by comparing the original type to the one we have.
+                     * Add the 30% boost to the base power so no need to calc it later. */
+                    if (m.type != analog.type)
+                        m.bp = analog.bp + (analog.bp * 0.3f);
+                    Global.moves.Add(m.name, m);
+                    //moves[i] = m;
+                    cwrite("Move " + i.ToString() + " " + m.name, COLOR_BOT);
+                }
+                else
+                {
+                    m = Global.moveLookup(nname);
+                    //moves[i] = m;
+                }
+
+            }
+            else
+            {
+                if (Global.moves.ContainsKey(name[0]))
+                    m = Global.moves[name[0]];
+                else
+                {
+                    cwrite("Unknown move " + name[0], COLOR_WARN);
+                    m = new Move(name[0], Global.types[type.ToLower()]);
+                }
+                //moves[i] = m;
+                cwrite("Move " + i.ToString() + " " + name[0], COLOR_BOT);
+            }
+            return m;
+        }
+
+        /// <summary>
+        /// Returns a list of all moves. If using a Z-Move, then it returns a list of all Z-Moves available.
+        /// </summary>
+        /// <returns></returns>
          protected Move[] getMoves()
          {
-             //todo deal with moves with no pp/disabled
              Move[] moves = new Move[4];
             int waittime = 1;
+            IWebElement moveCollection;
+            if (isUsingZMove)
+            {
+                moveCollection = waitFind(By.ClassName("movebuttons-z"));
+            }
+            else
+            {
+                moveCollection = waitFind(By.ClassName("movemenu"));
+            }
             for (int i = 0; i < 4; i++)
             {
                 if (!waitUntilElementExists(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"), waittime))
@@ -204,78 +303,8 @@ namespace ShowdownBot
                     moves[i] = defal;
                     continue;
                 }
-                IWebElement b = browser.FindElement(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"));
-                string htmla = (string)((IJavaScriptExecutor)browser).ExecuteScript("return arguments[0].outerHTML;", b);
-                string[] html = htmla.Split(new string[] { "data-move=\"" }, StringSplitOptions.None);
-                //string[] html = b.GetAttribute("innerhtml").Split(new string[]{"data-move=\""},StringSplitOptions.None);
-                var nametag = Array.Find(html, s => s.StartsWith("data-move"));
-                string[] name = html[1].Split('"');
-                string[] temp = b.GetAttribute("class").Split('-');
-                string type = temp[1];
-
-                // moves [i] =
-
-                Move m;
-                //hidden power and frustration check
-                if (name[0] == "Hidden Power")
-                {
-                    string nname = "Hidden Power " + type;
-                    if (!Global.moves.ContainsKey(nname))
-                    {
-                        m = new Move(nname, types[type.ToLower()], 60);
-                        m.group = "special";
-                        Global.moves.Add(m.name, m);
-                        moves[i] = m;
-                        cwrite("Move " + i.ToString() + " " + m.name, COLOR_BOT);
-
-                    }
-                    else
-                    {
-                        m = Global.moveLookup("Hidden Power " + type);
-                        moves[i] = m;
-                    }
-
-
-                }
-                else if (Global.moveLookup(name[0]).type.value == "normal" && !name[0].Contains("Milk Drink"))
-                {
-                    
-                    string nname = name[0]+" (" + type + ")";
-                    if (!Global.moves.ContainsKey(nname))
-                    {
-                        //This handles all normal type moves affected by -ate abilities.
-                        //I think it also handles Normalize as well.
-                        m = new Move(nname, types[type.ToLower()]);
-                        Move analog = Global.moveLookup(name[0]);
-                        m.group = analog.group;
-                        /* Check for -ate abilities by comparing the original type to the one we have.
-                         * Add the 30% boost to the base power so no need to calc it later. */
-                        if(m.type != analog.type)
-                            m.bp = analog.bp + (analog.bp * 0.3f);
-                        Global.moves.Add(m.name, m);
-                        moves[i] = m;
-                        cwrite("Move " + i.ToString() + " " + m.name, COLOR_BOT);
-                    }
-                    else
-                    {
-                        m = Global.moveLookup(nname);
-                        moves[i] = m;
-                    }
-
-                }
-                else
-                {
-                    if (Global.moves.ContainsKey(name[0]))
-                        m = Global.moves[name[0]];
-                    else
-                    {
-                        cwrite("Unknown move " + name[0], COLOR_WARN);
-                        m = new Move(name[0], Global.types[type.ToLower()]);
-                    }
-                    moves[i] = m;
-                    cwrite("Move " + i.ToString() + " " + name[0], COLOR_BOT);
-               }
-             }
+                moves[i] = processMove(i, moveCollection);
+            }
              return moves;
          }
 
@@ -390,7 +419,7 @@ namespace ShowdownBot
                 IList<IWebElement> elems;
                 try
                 {
-                   elems  = e.FindElements(By.ClassName("pokemonicon"));
+                   elems  = e.FindElements(By.ClassName("picon"));
                 }
                 catch (StaleElementReferenceException)
                 {
@@ -564,7 +593,10 @@ namespace ShowdownBot
             else if (elementExists(By.Name("zmove")))
             {
                 if (click)
+                {
                     browser.FindElement(By.Name("zmove")).Click();
+                    isUsingZMove = true;
+                }
                 return true;
             }
             return false;

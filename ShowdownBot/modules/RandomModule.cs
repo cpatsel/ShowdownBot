@@ -24,6 +24,7 @@ namespace ShowdownBot.modules
             do
             {
                 battleRandomly(ref turn);
+                turnEnd();
               
             } while (activeState == State.BATTLE);
 

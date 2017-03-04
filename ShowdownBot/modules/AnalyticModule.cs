@@ -97,7 +97,7 @@ namespace ShowdownBot.modules
                     updateActiveStatuses(ref active,ref enemy);
                     currentActive = active;
                     battleAnalytic(ref active, enemy, ref turn);
-                
+                    turnEnd();
 
             } while (activeState == State.BATTLE);
             myTeam.Clear();
@@ -503,9 +503,20 @@ namespace ShowdownBot.modules
             else
                 turnsSpentSleepTalking = 0;
 
-            if (elementExists(By.CssSelector("button[value='" + chosenMoveSlot.ToString() + "'][name='chooseMove']")))
+            IWebElement collection;
+            if (isUsingZMove)
             {
-                browser.FindElement(By.CssSelector("button[value='" + chosenMoveSlot.ToString() + "'][name='chooseMove']")).Click();
+                collection = waitFind(By.ClassName("movebuttons-z"));
+                isUsingZMove = false;
+            }
+            else
+            {
+                collection = waitFind(By.ClassName("movemenu"));
+            }
+
+            if (collection != null)
+            {
+                collection.FindElement(By.CssSelector("button[value='" + chosenMoveSlot.ToString() + "'][name='chooseMove']")).Click();
                 return chosenMove.name;
             }
             else

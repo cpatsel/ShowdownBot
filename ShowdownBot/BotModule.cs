@@ -401,6 +401,16 @@ namespace ShowdownBot
                                 return "mr. mime";
                             else if (n_name == "Jr." && cleanold == "Mime")
                                 return "mime jr.";
+                            else if (n_name == "Lele")
+                                return "tapu lele";
+                            else if (n_name == "Bulu")
+                                return "tapu Bulu";
+                            else if (n_name == "Koko")
+                                return "tapu koko";
+                            else if (n_name == "Fini")
+                                return "tapu fini";
+
+
                         }
                          return n_name.ToLower();
                      }
@@ -470,6 +480,14 @@ namespace ShowdownBot
                                 names_list.Add("mr. mime");
                             else if (n_name == "Jr." && cleanold == "Mime")
                                 names_list.Add("mime jr.");
+                            else if (n_name == "Lele")
+                                names_list.Add("tapu lele");
+                            else if (n_name == "Bulu")
+                                names_list.Add("tapu Bulu");
+                            else if (n_name == "Koko")
+                                names_list.Add("tapu koko");
+                            else if (n_name == "Fini")
+                                names_list.Add("tapu fini");
                             else
                                 names_list.Add(n_name.ToLower());
                         }

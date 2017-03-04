@@ -12787,7 +12787,7 @@
             species: "error",
             types: ["Normal"],
             baseStats: { hp: 50, atk: 50, def: 50, spa: 50, spd: 50, spe: 50 },
-            abilities: { a0: "", H: "" },
+            abilities: { a0: "none", H: "none" },
             heightm: 3,
             weightkg: 1590.8,
             color: "Gray",

@@ -182,12 +182,12 @@ namespace ShowdownBot
                 {
                     try
                     {
-                        p = pokedex[_name.TrimStart(PERSONAL_PRE.ToCharArray())];
+                        p = pokedex[_name.Split('_')[1]]; //search for portion after "my_"
                         return p;
                     }
-                    catch
+                    catch (Exception ex)
                     {
-
+                        cwrite(ex.Message + "ON PKMN:"+_name.Split('_')[1], "warning", COLOR_WARN);
                     }
                 }
                 cwrite("Unknown pokemon " + _name, "warning", COLOR_WARN);

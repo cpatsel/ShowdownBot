@@ -123,8 +123,8 @@ namespace ShowdownBot
         {
             abilities = ab;
             //If there is only one possible ability, set certainAbility.
-            if (ab.a2 == "none" && ab.H == "none")
-                certainAbility = abilities.a1;
+            if (ab.a1 == "none" && ab.H == "none")
+                certainAbility = abilities.a0;
         }
 
         private void initRoles()
@@ -275,9 +275,9 @@ namespace ShowdownBot
         /// <returns></returns>
         public bool hasPossibleAbility(string ability)
         {
-            if (abilities.a1.ToLower() == ability.ToLower()) return true;
-            if (!Object.ReferenceEquals(abilities.a2, null))
-                if (abilities.a2.ToLower() == ability.ToLower()) return true;
+            if (abilities.a0.ToLower() == ability.ToLower()) return true;
+            if (!Object.ReferenceEquals(abilities.a1, null))
+                if (abilities.a1.ToLower() == ability.ToLower()) return true;
             if (!Object.ReferenceEquals(abilities.H, null))
                 if (abilities.H.ToLower() == ability.ToLower()) return true;
             return false;

@@ -236,9 +236,9 @@ namespace ShowdownBot
 
 
             }
-            else if (Global.moveLookup(name[0]).type.value == "normal" && !Global.moveLookup(name[0]).heal)
+            else if (Global.moveLookup(name[0]).type.value == "normal" && Global.moveLookup(name[0]).bp >0)
             {
-
+                //Only look at damaging moves for -ate conversion. This may create some issues for galvanize status moves.
                 string nname = name[0] + " (" + type + ")";
                 if (!Global.moves.ContainsKey(nname))
                 {

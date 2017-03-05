@@ -208,9 +208,7 @@ namespace ShowdownBot
             }
             catch (Exception e)
             {
-                Console.ForegroundColor = COLOR_WARN;
-                Console.WriteLine("ON MOVE LOOKUP " + name + ":\n" + e);
-                Console.ResetColor();
+                cwrite("ON MOVE LOOKUP " + name + ":\n" + e,"error",COLOR_ERR);
                 return new Move(name, types["normal"]);
             }
             return m;

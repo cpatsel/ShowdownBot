@@ -21,7 +21,7 @@ Before running the program, be sure to edit the botInfo.txt file. The file conta
 * username - Name of the bot's account.
 * password - its password.
 * owner - Name of your account. Used for some things, but not necessary.
-* userdata_path - Path to your google chrome user data folder. For Windows 7, it should resemble the default, substituting your computer username.
+* **userdata_path** - Path to your google chrome user data folder. For Windows 7, it should resemble the default, substituting your computer username. **This is required to be filled out or the webdriver will not work.**
 * profile - The name of the profile. If you don't wish to use a profile, leave it as is.
 * update_onstart - Whether to check for updates at startup.
 * default_module - Default [module](https://github.com/Deviach/ShowdownBot/wiki/Modules) that the bot starts in.

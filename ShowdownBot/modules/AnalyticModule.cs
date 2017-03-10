@@ -223,17 +223,18 @@ namespace ShowdownBot.modules
 
         protected void updateModifiers(IWebElement statbar, ref BattlePokemon p)
         {
+            
             IList<IWebElement> elems;
             try
             {
-                elems = browser.FindElements(By.ClassName("good"));
+                elems = statbar.FindElements(By.ClassName("good"));
                 //for some stupid reason, the x isn't an 'x' but an '×'
                 foreach (IWebElement e in elems)
                 {
                     if (e.Text.Contains("×"))
                         p.updateBoosts(e.Text);
                 }
-                elems = browser.FindElements(By.ClassName("bad"));
+                elems = statbar.FindElements(By.ClassName("bad"));
                 foreach (IWebElement e in elems)
                 {
                     if (e.Text.Contains("×"))

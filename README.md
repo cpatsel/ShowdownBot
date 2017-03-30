@@ -3,7 +3,8 @@ A bot for Pokemon Showdown made using C# and the Selenium library.
 
 For a list of recent changes and features, see [the changelog](ShowdownBot/changelog.md)
 
-##Requirements
+## Requirements
+
 ### Windows
   * [.NET Framework 4.6](https://www.microsoft.com/en-us/download/details.aspx?id=48130)
   * Google Chrome version 54-56
@@ -15,7 +16,8 @@ For a list of recent changes and features, see [the changelog](ShowdownBot/chang
  * [Install mono](http://www.mono-project.com/docs/getting-started/install/mac/).
  * Download or compile the source and run with mono. See the linux section for more info (it should be a similar process).
 
-##Getting started
+## Getting started
+
 Before running the program, be sure to edit the botInfo.txt file. The file contains the following parameters.
 
 * username - Name of the bot's account.

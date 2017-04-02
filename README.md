@@ -3,7 +3,8 @@ A bot for Pokemon Showdown made using C# and the Selenium library.
 
 For a list of recent changes and features, see [the changelog](ShowdownBot/changelog.md)
 
-##Requirements
+## Requirements
+
 ### Windows
   * [.NET Framework 4.6](https://www.microsoft.com/en-us/download/details.aspx?id=48130)
   * Google Chrome version 54-56
@@ -15,7 +16,8 @@ For a list of recent changes and features, see [the changelog](ShowdownBot/chang
  * [Install mono](http://www.mono-project.com/docs/getting-started/install/mac/).
  * Download or compile the source and run with mono. See the linux section for more info (it should be a similar process).
 
-##Getting started
+## Getting started
+
 Before running the program, be sure to edit the botInfo.txt file. The file contains the following parameters.
 
 * username - Name of the bot's account.
@@ -49,10 +51,14 @@ If you want to log in as another account, or not register an account, you can ca
 
 Where ``<username>`` is the username of the account and ``<password>`` is the (optional) password to log into a registered account.
 
-To start a battle, switch to the desired module (see below) and type **challenge** or **cp** to challenge a player, or leave it blank to challenge the owner. 
-Additionally, to have the bot challenge a random player on the ladder, type **search**.
+To start a battle, switch to the desired module (see below) and type
 
-Each module has a default format it will search for matches or challenge players to. This can be changed with the **format** command. This command is case-sensitive and is typically the generation + whatever the format is called on Pokemon Showdown with no spaces and all lowercase. So Random Battle is "gen7randombattle" and OU would be "gen7ou" and so on. A more comprehensive list will be available soon, but in the meantime if you are unsure, inspect the element in your browser and copy the "value" of the format you want.
+``challenge <player>``
+
+to challenge a ``<player>``. If ``<player>`` is left blank, the owner will be challenged. ``cp <player>`` works as a shorthand. 
+Additionally, to have the bot challenge a random player on the ladder, type ``search``.
+
+Each module has a default format it will search for matches or challenge players to. This can be changed with the ``format`` command. This command is case-sensitive and is typically the generation + whatever the format is called on Pokemon Showdown with no spaces and all lowercase. So Random Battle is "gen7randombattle" and OU would be "gen7ou" and so on. A more comprehensive list will be available soon, but in the meantime if you are unsure, inspect the element in your browser and copy the "value" of the format you want.
 
 
 ## Modules
@@ -65,15 +71,15 @@ The bot works by using various modules. They are:
 
 [See a more detailed explanation here](https://github.com/Deviach/ShowdownBot/wiki/Modules)
 
-To switch modules, simply type **module** or **m** followed by one of the module types above, in lowercase.
+To switch modules, simply type ``module`` or ``m`` followed by one of the module types above, in lowercase.
 Do note, that when switching modules with the module command, the bot's format will be reset to whatever its default is defined as.
 
 
-##Other commands
-* **info** - Displays info about the current bot, or about certain moves or Pokemon.
-* **kill** - Stops the bot.
-* **exit** - Kills the bot and closes the console and browser.
-* See the **help** command for a full list of commands available, and use ``help <command>`` to see more information about it.
+## Other commands
+* ``info`` - Displays info about the current bot, or about certain moves or Pokemon.
+* ``kill`` - Stops the bot.
+* ``exit`` - Kills the bot and closes the console and browser.
+* See the ``help`` command for a full list of commands available, and use ``help <command>`` to see more information about it.
 
-##Bug reporting
-You may submit bug reports or questions/suggestions to the github issue tracker for the project. For bug reports, it is recommended that you submit your error.txt (if you have one) and use the **save** command if you can to save console output to the logs folder (it will be created if you do not have one).
+## Bug reporting
+You may submit bug reports or questions/suggestions to the github issue tracker for the project. For bug reports, it is recommended that you submit your error.txt (if you have one) and use the ``save`` command if you can to save console output to the logs folder (it will be created if you do not have one).

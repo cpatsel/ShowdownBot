@@ -121,8 +121,7 @@
     <Compile Include="dataobj\StatSpread.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="GlobalConstants.cs" />
-    <Compile Include="modules\Analytic\AnalyticModule.cs" />
-    <Compile Include="modules\Analytic\AnalyticMoveMethods.cs" />
+    <Compile Include="modules\AnalyticModule.cs" />
     <Compile Include="modules\BiasedModule.cs" />
     <Compile Include="modules\ComparativeModule.cs" />
     <Compile Include="modules\RandomModule.cs" />

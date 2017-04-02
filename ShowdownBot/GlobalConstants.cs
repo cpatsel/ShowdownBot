@@ -8,7 +8,7 @@ namespace ShowdownBot
 {
     public static class GlobalConstants
     {
-        public const string SDB_VERSION = "0.6.0-unreleased";
+        public const string SDB_VERSION = "1.0.0";
         public const string SDB_TITLEBAR = "Showdown Bot v" + SDB_VERSION;
         /// <summary>
         /// The format name for random singles as defined internally by Pokemon Showdown.

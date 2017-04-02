@@ -66,6 +66,9 @@ namespace ShowdownBot
 
         public static Queue<String> outputBuffer = new Queue<string>(100);
 
+        /// <summary>
+        /// Initialization method for the type dictionary. This MUST be called during intializaiton fo the bot.
+        /// </summary>
         public static void setupTypes()
         {
             types = new Dictionary<string, Type>();
@@ -196,6 +199,12 @@ namespace ShowdownBot
             }
             return p;
         }
+
+        /// <summary>
+        /// Returns the specified Move object. Returns the dummy error move if not found.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static Move moveLookup(string name)
         {
             Move m;
@@ -209,7 +218,7 @@ namespace ShowdownBot
             catch (Exception e)
             {
                 cwrite("ON MOVE LOOKUP " + name + ":\n" + e,"error",COLOR_ERR);
-                return new Move(name, types["normal"]);
+                return moves["error"];
             }
             return m;
         }
@@ -227,6 +236,12 @@ namespace ShowdownBot
             wait(2000);
         }
         
+        /// <summary>
+        /// Searches for a web element by from within the container toSearch.
+        /// </summary>
+        /// <param name="toSearch"></param>
+        /// <param name="by"></param>
+        /// <returns></returns>
         public static IWebElement findWithin(IWebElement toSearch, By by)
         {
             try
@@ -307,6 +322,11 @@ namespace ShowdownBot
             }
             
         }
+        /// <summary>
+        /// Returns whether an element matching the criteria by can be found.
+        /// </summary>
+        /// <param name="by"></param>
+        /// <returns></returns>
         public static bool elementExists(By by)
         {
             try
@@ -321,7 +341,8 @@ namespace ShowdownBot
         }
         /// <summary>
         /// Waits until either the specified element exists,
-        /// or it reaches MAX_WAITS
+        /// or it reaches MAX_WAITS.
+        /// Returns true if elemement found.
         /// </summary>
         /// <param name="by"></param>
         /// <param name="maxw"></param>
@@ -336,10 +357,19 @@ namespace ShowdownBot
                 return false;
 
         }
+        /// <summary>
+        /// Write a string to the console.
+        /// </summary>
+        /// <param name="t"></param>
         public static void cwrite(string t)
         {
             cwrite(t, COLOR_DEFAULT);
         }
+        /// <summary>
+        /// Writes a string of specified color to the console.
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="c"></param>
         public static void cwrite(string t, ConsoleColor c)
         {
             string date = GetTimestamp();
@@ -349,6 +379,12 @@ namespace ShowdownBot
             saveOutputToConsoleBuffer("[" + date + "]" + t);
 
         }
+        /// <summary>
+        /// Writes a string of specified color to console, with a header prepended.
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="header"></param>
+        /// <param name="c"></param>
         public static void cwrite(string t, string header, ConsoleColor c)
         {
             header = header.Trim('[', ']').ToUpper();
@@ -363,6 +399,10 @@ namespace ShowdownBot
             saveOutputToConsoleBuffer("[" + date + "]" + "[" + header + "]" + t);
 
         }
+        /// <summary>
+        /// Gets the time in 24-Hours:Minutes:Seconds format
+        /// </summary>
+        /// <returns></returns>
         public static string GetTimestamp()
         {
             string dt = DateTime.Now.ToString("HH:mm:ss");
@@ -370,6 +410,10 @@ namespace ShowdownBot
         }
 
 
+        /// <summary>
+        /// Saves string s to the console output buffer.
+        /// </summary>
+        /// <param name="s"></param>
         public static void saveOutputToConsoleBuffer(string s)
         {
             if (outputBuffer.Count > 99)
@@ -377,7 +421,9 @@ namespace ShowdownBot
             outputBuffer.Enqueue(s);
         }
 
-
+        /// <summary>
+        /// Writes the console output buffer to the logs folder.
+        /// </summary>
         public static void writeConsoleOutput()
         {
             if (!Directory.Exists(@"./logs/"))
@@ -391,6 +437,11 @@ namespace ShowdownBot
             }
            
         }
+
+        /// <summary>
+        /// Debugging method that enumerates some of the fields and their values for any given object.
+        /// </summary>
+        /// <param name="obj"></param>
         public static void var_dump(object obj)
         {
             System.Type t = obj.GetType();
@@ -423,6 +474,11 @@ namespace ShowdownBot
             }
         }
 
+        /// <summary>
+        /// Writes the error to error.txt. If fatal, then the program exits. This method also writes the console output buffer to a sperate log.
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <param name="fatal"></param>
         public static void logError(Exception ex, bool fatal)
         {
             using (StreamWriter sw = new StreamWriter("error.txt", true))

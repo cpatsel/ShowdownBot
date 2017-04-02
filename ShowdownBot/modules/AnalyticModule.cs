@@ -207,7 +207,11 @@ namespace ShowdownBot.modules
             }
         }
         
-
+        /// <summary>
+        /// Updates the health of the active pokemon.
+        /// </summary>
+        /// <param name="statbar"></param>
+        /// <param name="p"></param>
         protected void updateHealth(IWebElement statbar, ref BattlePokemon p)
         {
             var elem = findWithin(statbar, By.ClassName("hptext"));
@@ -221,6 +225,11 @@ namespace ShowdownBot.modules
             }
         }
 
+        /// <summary>
+        /// Updates the active pokemon's boost/drop modifiers for their stats.
+        /// </summary>
+        /// <param name="statbar"></param>
+        /// <param name="p"></param>
         protected void updateModifiers(IWebElement statbar, ref BattlePokemon p)
         {
             

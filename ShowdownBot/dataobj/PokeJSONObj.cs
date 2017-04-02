@@ -68,7 +68,7 @@ namespace ShowdownBot
         public int spe { get; set; }
     }
 
-    //TODO: add more specific roles, like fast physical or tank,etc and give them specific spreads in setRealStats
+    
     public class Role
     {
         //Mutually Exclusive:

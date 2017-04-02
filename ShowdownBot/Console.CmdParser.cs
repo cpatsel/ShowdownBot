@@ -9,7 +9,7 @@ using static ShowdownBot.GlobalConstants;
 using static ShowdownBot.Global;
 namespace ShowdownBot
 {
-    partial class Consol
+    partial class BotConsole
     {
        
         public void Parse(string t)

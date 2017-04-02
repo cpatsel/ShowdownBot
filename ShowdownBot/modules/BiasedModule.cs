@@ -67,7 +67,7 @@ namespace ShowdownBot.modules
             }
             else if (checkSwitch())
             {
-                //TODO: check if it's the first turn, and then select appropriate lead.
+                
                 cwrite("Switching pokemon.", COLOR_BOT);
                 pokeSelection = pickPokeRandomly();
                 cwrite("New pokemon selected: " + pokeSelection.ToString(), COLOR_BOT);

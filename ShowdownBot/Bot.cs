@@ -64,8 +64,8 @@ namespace ShowdownBot
 
         
         #endregion
-        Consol c;
-        public Bot(Consol c)
+        BotConsole c;
+        public Bot(BotConsole c)
         {
             this.c = c;
             isRunning = false;
@@ -93,7 +93,7 @@ namespace ShowdownBot
         /// </summary>
         /// <returns></returns>
         public bool getStatus() { return isRunning; }
-        public Consol getConsole(){ return c;}
+        public BotConsole getConsole(){ return c;}
         public string getOwner() { return owner;}
         public string getChallengee() { return challengee;}
         public void printInfo()

@@ -17,7 +17,7 @@ namespace ShowdownBot
         protected State activeState;
         protected IWebDriver browser;
         protected Bot manager;
-        protected Consol c;
+        protected BotConsole c;
         protected string format;
         protected bool isContinuous;
         protected int maxBattles;
@@ -34,6 +34,7 @@ namespace ShowdownBot
             init();
         }
 
+
         public virtual void init()
         {
             activeState = State.IDLE;
@@ -43,6 +44,10 @@ namespace ShowdownBot
             isContinuous = false;
             currentBattle = 1;
         }
+
+        /// <summary>
+        /// The bot's update function. This is called once every tick as long as the bot is running.
+        /// </summary>
         public virtual void Update()
         {
            
@@ -80,6 +85,9 @@ namespace ShowdownBot
             
         }
 
+        /// <summary>
+        /// The bot's battle function. While in a battle, the bot will continuously call this function.
+        /// </summary>
         public virtual void battle()
         {
             //battle logic goes here.
@@ -92,6 +100,7 @@ namespace ShowdownBot
         {
             isUsingZMove = false; //reset this for cases where z-move was clicked, but ended up switching.
         }
+
         /// <summary>
         /// Sends a challenge to a player.
         /// If no player is specified, it defaults to owner.
@@ -116,7 +125,6 @@ namespace ShowdownBot
             if (!waitFindClick(By.CssSelector("button[name='selectFormat'][value='" + format + "']"))) return;
 
             browser.FindElement(By.Name("makeChallenge")).Click();
-            ////TODO: implement a way to select alternate teams/ have more than one team.
             //Wait until the battle starts.
             if (!waitFindClick(By.Name("openBattleOptions"),MAX_WAIT_FOR_PLAYER_RESPONSE)) return;
             cwrite("Battle starting!", COLOR_BOT);
@@ -124,6 +132,9 @@ namespace ShowdownBot
 
         }
 
+        /// <summary>
+        /// Search for an opponent on the public ladder.
+        /// </summary>
         public virtual void ladder()
         {
             cwrite("Searching for new opponent in " + format, "bot", COLOR_BOT);
@@ -183,7 +194,7 @@ namespace ShowdownBot
 
          /// <summary>
          /// Checks the bot's ability to select a move.
-         /// Bot prioritizes making moves over switching (for now)
+         /// Bot prioritizes making moves over switching for most modules.
          /// </summary>
          /// <param name="b"></param>
          /// <returns>Can select a move?</returns>
@@ -234,21 +245,24 @@ namespace ShowdownBot
                     //moves[i] = m;
                 }
 
-
+                
             }
-            else if (Global.moveLookup(name[0]).type.value == "normal" && Global.moveLookup(name[0]).bp >0)
+            else if (Global.moveLookup(name[0]).type.value == "normal" && Global.moveLookup(name[0]).bp > 0 && type != "normal")
             {
-                //Only look at damaging moves for -ate conversion. This may create some issues for galvanize status moves.
+                //Only look at damaging moves for -ate conversion. TODO:This may create some issues for galvanize status moves.
+                //Also if the move is a normal type and is not converted, just ignore it.
                 string nname = name[0] + " (" + type + ")";
                 if (!Global.moves.ContainsKey(nname))
                 {
                     //This handles all normal type moves affected by -ate abilities.
                     //I think it also handles Normalize as well.
 
-                    m = Global.moveLookup(nname).copyDetails();
+                    m = Global.moveLookup(name[0]).copyDetails();
+                    m.name = nname;
                     m.type = types[type.ToLower()]; 
                     Move analog = Global.moveLookup(name[0]);
-                    m.group = analog.group;
+                    //m.group = analog.group;
+                    
                     /* Check for -ate abilities by comparing the original type to the one we have.
                      * Add the 30% boost to the base power so no need to calc it later. */
                     if (m.type != analog.type)
@@ -351,6 +365,12 @@ namespace ShowdownBot
              return p;
          }
 
+        /// <summary>
+        /// Determines the active pokemon by iterating through the team icons on the trainer panels at the side of the battle window.
+        /// In essence, it searches for the icon with the text "(active)" in it.
+        /// </summary>
+        /// <param name="ticons"></param>
+        /// <returns></returns>
          protected string parseNameFromPage(IList<IWebElement> ticons)
          {
              for(int i = 0; i<ticons.Count;i++)
@@ -453,7 +473,7 @@ namespace ShowdownBot
                         string[] name;
                         try
                         {
-                            //todo this fails on formats without picking a lead like randombattle
+                           
                             name = s.GetAttribute("title").Split(' ');
 
                         }
@@ -506,7 +526,7 @@ namespace ShowdownBot
          }
         
          /// <summary>
-         /// Randomly selects a pokemon.
+         /// Randomly selects a pokemon and returns its index in the team displayed below the battle.
          /// </summary>
          /// <returns>Index of pokemon.</returns>
          protected int pickPokeRandomly()
@@ -543,6 +563,11 @@ namespace ShowdownBot
              return range.ElementAt(index);
          }
 
+        /// <summary>
+        /// Checks if a battle has ended by looking for the Close and Return to Main Menu button.
+        /// If present, it will click the button.
+        /// </summary>
+        /// <returns></returns>
          protected bool checkBattleEnd()
          {
              if (elementExists(By.Name("closeAndMainMenu")))
@@ -558,7 +583,8 @@ namespace ShowdownBot
          }
 
          /// <summary>
-         /// Exits a battle and forfeits accordingly.
+         /// Attempts to return to the main menu. If forfeit is true, it will go through the steps necessesary to
+         /// forfeit.
          /// </summary>
          /// <param name="forfeit">Go through steps to forfeit match?</param>
          /// <returns>Whether it was successful</returns>
@@ -622,6 +648,11 @@ namespace ShowdownBot
             return false;
         }
 
+        /// <summary>
+        /// Calls goMainMenu with forfeit = true. Warns the user if it was unable to forfeit, otherwise
+        /// changes state to idle. Returns true if successfully forfeited.
+        /// </summary>
+        /// <returns></returns>
         public bool forfeitBattle()
         {
             if (!goMainMenu(true))
@@ -637,17 +668,24 @@ namespace ShowdownBot
             }
         }
 
+        /// <summary>
+        /// Changes state.
+        /// </summary>
+        /// <param name="ns"></param>
         public void changeState(State ns)
         {
             lastState = activeState;
             activeState = ns;
         }
+
         public State getState()
         {
             return activeState;
         }
 
-
+        /// <summary>
+        /// Prints information about the bot. Can be module specific.
+        /// </summary>
         public virtual void printInfo()
         {
             cwrite("Generic Bot info:\n" +

@@ -46,7 +46,7 @@ namespace ShowdownBot
             type1 = mon.type1;
             type2 = mon.type2;
             item = mon.item;
-            level = 100; //TODO: actually find this, for now just assume its max.
+            level = 100; //Assume max level
             initBoosts();
             canUseFakeout = true;
             hasUsedHazard = false;
@@ -376,7 +376,7 @@ namespace ShowdownBot
             
         }
 
-       //TODO: doesn't account for defense boost of sandstorm, or half damage of strong winds.
+       
         private float weatherMod(Move m, Weather w)
         {
             if (m.type.value == "water" && (w == Weather.RAIN || w == Weather.HEAVYRAIN))

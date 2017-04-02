@@ -11,7 +11,7 @@ namespace ShowdownBot
     /// <summary>
     /// Contains the in-console help documentation for commands.
     /// </summary>
-    public partial class Consol
+    public partial class BotConsole
     {
         private void DisplayHelp()
         {

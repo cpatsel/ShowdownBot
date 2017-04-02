@@ -16,15 +16,14 @@ using System.Xml.Linq;
 
 namespace ShowdownBot
 {
-    public partial class Consol
+    public partial class BotConsole
     {
         Bot bot;
-        bool ready = false;
         Thread threadBot;
         ThreadStart ts;
         XDocument helpdoc;
         
-        public Consol()
+        public BotConsole()
         {
            
             ts = new ThreadStart(() => bot = new Bot(this));

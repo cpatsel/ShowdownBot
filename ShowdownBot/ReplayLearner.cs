@@ -14,8 +14,8 @@ namespace ShowdownBot
     {
         IWebDriver browser;
 
-        Consol c;
-        public ReplayLearner(IWebDriver b, Consol con)
+        BotConsole c;
+        public ReplayLearner(IWebDriver b, BotConsole con)
         {
             browser = b;
             c = con;

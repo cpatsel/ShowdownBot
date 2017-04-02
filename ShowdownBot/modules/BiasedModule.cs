@@ -19,7 +19,7 @@ namespace ShowdownBot.modules
         public BiasedModule(Bot m, IWebDriver b)
             : base(m, b)
         {
-            format = "ou";
+            format = "gen7ou";
             M1WGT = Global.m1wgt;
             M2WGT = Global.m2wgt;
             M3WGT = Global.m3wgt;
@@ -36,6 +36,7 @@ namespace ShowdownBot.modules
             do
             {
                battleBiased(ref turn);
+                turnEnd();
 
             } while (activeState == State.BATTLE);
 
@@ -57,10 +58,7 @@ namespace ShowdownBot.modules
 
             if (checkMove())
             {
-                if (elementExists(By.Name("megaevo")))
-                {
-                    browser.FindElement(By.Name("megaevo")).Click();
-                }
+                findMegaZ(true);
                 wait();
                 moveSelection = pickMoveBiased();
                 cwrite("I'm selecting move " + moveSelection.ToString(), "[TURN " + turn.ToString() + "]", COLOR_BOT);
@@ -69,7 +67,7 @@ namespace ShowdownBot.modules
             }
             else if (checkSwitch())
             {
-                //TODO: check if it's the first turn, and then select appropriate lead.
+                
                 cwrite("Switching pokemon.", COLOR_BOT);
                 pokeSelection = pickPokeRandomly();
                 cwrite("New pokemon selected: " + pokeSelection.ToString(), COLOR_BOT);

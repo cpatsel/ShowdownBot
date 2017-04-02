@@ -17,13 +17,14 @@ namespace ShowdownBot
         protected State activeState;
         protected IWebDriver browser;
         protected Bot manager;
-        protected Consol c;
+        protected BotConsole c;
         protected string format;
         protected bool isContinuous;
         protected int maxBattles;
         protected int currentBattle;
         protected State lastBattleState; //used for continuously battling
         protected State lastState; //used in error handling.
+        protected bool isUsingZMove = false;
         public BotModule(Bot m, IWebDriver b)
         {
 
@@ -32,6 +33,7 @@ namespace ShowdownBot
 
             init();
         }
+
 
         public virtual void init()
         {
@@ -42,6 +44,10 @@ namespace ShowdownBot
             isContinuous = false;
             currentBattle = 1;
         }
+
+        /// <summary>
+        /// The bot's update function. This is called once every tick as long as the bot is running.
+        /// </summary>
         public virtual void Update()
         {
            
@@ -79,9 +85,20 @@ namespace ShowdownBot
             
         }
 
+        /// <summary>
+        /// The bot's battle function. While in a battle, the bot will continuously call this function.
+        /// </summary>
         public virtual void battle()
         {
             //battle logic goes here.
+        }
+
+        /// <summary>
+        /// Perform housekeeping on turn end.
+        /// </summary>
+        public virtual void turnEnd()
+        {
+            isUsingZMove = false; //reset this for cases where z-move was clicked, but ended up switching.
         }
 
         /// <summary>
@@ -108,14 +125,16 @@ namespace ShowdownBot
             if (!waitFindClick(By.CssSelector("button[name='selectFormat'][value='" + format + "']"))) return;
 
             browser.FindElement(By.Name("makeChallenge")).Click();
-            ////TODO: implement a way to select alternate teams/ have more than one team.
             //Wait until the battle starts.
-            if (!waitFindClick(By.Name("ignorespects"),MAX_WAIT_FOR_PLAYER_RESPONSE)) return;
+            if (!waitFindClick(By.Name("openBattleOptions"),MAX_WAIT_FOR_PLAYER_RESPONSE)) return;
             cwrite("Battle starting!", COLOR_BOT);
             changeState(State.BATTLE);
 
         }
 
+        /// <summary>
+        /// Search for an opponent on the public ladder.
+        /// </summary>
         public virtual void ladder()
         {
             cwrite("Searching for new opponent in " + format, "bot", COLOR_BOT);
@@ -175,7 +194,7 @@ namespace ShowdownBot
 
          /// <summary>
          /// Checks the bot's ability to select a move.
-         /// Bot prioritizes making moves over switching (for now)
+         /// Bot prioritizes making moves over switching for most modules.
          /// </summary>
          /// <param name="b"></param>
          /// <returns>Can select a move?</returns>
@@ -189,12 +208,108 @@ namespace ShowdownBot
              
          }
 
+        /// <summary>
+        /// Takes the move from collection at index i and converts it into a Move class.
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="collection"></param>
+        /// <returns></returns>
+        private Move processMove(int i,IWebElement collection)
+        {
+            IWebElement b = collection.FindElement(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"));
+            string htmla = (string)((IJavaScriptExecutor)browser).ExecuteScript("return arguments[0].outerHTML;", b);
+            string[] html = htmla.Split(new string[] { "data-move=\"" }, StringSplitOptions.None);
+            //string[] html = b.GetAttribute("innerhtml").Split(new string[]{"data-move=\""},StringSplitOptions.None);
+            var nametag = Array.Find(html, s => s.StartsWith("data-move"));
+            string[] name = html[1].Split('"');
+            string[] temp = b.GetAttribute("class").Split('-');
+            string type = temp[1];
 
+            Move m;
+            //hidden power and frustration check
+            if (name[0] == "Hidden Power")
+            {
+                string nname = "Hidden Power " + type;
+                if (!Global.moves.ContainsKey(nname))
+                {
+                    m = new Move(nname, types[type.ToLower()], 60);
+                    m.group = "special";
+                    Global.moves.Add(m.name, m);
+                    //moves[i] = m;
+                    cwrite("Move " + i.ToString() + " " + m.name, COLOR_BOT);
+
+                }
+                else
+                {
+                    m = Global.moveLookup("Hidden Power " + type);
+                    //moves[i] = m;
+                }
+
+                
+            }
+            else if (Global.moveLookup(name[0]).type.value == "normal" && Global.moveLookup(name[0]).bp > 0 && type != "normal")
+            {
+                //Only look at damaging moves for -ate conversion. TODO:This may create some issues for galvanize status moves.
+                //Also if the move is a normal type and is not converted, just ignore it.
+                string nname = name[0] + " (" + type + ")";
+                if (!Global.moves.ContainsKey(nname))
+                {
+                    //This handles all normal type moves affected by -ate abilities.
+                    //I think it also handles Normalize as well.
+
+                    m = Global.moveLookup(name[0]).copyDetails();
+                    m.name = nname;
+                    m.type = types[type.ToLower()]; 
+                    Move analog = Global.moveLookup(name[0]);
+                    //m.group = analog.group;
+                    
+                    /* Check for -ate abilities by comparing the original type to the one we have.
+                     * Add the 30% boost to the base power so no need to calc it later. */
+                    if (m.type != analog.type)
+                        m.bp = analog.bp + (analog.bp * 0.3f);
+                    Global.moves.Add(m.name, m);
+                    //moves[i] = m;
+                    cwrite("Move " + i.ToString() + " " + m.name, COLOR_BOT);
+                }
+                else
+                {
+                    m = Global.moveLookup(nname);
+                    //moves[i] = m;
+                }
+
+            }
+            else
+            {
+                if (Global.moves.ContainsKey(name[0]))
+                    m = Global.moves[name[0]];
+                else
+                {
+                    cwrite("Unknown move " + name[0], COLOR_WARN);
+                    m = new Move(name[0], Global.types[type.ToLower()]);
+                }
+                //moves[i] = m;
+                cwrite("Move " + i.ToString() + " " + name[0], COLOR_BOT);
+            }
+            return m;
+        }
+
+        /// <summary>
+        /// Returns a list of all moves. If using a Z-Move, then it returns a list of all Z-Moves available.
+        /// </summary>
+        /// <returns></returns>
          protected Move[] getMoves()
          {
-             //todo deal with moves with no pp/disabled
              Move[] moves = new Move[4];
             int waittime = 1;
+            IWebElement moveCollection;
+            if (isUsingZMove)
+            {
+                moveCollection = waitFind(By.ClassName("movebuttons-z"));
+            }
+            else
+            {
+                moveCollection = waitFind(By.ClassName("movemenu"));
+            }
             for (int i = 0; i < 4; i++)
             {
                 if (!waitUntilElementExists(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"), waittime))
@@ -204,77 +319,8 @@ namespace ShowdownBot
                     moves[i] = defal;
                     continue;
                 }
-                IWebElement b = browser.FindElement(By.CssSelector("button[value='" + (i + 1).ToString() + "'][name='chooseMove']"));
-                string htmla = (string)((IJavaScriptExecutor)browser).ExecuteScript("return arguments[0].outerHTML;", b);
-                string[] html = htmla.Split(new string[] { "data-move=\"" }, StringSplitOptions.None);
-                //string[] html = b.GetAttribute("innerhtml").Split(new string[]{"data-move=\""},StringSplitOptions.None);
-                var nametag = Array.Find(html, s => s.StartsWith("data-move"));
-                string[] name = html[1].Split('"');
-                string[] temp = b.GetAttribute("class").Split('-');
-                string type = temp[1];
-
-                // moves [i] =
-
-                Move m;
-                //hidden power and frustration check
-                if (name[0] == "Hidden Power")
-                {
-                    string nname = "Hidden Power " + type;
-                    if (!Global.moves.ContainsKey(nname))
-                    {
-                        m = new Move(nname, types[type.ToLower()], 60);
-                        m.group = "special";
-                        Global.moves.Add(m.name, m);
-                        moves[i] = m;
-                        cwrite("Move " + i.ToString() + " " + m.name, COLOR_BOT);
-
-                    }
-                    else
-                    {
-                        m = Global.moveLookup("Hidden Power " + type);
-                        moves[i] = m;
-                    }
-
-
-                }
-                else if (Global.moveLookup(name[0]).type.value == "normal")
-                {
-                    string nname = name[0]+" (" + type + ")";
-                    if (!Global.moves.ContainsKey(nname))
-                    {
-                        //This handles all normal type moves affected by -ate abilities.
-                        //I think it also handles Normalize as well.
-                        m = new Move(nname, types[type.ToLower()]);
-                        Move analog = Global.moveLookup(name[0]);
-                        m.group = analog.group;
-                        /* Check for -ate abilities by comparing the original type to the one we have.
-                         * Add the 30% boost to the base power so no need to calc it later. */
-                        if(m.type != analog.type)
-                            m.bp = analog.bp + (analog.bp * 0.3f);
-                        Global.moves.Add(m.name, m);
-                        moves[i] = m;
-                        cwrite("Move " + i.ToString() + " " + m.name, COLOR_BOT);
-                    }
-                    else
-                    {
-                        m = Global.moveLookup(nname);
-                        moves[i] = m;
-                    }
-
-                }
-                else
-                {
-                    if (Global.moves.ContainsKey(name[0]))
-                        m = Global.moves[name[0]];
-                    else
-                    {
-                        cwrite("Unknown move " + name[0], COLOR_WARN);
-                        m = new Move(name[0], Global.types[type.ToLower()]);
-                    }
-                    moves[i] = m;
-                    cwrite("Move " + i.ToString() + " " + name[0], COLOR_BOT);
-               }
-             }
+                moves[i] = processMove(i, moveCollection);
+            }
              return moves;
          }
 
@@ -319,6 +365,12 @@ namespace ShowdownBot
              return p;
          }
 
+        /// <summary>
+        /// Determines the active pokemon by iterating through the team icons on the trainer panels at the side of the battle window.
+        /// In essence, it searches for the icon with the text "(active)" in it.
+        /// </summary>
+        /// <param name="ticons"></param>
+        /// <returns></returns>
          protected string parseNameFromPage(IList<IWebElement> ticons)
          {
              for(int i = 0; i<ticons.Count;i++)
@@ -328,7 +380,7 @@ namespace ShowdownBot
                  IList<IWebElement> elems;
                 try
                 {
-                    elems = e.FindElements(By.ClassName("pokemonicon"));
+                    elems = e.FindElements(By.ClassName("picon"));
                 }
                 catch(StaleElementReferenceException)
                 {
@@ -371,6 +423,16 @@ namespace ShowdownBot
                                 return "mr. mime";
                             else if (n_name == "Jr." && cleanold == "Mime")
                                 return "mime jr.";
+                            else if (n_name == "Lele")
+                                return "tapu lele";
+                            else if (n_name == "Bulu")
+                                return "tapu Bulu";
+                            else if (n_name == "Koko")
+                                return "tapu koko";
+                            else if (n_name == "Fini")
+                                return "tapu fini";
+
+
                         }
                          return n_name.ToLower();
                      }
@@ -389,7 +451,7 @@ namespace ShowdownBot
                 IList<IWebElement> elems;
                 try
                 {
-                   elems  = e.FindElements(By.ClassName("pokemonicon"));
+                   elems  = e.FindElements(By.ClassName("picon"));
                 }
                 catch (StaleElementReferenceException)
                 {
@@ -397,12 +459,21 @@ namespace ShowdownBot
                 }
                 foreach (IWebElement s in elems)
                 {
-                    if (s.GetAttribute("title") != "Not revealed")
+                    bool isNotRevealed;
+                    try
+                    {
+                        isNotRevealed = (s.GetAttribute("title") != "Not revealed");
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        isNotRevealed = false;
+                    }
+                    if (isNotRevealed)
                     {
                         string[] name;
                         try
                         {
-                            //todo this fails on formats without picking a lead like randombattle
+                           
                             name = s.GetAttribute("title").Split(' ');
 
                         }
@@ -431,6 +502,14 @@ namespace ShowdownBot
                                 names_list.Add("mr. mime");
                             else if (n_name == "Jr." && cleanold == "Mime")
                                 names_list.Add("mime jr.");
+                            else if (n_name == "Lele")
+                                names_list.Add("tapu lele");
+                            else if (n_name == "Bulu")
+                                names_list.Add("tapu Bulu");
+                            else if (n_name == "Koko")
+                                names_list.Add("tapu koko");
+                            else if (n_name == "Fini")
+                                names_list.Add("tapu fini");
                             else
                                 names_list.Add(n_name.ToLower());
                         }
@@ -447,7 +526,7 @@ namespace ShowdownBot
          }
         
          /// <summary>
-         /// Randomly selects a pokemon.
+         /// Randomly selects a pokemon and returns its index in the team displayed below the battle.
          /// </summary>
          /// <returns>Index of pokemon.</returns>
          protected int pickPokeRandomly()
@@ -484,6 +563,11 @@ namespace ShowdownBot
              return range.ElementAt(index);
          }
 
+        /// <summary>
+        /// Checks if a battle has ended by looking for the Close and Return to Main Menu button.
+        /// If present, it will click the button.
+        /// </summary>
+        /// <returns></returns>
          protected bool checkBattleEnd()
          {
              if (elementExists(By.Name("closeAndMainMenu")))
@@ -499,7 +583,8 @@ namespace ShowdownBot
          }
 
          /// <summary>
-         /// Exits a battle and forfeits accordingly.
+         /// Attempts to return to the main menu. If forfeit is true, it will go through the steps necessesary to
+         /// forfeit.
          /// </summary>
          /// <param name="forfeit">Go through steps to forfeit match?</param>
          /// <returns>Whether it was successful</returns>
@@ -537,7 +622,37 @@ namespace ShowdownBot
 
         #endregion
 
+        /// <summary>
+        /// Finds Mega Evo/Z-Move checkbox and clicks it if desired.
+        /// Returns true if found, false if not. Megas and Z-Moves are mutually exclusive.
+        /// </summary>
+        /// <param name="click"></param>
+        /// <returns></returns>
+        public bool findMegaZ(bool click)
+        {
+            if (elementExists(By.Name("megaevo")))
+            {
+                if (click)
+                    browser.FindElement(By.Name("megaevo")).Click();
+                return true;
+            }
+            else if (elementExists(By.Name("zmove")))
+            {
+                if (click)
+                {
+                    browser.FindElement(By.Name("zmove")).Click();
+                    isUsingZMove = true;
+                }
+                return true;
+            }
+            return false;
+        }
 
+        /// <summary>
+        /// Calls goMainMenu with forfeit = true. Warns the user if it was unable to forfeit, otherwise
+        /// changes state to idle. Returns true if successfully forfeited.
+        /// </summary>
+        /// <returns></returns>
         public bool forfeitBattle()
         {
             if (!goMainMenu(true))
@@ -553,17 +668,24 @@ namespace ShowdownBot
             }
         }
 
+        /// <summary>
+        /// Changes state.
+        /// </summary>
+        /// <param name="ns"></param>
         public void changeState(State ns)
         {
             lastState = activeState;
             activeState = ns;
         }
+
         public State getState()
         {
             return activeState;
         }
 
-
+        /// <summary>
+        /// Prints information about the bot. Can be module specific.
+        /// </summary>
         public virtual void printInfo()
         {
             cwrite("Generic Bot info:\n" +

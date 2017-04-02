@@ -16,7 +16,6 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\Sho
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\ShowdownBot.exe
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\ShowdownBot.pdb
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.csprojResolveAssemblyReference.cache
-C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.Consol.resources
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.Properties.Resources.resources
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\obj\x86\Debug\ShowdownBot.csproj.GenerateResource.Cache
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\botInfo.txt
@@ -75,3 +74,5 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\Newtons
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\data\moves.js
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\data\roleOverride.js
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\data\help.xml
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\cd\chromedriver.exe
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Debug\cd\argfile

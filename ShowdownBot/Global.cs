@@ -20,6 +20,18 @@ namespace ShowdownBot
         BUSY
 
     };
+
+    public enum Weather
+    {
+        RAIN,
+        SUN,
+        SAND,
+        HEAVYRAIN,
+        HARSHSUN,
+        STRONGWIND,
+        HAIL,
+        NONE
+    }
     /// <summary>
     /// Contains variables utilized by multiple classes.
     /// </summary>
@@ -31,11 +43,14 @@ namespace ShowdownBot
         //Options
         public static bool showDebug = false;
         public static bool botIsReady = false;
+        public static bool updateOnStart = true;
         public static float m1wgt = 0.4f;
         public static float m2wgt = 0.3f;
         public static float m3wgt = 0.2f;
         public static float m4wgt = 0.1f;
-        public static string FF_PROFILE = "sdb";
+        public static string PROFILE_NAME = "Profile 1";
+        public static string CD_ARGS = "--log-level=3";
+        public static string USERDATA_PATH = @"C:/User_Data";
         public static string DBPATH = @"./data/mtdb.sdb";
         public static string POKEBASEPATH = @"./data/pokedex.js";
         public static string MOVELISTPATH = @"./data/moves.js";
@@ -49,8 +64,11 @@ namespace ShowdownBot
         public static Dictionary<string, Pokemon> pokedex;
         public static IWebDriver gBrowserInstance;
 
-        public static string lastcmd = "";
+        public static Queue<String> outputBuffer = new Queue<string>(100);
 
+        /// <summary>
+        /// Initialization method for the type dictionary. This MUST be called during intializaiton fo the bot.
+        /// </summary>
         public static void setupTypes()
         {
             types = new Dictionary<string, Type>();
@@ -168,12 +186,12 @@ namespace ShowdownBot
                 {
                     try
                     {
-                        p = pokedex[_name.TrimStart(PERSONAL_PRE.ToCharArray())];
+                        p = pokedex[_name.Split('_')[1]]; //search for portion after "my_"
                         return p;
                     }
-                    catch
+                    catch (Exception ex)
                     {
-
+                        cwrite(ex.Message + "ON PKMN:"+_name.Split('_')[1], "warning", COLOR_WARN);
                     }
                 }
                 cwrite("Unknown pokemon " + _name, "warning", COLOR_WARN);
@@ -181,6 +199,12 @@ namespace ShowdownBot
             }
             return p;
         }
+
+        /// <summary>
+        /// Returns the specified Move object. Returns the dummy error move if not found.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static Move moveLookup(string name)
         {
             Move m;
@@ -193,10 +217,8 @@ namespace ShowdownBot
             }
             catch (Exception e)
             {
-                Console.ForegroundColor = COLOR_WARN;
-                Console.WriteLine("ON MOVE LOOKUP " + name + ":\n" + e);
-                Console.ResetColor();
-                return new Move(name, types["normal"]);
+                cwrite("ON MOVE LOOKUP " + name + ":\n" + e,"error",COLOR_ERR);
+                return moves["error"];
             }
             return m;
         }
@@ -214,6 +236,12 @@ namespace ShowdownBot
             wait(2000);
         }
         
+        /// <summary>
+        /// Searches for a web element by from within the container toSearch.
+        /// </summary>
+        /// <param name="toSearch"></param>
+        /// <param name="by"></param>
+        /// <returns></returns>
         public static IWebElement findWithin(IWebElement toSearch, By by)
         {
             try
@@ -256,43 +284,9 @@ namespace ShowdownBot
                 }
             
         }
-        /// <summary>
-        /// Exception handling method for webbrowser.findElements
-        /// Returns null on exceptions.
-        /// </summary>
-        /// <param name="by"></param>
-        /// <returns></returns>
-        public static IList<IWebElement> findElements(By by)
-        {
-            try
-            {
-               return gBrowserInstance.FindElements(by);
-            }
-            catch (Exception e)
-            {
-                cwrite("Something went horribly wrong finding some elements: " + e.Message);
-                return null;
-            }
-        }
 
-        /// <summary>
-        /// Exception handling method for finding elements within another web element.
-        /// Returns null on exceptions.
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="by"></param>
-        /// <returns></returns>
-        public static IList<IWebElement> findElementsFromWithin(IWebElement from, By by)
-        {
-            try
-            {
-                return from.FindElements(by);
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-        }
+
+       
         /// <summary>
         /// Waits until an element is available and then clicks it.
         /// </summary>
@@ -328,6 +322,11 @@ namespace ShowdownBot
             }
             
         }
+        /// <summary>
+        /// Returns whether an element matching the criteria by can be found.
+        /// </summary>
+        /// <param name="by"></param>
+        /// <returns></returns>
         public static bool elementExists(By by)
         {
             try
@@ -342,7 +341,8 @@ namespace ShowdownBot
         }
         /// <summary>
         /// Waits until either the specified element exists,
-        /// or it reaches MAX_WAITS
+        /// or it reaches MAX_WAITS.
+        /// Returns true if elemement found.
         /// </summary>
         /// <param name="by"></param>
         /// <param name="maxw"></param>
@@ -357,19 +357,34 @@ namespace ShowdownBot
                 return false;
 
         }
+        /// <summary>
+        /// Write a string to the console.
+        /// </summary>
+        /// <param name="t"></param>
         public static void cwrite(string t)
         {
-            Console.WriteLine("[" + GetTimestamp() + "]" + t);
-            Console.ResetColor();
+            cwrite(t, COLOR_DEFAULT);
         }
+        /// <summary>
+        /// Writes a string of specified color to the console.
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="c"></param>
         public static void cwrite(string t, ConsoleColor c)
         {
             string date = GetTimestamp();
             Console.ForegroundColor = c;
             Console.WriteLine("[" + date + "]" + t);
             Console.ResetColor();
+            saveOutputToConsoleBuffer("[" + date + "]" + t);
 
         }
+        /// <summary>
+        /// Writes a string of specified color to console, with a header prepended.
+        /// </summary>
+        /// <param name="t"></param>
+        /// <param name="header"></param>
+        /// <param name="c"></param>
         public static void cwrite(string t, string header, ConsoleColor c)
         {
             header = header.Trim('[', ']').ToUpper();
@@ -381,9 +396,13 @@ namespace ShowdownBot
             Console.Write("[" + header + "]");
             Console.ResetColor();
             Console.Write(t + "\n");
-
+            saveOutputToConsoleBuffer("[" + date + "]" + "[" + header + "]" + t);
 
         }
+        /// <summary>
+        /// Gets the time in 24-Hours:Minutes:Seconds format
+        /// </summary>
+        /// <returns></returns>
         public static string GetTimestamp()
         {
             string dt = DateTime.Now.ToString("HH:mm:ss");
@@ -391,6 +410,38 @@ namespace ShowdownBot
         }
 
 
+        /// <summary>
+        /// Saves string s to the console output buffer.
+        /// </summary>
+        /// <param name="s"></param>
+        public static void saveOutputToConsoleBuffer(string s)
+        {
+            if (outputBuffer.Count > 99)
+                outputBuffer.Dequeue(); //Clear out oldest after 100 entries.
+            outputBuffer.Enqueue(s);
+        }
+
+        /// <summary>
+        /// Writes the console output buffer to the logs folder.
+        /// </summary>
+        public static void writeConsoleOutput()
+        {
+            if (!Directory.Exists(@"./logs/"))
+                Directory.CreateDirectory(@"./logs/");
+            using (var writer = new StreamWriter(@"./logs/consoleout_" + DateTime.Now.ToString("yyyy-MM-dd H-mm-ss") + ".txt"))
+            {
+                while (outputBuffer.Count != 0)
+                {
+                    writer.WriteLine(outputBuffer.Dequeue());
+                }
+            }
+           
+        }
+
+        /// <summary>
+        /// Debugging method that enumerates some of the fields and their values for any given object.
+        /// </summary>
+        /// <param name="obj"></param>
         public static void var_dump(object obj)
         {
             System.Type t = obj.GetType();
@@ -423,6 +474,11 @@ namespace ShowdownBot
             }
         }
 
+        /// <summary>
+        /// Writes the error to error.txt. If fatal, then the program exits. This method also writes the console output buffer to a sperate log.
+        /// </summary>
+        /// <param name="ex"></param>
+        /// <param name="fatal"></param>
         public static void logError(Exception ex, bool fatal)
         {
             using (StreamWriter sw = new StreamWriter("error.txt", true))
@@ -432,6 +488,7 @@ namespace ShowdownBot
                 sw.WriteLine("[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "] - On: " + Environment.OSVersion.ToString());
                 sw.WriteLine("ERROR:" + ex.Message);
                 sw.WriteLine(ex.StackTrace);
+                writeConsoleOutput();
 
             }
             if (fatal)

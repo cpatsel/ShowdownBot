@@ -34,6 +34,8 @@ namespace ShowdownBot
         public Boosts currentBoosts;
         public string item;
         public int level;
+        public bool canUseFakeout;
+        public bool hasUsedHazard;
         public BattlePokemon(Pokemon p)
         {
             this.mon = p;
@@ -44,9 +46,10 @@ namespace ShowdownBot
             type1 = mon.type1;
             type2 = mon.type2;
             item = mon.item;
-            level = 100; //TODO: actually find this, for now just assume its max.
+            level = 100; //Assume max level
             initBoosts();
-
+            canUseFakeout = true;
+            hasUsedHazard = false;
            
         }
 
@@ -67,7 +70,7 @@ namespace ShowdownBot
             string[] split = boostText.Split('×');
             string value = split[0];
             string whichBoost = split[1].Trim(' ').ToLower();
-            setBoost(whichBoost, convertBoostToCount(float.Parse(value)));
+            setBoost(whichBoost, convertBoostToStage(float.Parse(value)));
         }
 
         /// <summary>
@@ -110,7 +113,7 @@ namespace ShowdownBot
         /// </summary>
         /// <param name="boost"></param>
         /// <returns></returns>
-        private int convertBoostToCount(float boost)
+        private int convertBoostToStage(float boost)
         {
             float mod = 1.0f;
             if(boost >= 1)
@@ -223,20 +226,28 @@ namespace ShowdownBot
         /// <param name="m"></param>
         /// <param name="enemy"></param>
         /// <returns></returns>
-        public int rankMove(Move m, BattlePokemon enemy,List<BattlePokemon> enemyTeam, LastBattleAction lba)
+        public int rankMove(Move m, BattlePokemon enemy,List<BattlePokemon> enemyTeam, LastBattleAction lba, Weather weather)
         {
             int DEFAULT_RANK = 11; //(15 - 4)
             int rank = DEFAULT_RANK; // rank of move m
             if (m.group != "status")
             {
-                rank = hitsToKill(m, enemy);
+                rank = hitsToKill(m, enemy,weather);
+                /*
+                 * Set the rank to the maximum if this move is fake out, and it can be used.
+                 * This is isn't always the move we want to make, so further checks need
+                 * to be developed. Namely, prevent using it against ghost types and
+                 * rough skin/iron barbs, etc. */
+                if (m.name.Contains("Fake Out") && this.canUseFakeout)
+                    rank = 0; //Rank order is reversed for damaging moves, 0 = Max Rank.
+
                 //discourage the use of low accuracy moves if they're overkill
                 if (m.accuracy != 1 && enemy.getHPPercentage() < 20)
                     ++rank;
                 if (m.priority > 0)
                     rank -= m.priority;
                 //To rank in ascending order (ie 1 is a poor rank) subtract the rank from the max.
-                if (rank > GlobalConstants.MAX_MOVE_RANK) rank = GlobalConstants.MAX_MOVE_RANK;
+                if (rank > GlobalConstants.MAX_MOVE_RANK) rank = GlobalConstants.MAX_MOVE_RANK; //Prevent negative ranks.
                 rank = GlobalConstants.MAX_MOVE_RANK - rank;
                
             }
@@ -261,6 +272,19 @@ namespace ShowdownBot
                 {
                     rank += getBoostChance(this, enemy, m, lba);
                 }
+               else if (m.field)
+                {
+                    /*
+                     * If the pokemon is a lead and hasn't used a hazard,
+                     * rank this highly. Otherwise give it a small boost,
+                     * or have it remain default for non-lead pokemon.
+                     * This needs to be refined more. */
+                    if (this.mon.getRole().lead && !this.hasUsedHazard)
+                        rank = GlobalConstants.MAX_MOVE_RANK;
+                    else if (this.mon.getRole().lead)
+                        rank += 1;
+
+                }
             }
             return rank;
         }
@@ -272,15 +296,19 @@ namespace ShowdownBot
         /// <param name="m"></param>
         /// <param name="enemy"></param>
         /// <returns></returns>
-        public int hitsToKill(Move m, BattlePokemon enemy)
+        public int hitsToKill(Move m, BattlePokemon enemy, Weather weather)
         {
-            int totalDamage = damageFormula(m, enemy);
+            int totalDamage = damageFormula(m, enemy,weather);
+            if (totalDamage == 0)
+                return GlobalConstants.MAX_HKO + 5;
+
+
             //Compare the damage we will deal to the health of the enemy.
             int times = 0; //number of times it takes to use this move to KO the opponent.
             int health = enemy.getHealth();
             for (;(health > 0); times++)
             {
-                if (times > GlobalConstants.MAX_HKO)
+                if (times == GlobalConstants.MAX_HKO)
                     break;
                 health -= totalDamage;
             }
@@ -296,7 +324,7 @@ namespace ShowdownBot
         /// <param name="m"></param>
         /// <param name="enemy"></param>
         /// <returns></returns>
-        private int damageFormula(Move m, BattlePokemon enemy)
+        private int damageFormula(Move m, BattlePokemon enemy, Weather weather)
         {
             float first = (2f * this.level + 10f) / 250f;
             float second = 0;
@@ -316,7 +344,7 @@ namespace ShowdownBot
             float itemmod = 1;
             float stab = 1;
             float immunity = 1;
-
+            float abilitymod = 1;
             float type = damageCalc(m.type, enemy.type1);
             if(enemy.type1 != enemy.type2)
                 type = type * damageCalc(m.type, enemy.type2);
@@ -326,10 +354,45 @@ namespace ShowdownBot
                 stab = 1.5f;
             }
             itemmod = itemDamageMod(m, enemy);
+            abilitymod = abilityDamageMod(m, enemy);
             if (immunityCheck(m.type, enemy))
                 immunity = 0;
-            float multiplier = type * stab * itemmod * immunity;
+            float multiplier = type * stab * itemmod * abilitymod * immunity;
             return (int)Math.Floor(totaldmg * multiplier);
+        }
+
+        private float abilityDamageMod(Move m, BattlePokemon enemy)
+        {
+            Pokemon you = this.mon;
+            if (you.hasCertainAbility("technician") && m.bp <= 60)
+                return 1.5f;
+            if (you.hasCertainAbility("toughclaws") && m.flags.contact > 0)
+                return 1.33f;
+            if (you.hasCertainAbility("ironfist") && m.flags.punch > 0)
+                return 1.2f;
+            if (you.hasCertainAbility("strongjaw") && m.flags.bite > 0)
+                return 1.5f;
+            return 1;
+            
+        }
+
+       
+        private float weatherMod(Move m, Weather w)
+        {
+            if (m.type.value == "water" && (w == Weather.RAIN || w == Weather.HEAVYRAIN))
+                return 1.5f;
+            else if (m.type.value == "water" && (w == Weather.SUN || w==Weather.HARSHSUN))
+                return 0.5f;
+            else if (m.type.value == "fire" && w == Weather.RAIN)
+                return 0.5f;
+            else if (m.type.value == "fire" && w == Weather.SUN)
+                return 1.5f;
+            else if (m.type.value == "water" && w == Weather.HARSHSUN)
+                return 0;
+            else if (m.type.value == "fire" && w == Weather.HEAVYRAIN)
+                return 0;
+            else
+                return 1;
         }
 
         /// <summary>
@@ -578,6 +641,7 @@ namespace ShowdownBot
         /// <returns></returns>
         public bool immunityCheck(Type t, BattlePokemon p)
         {
+            //Of the Pokemon with levitate, almost all of them have it as their only ability
             if (t.value == "ground" && p.mon.hasAbility("levitate"))
                 return true;
             if (t.value == "fire" && p.mon.hasAbility("flashfire"))

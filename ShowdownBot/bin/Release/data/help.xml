@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<help>
+  <command>
+      <name>challengeplayer</name>
+      <description>Challenges a player or the owner to a battle.</description>
+      <alias>cp</alias>
+      <param>
+        <id>u</id>
+        <arg></arg>
+        <description>Username of the challengee.</description>
+      </param>
+      <param>
+        <id>c</id>
+        <arg></arg>
+        <description>Number battles to play.</description>
+      </param>
+      <param>
+        <id>f</id>
+        <arg></arg>
+        <description>Format to play on.</description>
+      </param>
+    </command>
+  <command>
+      <name>clear</name>
+      <description>Clears logs</description>
+      <alias></alias>
+      <param>
+        <id>e</id>
+        <arg></arg>
+        <description>Clears the error log.</description>
+      </param>
+    </command>
+  <command>
+      <name>exit</name>
+      <description>Quits the program and kills any bot running.</description>
+      <alias>quit</alias>
+      <param>
+        <id></id>
+        <arg></arg>
+        <description></description>
+      </param>
+    </command>
+  <command>
+      <name>forfeit</name>
+      <description>If the bot is in a battle, forfeits and returns to the main menu.</description>
+      <alias></alias>
+      <param>
+        <id></id>
+        <arg></arg>
+        <description></description>
+      </param>
+    </command>
+ <command>
+      <name>format</name>
+      <description>Changes what format the module will battle on. This is reset when changing modules.</description>
+      <alias></alias>
+      <param>
+        <id></id>
+        <arg></arg>
+        <description></description>
+      </param>
+    </command>
+  <command>
+      <name>info</name>
+      <description>Displays information about the bot.</description>
+      <alias></alias>
+      <param>
+        <id>p</id>
+        <arg></arg>
+        <description>Displays info about a particular Pokemon. Replaces '=' with '-'.</description>
+      </param>
+      <param>
+        <id>m</id>
+        <arg></arg>
+        <description>Displays info about a particular Move. Replaces '=' with '-'.</description>
+      </param>
+    </command>
+  <command>
+      <name>kill</name>
+      <description>Kills the current bot and closes the browser.</description>
+      <alias></alias>
+      <param>
+        <id></id>
+        <arg></arg>
+        <description></description>
+      </param>
+    </command>
+  <command>
+      <name>module</name>
+      <description>Switches which AI module the bot will use. Acceptable values are: 'analytic / a' , 'biased / b', 'random / r' </description>
+      <alias>m</alias>
+      <param>
+        <id></id>
+        <arg></arg>
+        <description></description>
+      </param>
+    </command>
+  <command>
+      <name>refresh</name>
+      <description>Refreshes the page.</description>
+      <alias></alias>
+      <param>
+        <id></id>
+        <arg></arg>
+        <description></description>
+      </param>
+    </command>
+ <command>
+      <name>search</name>
+      <description>Search for a battle on the ladder.</description>
+      <alias>ladder</alias>
+      <param>
+        <id>c</id>
+        <arg></arg>
+        <description>Number battles to play.</description>
+      </param>
+      <param>
+        <id>f</id>
+        <arg></arg>
+        <description>Format to play on.</description>
+      </param>
+    </command>
+  <command>
+    <name>start</name>
+    <description>Starts the bot.</description>
+    <alias></alias>
+    <param>
+      <id>u</id>
+      <arg></arg>
+      <description>Specify username to log in with.</description>
+    </param>
+    <param>
+        <id>p</id>
+        <arg></arg>
+        <description>Specify a password alongside the username.</description>
+      </param>
+  </command>
+ 
+  <command>
+    <name>startf</name>
+    <description>Starts the bot with no authentication.</description>
+    <alias></alias>
+    <param>
+      <id></id>
+      <arg></arg>
+      <description></description>
+    </param>
+  </command>
+ 
+  <command>
+      <name>stop</name>
+      <description>Changes the bot to idle.</description>
+      <alias></alias>
+      <param>
+        <id></id>
+        <arg></arg>
+        <description></description>
+      </param>
+    </command>
+ <command>
+      <name>update</name>
+      <description>Displays whether or not a new version is available.</description>
+      <alias></alias>
+      <param>
+        <id></id>
+        <arg></arg>
+        <description></description>
+      </param>
+    </command>
+  <command>
+      <name>version</name>
+      <description>Displays the current version, as seen in the title bar.</description>
+      <alias></alias>
+      <param>
+        <id></id>
+        <arg></arg>
+        <description></description>
+      </param>
+    </command>
+   
+   
+   
+     
+  <command>
+      <name></name>
+      <description></description>
+      <alias></alias>
+      <param>
+        <id></id>
+        <arg></arg>
+        <description></description>
+      </param>
+    </command>
+</help>

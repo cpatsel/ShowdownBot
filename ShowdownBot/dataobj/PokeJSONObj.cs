@@ -45,15 +45,16 @@ namespace ShowdownBot
         public Role role { get; set; }
         public DefenseType deftype { get; set; }
         public StatSpread statspread { get; set; }
-        public bool personal { get; set; }
-        public string item { get; set; }
+        public bool personal { get; set; } = false;
+        public string certainAbility { get; set; } = "none";
+        public string item { get; set; } = "none";
     }
 
     public class Abilities
     {
-        public string a1 { get; set; }
-        public string a2 { get; set; }
-        public string H { get; set; }
+        public string a0 { get; set; }
+        public string a1 { get; set; } = "none";
+        public string H { get; set; } = "none";
         
     }
 
@@ -67,7 +68,7 @@ namespace ShowdownBot
         public int spe { get; set; }
     }
 
-    //TODO: add more specific roles, like fast physical or tank,etc and give them specific spreads in setRealStats
+    
     public class Role
     {
         //Mutually Exclusive:

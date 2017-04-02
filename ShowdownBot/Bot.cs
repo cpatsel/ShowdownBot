@@ -38,6 +38,7 @@ namespace ShowdownBot
         string passwordField = "password";
         // ///Vars
 
+        Dictionary<string, string> options;
         string challengee;
         AiMode modeCurrent;
         IWebDriver mainBrowser;
@@ -63,21 +64,22 @@ namespace ShowdownBot
 
         
         #endregion
-        Consol c;
-        public Bot(Consol c)
+        BotConsole c;
+        public Bot(BotConsole c)
         {
             this.c = c;
             isRunning = false;
             //activeState = State.IDLE;
-            modeCurrent = AiMode.RANDOM; //TODO: set default in config to be read
+            modeCurrent = AiMode.RANDOM; 
             Global.pokedex = new Dictionary<string, Pokemon>();
+            options = new Dictionary<string, string>();
             ReadFile();
             Global.setupTypes();
             BuildPokedex();
             Global.moves = new Dictionary<string,Move>();
             movelist = new Movelist();
             movelist.initialize();
-            cwrite("Ready for input!", COLOR_OK);
+            
 
             
            
@@ -91,7 +93,7 @@ namespace ShowdownBot
         /// </summary>
         /// <returns></returns>
         public bool getStatus() { return isRunning; }
-        public Consol getConsole(){ return c;}
+        public BotConsole getConsole(){ return c;}
         public string getOwner() { return owner;}
         public string getChallengee() { return challengee;}
         public void printInfo()
@@ -106,14 +108,14 @@ namespace ShowdownBot
         {
             if (browser)
             {
-                FirefoxProfileManager pm = new FirefoxProfileManager();
-                FirefoxProfile ffp = pm.GetProfile(Global.FF_PROFILE);
-                FirefoxOptions fo = new FirefoxOptions();
-                fo.SetLoggingPreference(LogType.Driver, LogLevel.Off); //todo allow toggling this
-                fo.SetLoggingPreference(LogType.Client, LogLevel.Off);
-                
-                mainBrowser = new FirefoxDriver(ffp);
-            
+                ChromeOptions options = new ChromeOptions();
+                ChromeDriverService svc = ChromeDriverService.CreateDefaultService(@"./cd/");
+                svc.SuppressInitialDiagnosticInformation = true;
+
+                options.AddArgument(CD_ARGS);
+                options.AddArgument("user-data-dir=" + USERDATA_PATH);
+                options.AddArgument("--profile-directory=" + PROFILE_NAME);
+                mainBrowser = new ChromeDriver(svc,options);
                 mainBrowser.Manage().Window.Maximize(); //prevent unintenttionally hiding elements in some versions of FF
                 
                 gBrowserInstance = mainBrowser;
@@ -133,9 +135,10 @@ namespace ShowdownBot
             
 
         }
-        public void changeMode(AiMode nmode)
+        public void changeMode(AiMode nmode, bool silent = false)
         {
-            cwrite("Changing AI mode from " + modeCurrent.ToString() + " to: " + nmode.ToString());
+            if (!silent)
+                cwrite("Changing AI mode from " + modeCurrent.ToString() + " to: " + nmode.ToString());
             modeCurrent = nmode;
             switch (modeCurrent)
             {
@@ -163,21 +166,28 @@ namespace ShowdownBot
         }
         public void changeFormat(string nf)
         {
-            cwrite("Changing format to "+nf.ToLower());
-            mainModule.changeFormat(nf.ToLower());
+            //Do a quick error check for randombattle and ou
+            //This allows users to type in ou and randombattle, and format it to
+            //the now named gen7ou and gen7randombattle respectively
+            String f = nf.ToLower();
+            if (f == "ou" || f == "randombattle")
+                f = "gen7" + f;
+            cwrite("Changing format to "+f.ToLower());
+            mainModule.changeFormat(f.ToLower());
         }
 
         public void testBattle()
         {
-            BattlePokemon off = new BattlePokemon(Global.lookup("magcargo"));
-            BattlePokemon def = new BattlePokemon(Global.lookup("scizor"));
+            BattlePokemon off = new BattlePokemon(Global.lookup("my_metagross"));
+            BattlePokemon def = new BattlePokemon(Global.lookup("Landorus-Therian"));
             List<BattlePokemon> defteam = new List<BattlePokemon>();
             defteam.Add(def);
-            Move m1 = Global.moveLookup("Fire Blast");
-            Move m2 = Global.moveLookup("Flamethrower");
-            def.setHealth(10);
-            int dmg1 = off.rankMove(m1, def,defteam, LastBattleAction.ACTION_ATTACK_SUCCESS);
-            int dmg2 = off.rankMove(m2, def, defteam, LastBattleAction.ACTION_ATTACK_SUCCESS);
+            def.mon.certainAbility = "levitate";
+            Move m1 = Global.moveLookup("Meteor Mash");
+            Move m2 = Global.moveLookup("Earthquake");
+            def.setHealth(100);
+            int dmg1 = off.rankMove(m1, def,defteam, LastBattleAction.ACTION_ATTACK_SUCCESS, Weather.NONE);
+            int dmg2 = off.rankMove(m2, def, defteam, LastBattleAction.ACTION_ATTACK_SUCCESS, Weather.NONE);
             cwrite(off.mon.name + "'s " + m1.name + " against " + def.mon.name+":"+dmg1, "debug", COLOR_BOT);
             cwrite(off.mon.name + "'s " + m2.name + " against " + def.mon.name + ":" + dmg2, "debug", COLOR_BOT);
 
@@ -303,7 +313,6 @@ namespace ShowdownBot
                 cwrite("You can try starting without authenticating (startf)", COLOR_WARN);
                 return;
             }
-            wait(1000);
             using (var reader = new StreamReader("botInfo.txt"))
             {
                 string line;
@@ -345,8 +354,10 @@ namespace ShowdownBot
 
             else if (key == "[PASSWORD]")
                 password = val;
+            else if (key == "[USERDATA_PATH]")
+                Global.USERDATA_PATH = val;
             else if (key == "[PROFILE]")
-                Global.FF_PROFILE = val;
+                Global.PROFILE_NAME = val;
             else if (key == "[SHOW_DEBUG]")
             {
                 val = val.ToLower();
@@ -356,6 +367,32 @@ namespace ShowdownBot
                     Global.showDebug = true;
                 else
                     cwrite("Unknown value " + val + " for SHOW_DEBUG", "WARNING", COLOR_WARN);
+            }
+            else if (key == "[CHROMEARGS]")
+            {
+                string path = @"" + val;
+                if (File.Exists(path))
+                {
+                    using (var reader = new StreamReader(path))
+                    {
+                        CD_ARGS = reader.ReadToEnd();
+                    }
+                }
+                else
+                {
+                    cwrite("No chromedriver argument file found at path "+path+". Check that the path in botInfo.txt is correct.", "warning", COLOR_WARN);
+                    cwrite("Continuing with default logging-level=3", COLOR_OK);
+                }
+            }
+            else if (key == "[DEFAULT_MODULE]")
+            {
+                val = val.ToLower();
+                if (val == "r" || val == "random")
+                    changeMode(AiMode.RANDOM, true);
+                else if (val == "b" || val == "biased")
+                    changeMode(AiMode.BIAS, true);
+                else if (val == "a" || val == "analytic")
+                    changeMode(AiMode.ANALYTIC, true);
             }
             else if (key.StartsWith("[SLOT"))
             {
@@ -367,6 +404,13 @@ namespace ShowdownBot
                     Global.m3wgt = float.Parse(val);
                 else
                     Global.m4wgt = float.Parse(val);
+            }
+            else if (key.Contains("UPDATE_ONSTART"))
+            {
+                if (val.ToLower().Contains("true"))
+                    Global.updateOnStart = true;
+                else
+                    Global.updateOnStart = false;
             }
         }
         private void Update()
@@ -428,17 +472,22 @@ namespace ShowdownBot
                 cwrite("Continuing operation.",COLOR_OK);
                 return;
             }
-            string json;
+            
             using (var reader = new StreamReader(Global.POKEBASEPATH))
             {
-                while ((json = reader.ReadLine()) != null)
+                string json;
+                json = reader.ReadToEnd();
+                JObject jo = JsonConvert.DeserializeObject<JObject>(json);
+                string allmons = jo.First.ToString();
+                var current = jo.First;
+                for (int i = 0; i < jo.Count; i++)
                 {
-                    string full = "{" + json + "}";
-                    JObject po = JsonConvert.DeserializeObject<JObject>(full);
-                    var first = po.First;
-                    PokeJSONObj obj = JsonConvert.DeserializeObject<PokeJSONObj>(po.First.First.ToString());
-                    Pokemon p = new Pokemon(obj);
-                    Global.pokedex.Add(p.name, p);
+                    
+                    PokeJSONObj pk = JsonConvert.DeserializeObject<PokeJSONObj>(current.First.ToString());
+                    Pokemon mon = new Pokemon(pk);
+                    Global.pokedex.Add(mon.name, mon);
+                    current = current.Next;
+
                 }
             }
             //cwrite("Pokedex built!", COLOR_OK);

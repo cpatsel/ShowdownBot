@@ -9,7 +9,7 @@ using static ShowdownBot.GlobalConstants;
 using static ShowdownBot.Global;
 namespace ShowdownBot
 {
-    partial class Consol
+    partial class BotConsole
     {
        
         public void Parse(string t)
@@ -40,6 +40,11 @@ namespace ShowdownBot
             else if (args[0] == "stop" || args[0] == "idle")
             {
                 botUseCommand(() => bot.changeState(State.IDLE));
+            }
+            else if (args[0] == "save")
+            {
+                writeConsoleOutput();
+                cwrite("Saved current console output to /logs");
             }
             else if (args[0] == "kill")
             {
@@ -132,7 +137,7 @@ namespace ShowdownBot
             }
             else if (args[0] == "tb")
             {
-               // botUseCommand(() => bot.testBattle(), true);
+                botUseCommand(() => bot.testBattle(), true);
             }
             else if (args[0] == "exit" || args[0] == "quit")
             {
@@ -140,7 +145,7 @@ namespace ShowdownBot
                 writef("Killing bot.", "[SYSTEM]", COLOR_SYS);
                 botUseCommand(() => bot.Kill());
                 Environment.Exit(0);
-                this.Close();
+                
             }
             else if (args[0] == "info")
             {
@@ -148,6 +153,7 @@ namespace ShowdownBot
                 {
                     string a = param["-m"];
                     a = a.Replace('_', ' ');
+                    a = a.Replace('=', '-');
                     Move m = Global.moveLookup(a);
                     write(m.name + " (" + m.group + "):" + m.type.value + ", " + m.bp + ", " + (m.accuracy*100) + "%\n" + m.desc);
                     var_dump(m);
@@ -156,6 +162,8 @@ namespace ShowdownBot
                 {
                     string a = param["-p"];
                     a = a.Replace('=', '-');
+                    a = a.Replace('_', ' ');
+                    a = a.Replace('/', '_');
                     Pokemon p = Global.lookup(a);
                     write(p.name + ": " + p.type1.value + "/" + p.type2.value + "\nTypically " + p.getRoleToString() + " with " + p.getDefTypeToString() + " defenses.");
                     writef("Debug Info:\n" + p.statSpread.ToString(), "debug", COLOR_OK);

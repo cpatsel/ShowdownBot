@@ -16,24 +16,26 @@ using System.Xml.Linq;
 
 namespace ShowdownBot
 {
-    public partial class Consol : Form
+    public partial class BotConsole
     {
         Bot bot;
-        bool ready = false;
         Thread threadBot;
         ThreadStart ts;
         XDocument helpdoc;
-        public Consol()
+        
+        public BotConsole()
         {
+           
             ts = new ThreadStart(() => bot = new Bot(this));
             threadBot = new Thread(ts);
             threadBot.SetApartmentState(ApartmentState.STA);
             threadBot.Start();
-            InitializeComponent();
-            richTextBox1.WordWrap = false;
             helpdoc = XDocument.Load(HELPPATH);
+            if (Global.updateOnStart)
+                this.checkForNewVersion();
             write("Console initialized.");
-            
+            cwrite("Ready for input!", COLOR_OK);
+            Consol_Load();
         }
 
         /// <summary>
@@ -129,7 +131,7 @@ namespace ShowdownBot
             job();
         }
 
-        private void Consol_Load(object sender, EventArgs e)
+        private void Consol_Load()
         {
             
             while (true)
@@ -155,25 +157,29 @@ namespace ShowdownBot
             string[] components = versiontext.Split('.');
             string[] mycomponents = SDB_VERSION.TrimEnd("-unreleased".ToCharArray()).Split('.');
             bool behind = false;
+            ConsoleColor color = GlobalConstants.COLOR_OK;
             if (Int32.Parse(components[0]) > Int32.Parse(mycomponents[0]))
             {
                 behind = true;
+                color = COLOR_ERR;
             }
             else if (Int32.Parse(components[1]) > Int32.Parse(mycomponents[1]))
             {
                 behind = true;
+                color = COLOR_WARN;
             }
             else if ((Int32.Parse(components[2]) > Int32.Parse(mycomponents[2]))
                 && (Int32.Parse(components[1]) == Int32.Parse(mycomponents[1])))
             {
                 behind = true;
+                color = COLOR_WARN;
             }
             if (behind)
             {
-                cwrite("There's a new version v" + versiontext + " available!", COLOR_WARN);
+                cwrite("There's a new version v" + versiontext + " available!","updater", color);
             }
             else
-                cwrite("You have the latest version!", COLOR_OK);
+                cwrite("You have the latest version!","updater", COLOR_OK);
             return true;
         }
     }

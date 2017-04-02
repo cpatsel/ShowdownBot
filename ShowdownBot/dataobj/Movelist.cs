@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using static ShowdownBot.Global;
 using static ShowdownBot.GlobalConstants;
+using ShowdownBot.dataobj;
+
 namespace ShowdownBot
 {
 
@@ -35,12 +37,15 @@ namespace ShowdownBot
         public bool phase = false; //Is a phasing move? ie. Whirlwind
         public bool heal = false;
         public bool field = false; //Hazard move?
+        public bool shouldNotRepeat = false;
+        public bool isZ = false; //Is a Z move?
         public Boosts boosts;
         public string statuseffect = "none";
         public Move(string n, Type t, float p) { name = n; type = t; bp = p; }
         public Move(string n, Type t) { name = n; type = t; unknown = true; bp = -1; }
         public string desc;
         private Secondary secondary = null;
+        public Flags flags = new Flags();
         public Move(MoveJSONObj obj)
         {
             name = obj.name;
@@ -53,17 +58,32 @@ namespace ShowdownBot
             desc = obj.desc;
             statuseffect = obj.status;
             secondary = obj.secondary;
+            if (obj.sideCondition != "none") field = true; //Hazard moves
+            if (obj.isZ != "false")
+            {
+                isZ = true;
+                bp = 100; //for now just set bp to a high value to encourage usage --otherwise endlessly switches.
+              
+            } 
             if (statuseffect != "none") status = true;
             if (hasBoosts()) isBoost = true;
-            if (Convert.ToBoolean(obj.flags.heal)) heal = true; 
+            if (Convert.ToBoolean(obj.flags.heal)) heal = true;
+            if (!Object.Equals(obj.flags, null))
+                flags = obj.flags;
             
         }
+
+        
         public bool hasBoosts()
         {
             if (!Object.ReferenceEquals(boosts, null))
-                return (boosts.total() > 0) ? true : false; //TODO: follow a similar method for finding moves that drop stats.
+                return (boosts.hasBoosts()) ? true : false;
             else
                 return false;
+        }
+        public bool hasDrops()
+        {
+            return boosts.hasDrops();
         }
         public List<String> whatBoosts()
         {
@@ -78,6 +98,11 @@ namespace ShowdownBot
 
             }
             return toreturn;
+        }
+
+        public Move copyDetails()
+        {
+            return (Move)this.MemberwiseClone();
         }
         /// <summary>
         /// Whether or not this move has secondary effects.
@@ -118,6 +143,9 @@ namespace ShowdownBot
                 cwrite("Attempting to continue", COLOR_OK);
                 return;
             }
+            var settings = new JsonSerializerSettings {
+
+            };
             using (var reader = new StreamReader(path))
             {
                 string json;

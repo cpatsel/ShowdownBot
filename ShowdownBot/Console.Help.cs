@@ -6,12 +6,12 @@ using static ShowdownBot.Global;
 using static ShowdownBot.GlobalConstants;
 namespace ShowdownBot
 {
-    //Todo: Move this to an external (XML?) file?
+    
 
     /// <summary>
     /// Contains the in-console help documentation for commands.
     /// </summary>
-    public partial class Consol
+    public partial class BotConsole
     {
         private void DisplayHelp()
         {

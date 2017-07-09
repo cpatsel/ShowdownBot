@@ -4,7 +4,8 @@
 [USERNAME]=changeMe
 [PASSWORD]=changeMeToo
 [OWNER]=yourusername
-[PROFILE]=sdb
+[USERDATA_PATH]=C:/Users/YOURNAME/AppData/Local/Google/Chrome/User Data/
+[PROFILE]=Profile 1
 [UPDATE_ONSTART]=true
 [DEFAULT_MODULE]=r
 #### Biased Mode moveslot weights ####
@@ -14,4 +15,5 @@
 [SLOT4_WEIGHT]=0.1
 
 #### Debug Information ####
-[SHOW_DEBUG]=true
+[SHOW_DEBUG]=false
+[CHROMEARGS]=./cd/argfile

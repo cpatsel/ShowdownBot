@@ -62,17 +62,19 @@
     </command>
   <command>
       <name>info</name>
-      <description>Displays information about the bot.</description>
+      <description>Displays information about the bot. Makes the following character changes: '=' becomes '-', '_' becomes ' ' (space)
+      '/' becomes '_' (for pokemon only. Used to check stats of personal pokemon ie. my_xxx)   
+    </description>
       <alias></alias>
       <param>
         <id>p</id>
         <arg></arg>
-        <description>Displays info about a particular Pokemon. Replaces '=' with '-'.</description>
+        <description>Displays info about a particular Pokemon.</description>
       </param>
       <param>
         <id>m</id>
         <arg></arg>
-        <description>Displays info about a particular Move. Replaces '=' with '-'.</description>
+        <description>Displays info about a particular Move.</description>
       </param>
     </command>
   <command>
@@ -105,6 +107,16 @@
         <description></description>
       </param>
     </command>
+  <command>
+    <name>save</name>
+    <description>Saves the last 100 lines of console output to a file in the logs directory.</description>
+    <alias></alias>
+    <param>
+      <id></id>
+      <arg></arg>
+      <description></description>
+    </param>
+  </command>
  <command>
       <name>search</name>
       <description>Search for a battle on the ladder.</description>
@@ -181,14 +193,5 @@
    
    
      
-  <command>
-      <name></name>
-      <description></description>
-      <alias></alias>
-      <param>
-        <id></id>
-        <arg></arg>
-        <description></description>
-      </param>
-    </command>
+
 </help>

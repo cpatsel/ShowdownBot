@@ -116,8 +116,9 @@ namespace ShowdownBot
                 options.AddArgument("user-data-dir=" + USERDATA_PATH);
                 options.AddArgument("--profile-directory=" + PROFILE_NAME);
                 mainBrowser = new ChromeDriver(svc,options);
-                mainBrowser.Manage().Window.Maximize(); //prevent unintenttionally hiding elements in some versions of FF
-                
+                //This started giving me errors, maximizing is now handled through the argfile.
+               // mainBrowser.Manage().Window.Maximize(); //prevent unintenttionally hiding elements in some versions of FF
+             
                 gBrowserInstance = mainBrowser;
                 DesiredCapabilities d = new DesiredCapabilities();
             }

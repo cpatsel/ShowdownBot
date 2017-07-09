@@ -218,7 +218,7 @@ namespace ShowdownBot
             catch (Exception e)
             {
                 cwrite("ON MOVE LOOKUP " + name + ":\n" + e,"error",COLOR_ERR);
-                return moves["error"];
+                return moves["Error"];
             }
             return m;
         }

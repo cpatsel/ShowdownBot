@@ -1,7 +1,13 @@
 ## Changelog ##
 
+### v1.0.1 / 2017-07-09 ###
 
-### v1.0.0 / 2016-04-02 ###
+Fixes:
+
+* Crash when encountering a move not in the database (reimplemented error move)
+* Error on startup relating to maximizing the browser.
+
+### v1.0.0 / 2017-04-02 ###
 ----
 
 

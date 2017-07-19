@@ -87,6 +87,16 @@
         <description></description>
       </param>
     </command>
+    <command>
+      <name>learn</name>
+      <description>Initiates bot machine learning mode.</description>
+      <alias>l</alias>
+      <param>
+        <id>d</id>
+        <arg></arg>
+        <description>Activates replay downloader instead.</description>
+      </param>
+    </command>
   <command>
       <name>module</name>
       <description>Switches which AI module the bot will use. Acceptable values are: 'analytic / a' , 'biased / b', 'random / r' </description>

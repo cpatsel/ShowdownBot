@@ -500,8 +500,6 @@ namespace ShowdownBot
             cwrite("Initiating learning mode.", "bot", COLOR_BOT);
             isRunning = true;
             //bool isLearning = true; //uncommented for now.
-            if (number > 0)
-                initialise();
             ReplayLearner rl = new ReplayLearner(mainBrowser,c);
 
             if (number > 0)

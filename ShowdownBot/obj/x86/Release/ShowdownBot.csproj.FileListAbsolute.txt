@@ -28,4 +28,5 @@ C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\Newto
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\Newtonsoft.Json.xml
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\data\help.xml
 C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\data\roleOverride.js
-C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\geckodriver.exe
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\cd\argfile
+C:\Users\Steven\Documents\Repositories\ShowdownBot\ShowdownBot\bin\Release\cd\chromedriver.exe

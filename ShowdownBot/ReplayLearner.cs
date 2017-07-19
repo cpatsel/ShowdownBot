@@ -24,7 +24,8 @@ namespace ShowdownBot
         //todo: see if there's a way to filter by elo rank to weed out the trash replays
         public void download(int number = 1)
         {
-            browser.Navigate().GoToUrl("https://replay.pokemonshowdown.com");
+            
+            browser.Url = "https://replay.pokemonshowdown.com";
             System.Threading.Thread.Sleep(5000);
             browser.FindElement(By.Name("format")).SendKeys("ou");
             browser.FindElement(By.Name("format")).Submit();
@@ -46,10 +47,12 @@ namespace ShowdownBot
 
             for (int i = 0; i < number; i++)
             {
-
+                list = browser.FindElements(By.XPath("//ul[@class='linklist']/li")); //refresh list
                 list[i].Click();
                 System.Threading.Thread.Sleep(2000);
-                IWebElement dlb = browser.FindElement(By.PartialLinkText("Download"));
+                
+                IWebElement dlb = waitFind(By.PartialLinkText("Download"));
+                if (dlb == null) { cwrite("Error downloading " + list[i].Text, "!", GlobalConstants.COLOR_WARN); continue; }
                 dlb.Click();
                 cwrite("Downloaded " + browser.Url, "replaymanager", COLOR_BOT);
                 //see note above

@@ -201,17 +201,8 @@ namespace ShowdownBot
             else if (args[0] == "learn" || args[0] == "l")
             {
 
-                if (!paramCheck(2, args, "learn"))
-                {
-
-                    return;
-                }
-                if (args[1] == "d" || args[1] == "download")
-                {
-                    if (paramCheck(3, args, "learn"))
-                    {
-                        botUseCommand(() => bot.learn(Int32.Parse(args[2])));
-                    }
+               if (isSet(param, "-d")) { 
+                        botUseCommand(() => bot.learn(Int32.Parse(param["-d"])));
                 }
                 else
                 {
